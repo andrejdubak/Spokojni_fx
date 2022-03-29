@@ -23,7 +23,6 @@ public class MainApplication extends Application {
         } catch (Exception var3) {
             var3.printStackTrace();
         }
-
         try {
             System.out.print(DB.getUserById(1).getEmail());
         } catch (SQLException var2) {
