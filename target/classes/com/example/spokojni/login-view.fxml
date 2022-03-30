@@ -14,6 +14,6 @@
    <TextField text="Heslo" />
 
     <Label fx:id="welcomeText" />
-    <Button onAction="#loginClick" text="Login" />
+    <Button fx:id="LoginClick" onAction="#loginClick" text="Login" />
     <Button text="Register" />
 </VBox>

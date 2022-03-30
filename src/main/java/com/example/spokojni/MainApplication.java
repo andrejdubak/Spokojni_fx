@@ -1,7 +1,6 @@
 package com.example.spokojni;
 
 import com.example.spokojni.backend.db.DB;
-import com.example.spokojni.frontend.ChangeScreenController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -15,8 +14,7 @@ public class MainApplication extends Application {
     public void start(Stage stage) throws IOException {
 
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("login-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-        ChangeScreenController screenController = new ChangeScreenController(scene);
+        Scene scene = new Scene(fxmlLoader.load(), 1500, 1000);
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
