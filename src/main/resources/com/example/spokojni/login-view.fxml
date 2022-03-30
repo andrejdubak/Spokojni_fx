@@ -5,7 +5,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" prefHeight="460.0" prefWidth="502.0" spacing="20.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.spokojni.frontend.HelloController">
+<VBox alignment="CENTER" prefHeight="460.0" prefWidth="502.0" spacing="20.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.spokojni.frontend.LoginController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -14,6 +14,6 @@
    <TextField text="Heslo" />
 
     <Label fx:id="welcomeText" />
-    <Button onAction="#onHelloButtonClick" text="Login" />
+    <Button onAction="#loginClick" text="Login" />
     <Button text="Register" />
 </VBox>
