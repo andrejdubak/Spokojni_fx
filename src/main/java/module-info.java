@@ -3,6 +3,7 @@ module com.example.spokojni {
     requires javafx.fxml;
     requires java.sql;
     requires com.calendarfx.view;
+    requires mysql.connector.java;
 
 
     opens com.example.spokojni to javafx.fxml;

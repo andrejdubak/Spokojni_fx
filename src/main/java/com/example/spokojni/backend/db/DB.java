@@ -8,7 +8,9 @@ import com.example.spokojni.backend.users.Admin;
 import com.example.spokojni.backend.users.Student;
 import com.example.spokojni.backend.users.Teacher;
 
+import java.security.Timestamp;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class DB {
@@ -27,7 +29,14 @@ public class DB {
     public static User getUserById(int id) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE id=" + id);
         rs.first();
-        return new User(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
+        switch(rs.getInt(6)) {
+            case 3:
+                return new Admin(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
+            case 2:
+                return new Teacher(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
+            default:
+                return new Student(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
+        }
     }
     public static Subject getSubjectById(int id) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT * FROM subjects WHERE id=" + id);
@@ -37,18 +46,16 @@ public class DB {
     public static Term getTermById(int id) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT * FROM terms WHERE id=" + id);
         rs.first();
-        return new Term(rs.getInt(1),getSubjectById(rs.getInt(2)), rs.getTimestamp(3));
+        LocalDateTime start_time = rs.getTimestamp(3).toLocalDateTime();
+        LocalDateTime end_time = rs.getTimestamp(3).toLocalDateTime();
+        String description = rs.getString(5);
+        return new Term(rs.getInt(1), getSubjectById(rs.getInt(2)), start_time, end_time, description);
     }
     public static ArrayList<Student> getStudents() throws SQLException{
         ArrayList<Student> Students = new ArrayList<>();
         ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE role=1");
         while(rs.next())
             Students.add(new Student(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4)));
-        /*catch(SQLException e){
-            System.out.println("SQLException: " + e.getMessage());
-            System.out.println("SQLState: " + e.getSQLState());
-            System.out.println("VendorError: " + e.getErrorCode());
-        }*/
         return Students;
     }
     public static ArrayList<Teacher> getTeachers() throws SQLException{
@@ -75,22 +82,34 @@ public class DB {
     public static ArrayList<Term> getTerms() throws SQLException{
         ArrayList<Term> Terms = new ArrayList<>();
         ResultSet rs = stmt.executeQuery("SELECT * FROM terms");
-        while(rs.next())
-            Terms.add(new Term(rs.getInt(1),getSubjectById(rs.getInt(2)), rs.getTimestamp(3)));
+        while(rs.next()){
+            LocalDateTime start_time = rs.getTimestamp(3).toLocalDateTime();
+            LocalDateTime end_time = rs.getTimestamp(3).toLocalDateTime();
+            String description = rs.getString(5);
+            Terms.add(new Term(rs.getInt(1),getSubjectById(rs.getInt(2)), start_time, end_time, description));
+        }
         return Terms;
     }
     public static ArrayList<Term> getTermsBySubjectId(int id) throws SQLException{
         ArrayList<Term> Terms = new ArrayList<>();
         ResultSet rs = stmt.executeQuery("SELECT * FROM terms WHERE subject_id=" + id);
-        while(rs.next())
-            Terms.add(new Term(rs.getInt(1),getSubjectById(rs.getInt(2)), rs.getTimestamp(3)));
+        while(rs.next()){
+            LocalDateTime start_time = rs.getTimestamp(3).toLocalDateTime();
+            LocalDateTime end_time = rs.getTimestamp(3).toLocalDateTime();
+            String description = rs.getString(5);
+            Terms.add(new Term(rs.getInt(1),getSubjectById(rs.getInt(2)), start_time, end_time, description));
+        }
         return Terms;
     }
     public static ArrayList<Term> getTermsByStudentId(int id) throws SQLException{
         ArrayList<Term> Terms = new ArrayList<>();
         ResultSet rs = stmt.executeQuery("SELECT * FROM terms WHERE student_id=" + id);
-        while(rs.next())
-            Terms.add(new Term(rs.getInt(1),getSubjectById(rs.getInt(2)), rs.getTimestamp(3)));
+        while(rs.next()){
+            LocalDateTime start_time = rs.getTimestamp(3).toLocalDateTime();
+            LocalDateTime end_time = rs.getTimestamp(3).toLocalDateTime();
+            String description = rs.getString(5);
+            Terms.add(new Term(rs.getInt(1),getSubjectById(rs.getInt(2)), start_time, end_time, description));
+        }
         return Terms;
     }
     public static ArrayList<Agreement> getAgreements() throws SQLException{
@@ -109,7 +128,7 @@ public class DB {
     }
     public static ArrayList<Agreement> getAgreementsBySubjectId(int id) throws SQLException{
         ArrayList<Agreement> Agreements = new ArrayList<>();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM agreements WHERE subject_id=" + id);
+        ResultSet rs = stmt.executeQuery("SELECT * FROM agreements JOIN users ON users.id=student_id JOIN terms ON terms.id=term_id WHERE subject_id=" + id);
         while(rs.next())
             Agreements.add(new Agreement(rs.getInt(1),(Student) getUserById(rs.getInt(2)), getTermById(rs.getInt(3))));
         return Agreements;

@@ -25,7 +25,7 @@ public class MainApplication extends Application {
             var3.printStackTrace();
         }
         try {
-            System.out.print(DB.getUserById(1).getEmail());
+            System.out.print(DB.getSubjects());
         } catch (SQLException var2) {
             System.out.println("SQLException: " + var2.getMessage());
             System.out.println("SQLState: " + var2.getSQLState());
