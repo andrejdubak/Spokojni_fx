@@ -25,7 +25,7 @@ public class MainApplication extends Application {
             var3.printStackTrace();
         }
         try {
-            System.out.print(DB.getSubjects());
+            System.out.print(DB.getTermById(1).getStart_time());
         } catch (SQLException var2) {
             System.out.println("SQLException: " + var2.getMessage());
             System.out.println("SQLState: " + var2.getSQLState());
