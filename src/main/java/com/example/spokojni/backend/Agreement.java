@@ -3,7 +3,7 @@ package com.example.spokojni.backend;
 
 import com.example.spokojni.backend.users.Student;
 
-public class Agreement {
+public class Agreement{
     private int id;
     private Student student;
     private Term term;

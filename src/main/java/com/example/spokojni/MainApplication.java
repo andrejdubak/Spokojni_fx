@@ -1,5 +1,6 @@
 package com.example.spokojni;
 
+import com.example.spokojni.backend.Term;
 import com.example.spokojni.backend.db.DB;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +26,13 @@ public class MainApplication extends Application {
             var3.printStackTrace();
         }
         try {
-            System.out.print(DB.getTermById(1).getStart_time());
+            for(Term term : DB.getTerms()){
+                System.out.print(term.getId());
+                System.out.print(term.getSubject().getName());
+                System.out.print(term.getStart_time());
+                System.out.print(term.getEnd_time());
+                System.out.println(term.getDescription());
+            }
         } catch (SQLException var2) {
             System.out.println("SQLException: " + var2.getMessage());
             System.out.println("SQLState: " + var2.getSQLState());
