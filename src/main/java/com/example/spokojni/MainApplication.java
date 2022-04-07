@@ -19,26 +19,6 @@ public class MainApplication extends Application {
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
-
-        try {
-            DB.makeConn();
-        } catch (Exception var3) {
-            var3.printStackTrace();
-        }
-        try {
-            for(Term term : DB.getTerms()){
-                System.out.print(term.getId());
-                System.out.print(term.getSubject().getName());
-                System.out.print(term.getStart_time());
-                System.out.print(term.getEnd_time());
-                System.out.println(term.getDescription());
-            }
-        } catch (SQLException var2) {
-            System.out.println("SQLException: " + var2.getMessage());
-            System.out.println("SQLState: " + var2.getSQLState());
-            System.out.println("VendorError: " + var2.getErrorCode());
-            var2.printStackTrace();
-        }
     }
 
     public static void main(String[] args) {
