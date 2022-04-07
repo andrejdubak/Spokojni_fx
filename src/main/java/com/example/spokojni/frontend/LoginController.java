@@ -1,27 +1,34 @@
 package com.example.spokojni.frontend;
 
-import com.example.spokojni.MainApplication;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.stage.Stage;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class LoginController {
     @FXML
     private Button LoginClick;
 
     @FXML
-    private Label welcomeText;
+    private TextField username;
+
+    @FXML
+    private PasswordField password;
 
     @FXML
     protected void loginClick() throws IOException {
-        new ChangeWindowController(LoginClick,"main-view.fxml");
+        int role_number = 2;
+        //int role_number = userRoleGetByEmail(username, password); //TODO vytvorit getter na backende pre rolu
+        if (role_number == 1)
+            new ChangeWindowController(LoginClick,"student-view.fxml");
+        else if (role_number == 2)
+            new ChangeWindowController(LoginClick,"teacher-view.fxml");
+        else if (role_number == 3)
+            new ChangeWindowController(LoginClick,"admin-view.fxml");
+        else
+            System.out.println("Login Error!!");
     }
 
     @FXML

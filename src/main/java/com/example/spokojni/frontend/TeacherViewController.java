@@ -1,11 +1,9 @@
 package com.example.spokojni.frontend;
 
-import com.calendarfx.model.Calendar;
-import com.calendarfx.model.CalendarSource;
-import com.calendarfx.model.Entry;
-import com.calendarfx.model.Interval;
+import com.calendarfx.model.*;
 import com.example.spokojni.backend.Term;
 import com.example.spokojni.backend.db.DB;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import com.calendarfx.view.CalendarView;
@@ -15,7 +13,7 @@ import java.sql.SQLException;
 import java.time.*;
 import java.time.ZonedDateTime;
 
-public class CalendarController {
+public class TeacherViewController {
     @FXML
     private CalendarView calendarView;
 
@@ -35,6 +33,10 @@ public class CalendarController {
 
         Calendar vavaCalendar = new Calendar("Vava");
         Calendar oopCalendar = new Calendar("OOP");
+
+        EventHandler<CalendarEvent> handler = evt -> eventListener(evt);
+        vavaCalendar.addEventHandler(handler);
+        oopCalendar.addEventHandler(handler);
 
         vavaCalendar.setStyle(Calendar.Style.STYLE1);
         oopCalendar.setStyle(Calendar.Style.STYLE2);
@@ -70,5 +72,9 @@ public class CalendarController {
             System.out.println("VendorError: " + var2.getErrorCode());
             var2.printStackTrace();
         }
+    }
+    protected void eventListener (CalendarEvent evt) {
+        System.out.println(evt.getEventType());
+
     }
 }
