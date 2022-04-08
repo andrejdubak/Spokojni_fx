@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.spokojni.frontend.AdminPopupController">
+    <children>
+        <Text fx:id="name" layoutX="277.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name" wrappingWidth="46.693359375" />
+        <Button fx:id="Login" layoutX="48.0" layoutY="180.0" mnemonicParsing="false" prefHeight="75.0" prefWidth="125.0" text="Log in as user" />
+        <Button fx:id="newPassword" layoutX="254.0" layoutY="180.0" mnemonicParsing="false" prefHeight="75.0" prefWidth="125.0" text="Generate password" />
+        <Button fx:id="deleteUser" layoutX="440.0" layoutY="180.0" mnemonicParsing="false" prefHeight="75.0" prefWidth="125.0" text="Delete user" />
+    </children>
+</AnchorPane>
