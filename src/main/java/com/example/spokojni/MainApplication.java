@@ -13,6 +13,11 @@ import java.sql.SQLException;
 public class MainApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
+        try {
+            DB.makeConn();
+        } catch (Exception var3) {
+            var3.printStackTrace();
+        }
 
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("login-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1500, 1000);
