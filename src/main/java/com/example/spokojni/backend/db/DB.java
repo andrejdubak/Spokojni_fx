@@ -83,6 +83,18 @@ public class DB {
                 return new Student(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
         }
     }
+    public static User getUserByLogin(String username) throws SQLException{
+        ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE login='" + username + "'");
+        rs.first();
+        switch(rs.getInt(6)) {
+            case 3:
+                return new Admin(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
+            case 2:
+                return new Teacher(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
+            default:
+                return new Student(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
+        }
+    }
     public static Subject getSubjectById(int id) throws SQLException{
         getTeachers();
         ResultSet rs = stmt.executeQuery("SELECT * FROM subjects WHERE id=" + id);
@@ -130,6 +142,14 @@ public class DB {
             newSubjects.add(new Subject(rs.getInt(1),rs.getString(2), getTeacher(rs.getInt(3))));
         Subjects = newSubjects;
         return Subjects;
+    }
+    public static ArrayList<Subject> getSubjectsByTeacherId(int id) throws SQLException{
+        getTeachers();
+        ArrayList<Subject> newSubjects = new ArrayList<>();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM subjects JOIN users ON master_id=users.id WHERE users.id=" + id);
+        while(rs.next())
+            newSubjects.add(new Subject(rs.getInt(1),rs.getString(2), getTeacher(rs.getInt(3))));
+        return newSubjects;
     }
     public static ArrayList<Term> getTerms() throws SQLException{
         getSubjects();
@@ -196,6 +216,10 @@ public class DB {
     }
     public static boolean checkPassword(int user_id, String password) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT pass FROM users WHERE id=" + user_id + " AND pass=SHA1('" + password + "')");
+        return rs.next();
+    }
+    public static boolean checkPassword(String username, String password) throws SQLException{
+        ResultSet rs = stmt.executeQuery("SELECT pass FROM users WHERE login='" + username + "' AND pass=SHA1('" + password + "')");
         return rs.next();
     }
     public static boolean checkPassword(User user, String password) throws SQLException{
