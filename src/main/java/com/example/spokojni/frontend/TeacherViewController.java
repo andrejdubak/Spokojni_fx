@@ -1,6 +1,7 @@
 package com.example.spokojni.frontend;
 
 import com.calendarfx.model.*;
+import com.example.spokojni.backend.Subject;
 import com.example.spokojni.backend.Term;
 import com.example.spokojni.backend.db.DB;
 import javafx.event.EventHandler;
@@ -12,6 +13,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.*;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TeacherViewController {
     @FXML
@@ -31,40 +34,54 @@ public class TeacherViewController {
         ZonedDateTime europeDateTime = zonedDateTime.withZoneSameInstant(ZoneId.of("Europe/Kaliningrad"));
         //System.out.println(europeDateTime);
 
-        Calendar vavaCalendar = new Calendar("Vava");
-        Calendar oopCalendar = new Calendar("OOP");
+        ArrayList<Subject> subjects = new ArrayList<>();
+        ArrayList<Calendar> calendars = new ArrayList<>();
+        try {
+            //subjects = new ArrayList<Subject>();
+            subjects.addAll(DB.getSubjects());
+        } catch (SQLException var2) {
+            System.out.println("SQLException: " + var2.getMessage());
+            System.out.println("SQLState: " + var2.getSQLState());
+            System.out.println("VendorError: " + var2.getErrorCode());
+            var2.printStackTrace();
+        }
+
+        for (Subject sub: subjects) {
+            calendars.add(new Calendar(sub.getName()));
+            System.out.println(sub.getName());
+        }
 
         EventHandler<CalendarEvent> handler = evt -> eventListener(evt);
-        vavaCalendar.addEventHandler(handler);
-        oopCalendar.addEventHandler(handler);
 
-        vavaCalendar.setStyle(Calendar.Style.STYLE1);
-        oopCalendar.setStyle(Calendar.Style.STYLE2);
-
-        CalendarSource familyCalendarSource = new CalendarSource("School");
-        familyCalendarSource.getCalendars().addAll(vavaCalendar, oopCalendar);
-
-        calendarView.getCalendarSources().setAll(familyCalendarSource);
-
-        calendarView.createEntryAt(europeDateTime, oopCalendar);
-
-        try {
-            DB.makeConn();
-        } catch (Exception var3) {
-            var3.printStackTrace();
+        for (Calendar cal: calendars) {
+            cal.addEventHandler(handler);
         }
-        try {
-            for(Term term : DB.getTerms()){
-                /*System.out.print(term.getId());
-                System.out.print(term.getSubject().getName());
-                System.out.print(term.getStart_time());
-                System.out.print(term.getEnd_time());
-                System.out.println(term.getDescription());*/
 
+        calendars.get(0).setStyle(Calendar.Style.STYLE1);
+        calendars.get(1).setStyle(Calendar.Style.STYLE2);
+
+        CalendarSource schoolCalendarSource = new CalendarSource("School");
+
+        for (Calendar cal: calendars) {
+            schoolCalendarSource.getCalendars().add(cal);
+        }
+
+        calendarView.getCalendarSources().setAll(schoolCalendarSource);
+
+        calendarView.createEntryAt(europeDateTime, calendars.get(1));
+
+        try {
+            for (Term term : DB.getTerms()) {
+                int counter = 0;
                 Interval interval = new Interval(term.getStart_time(), term.getEnd_time());
-                Entry<String> dentistAppointment = new Entry<>(term.getSubject().getName(), interval);
-                dentistAppointment.setLocation(term.getDescription());
-                vavaCalendar.addEntry(dentistAppointment);
+                Entry<String> entry = new Entry<>(term.getSubject().getName(), interval);
+                entry.setLocation(term.getDescription());
+                for(Calendar cal: calendars) {
+                    if (cal.getName().equals(term.getSubject().getName()))
+                        calendars.get(counter).addEntry(entry);
+                    else
+                        counter++;
+                }
             }
         } catch (SQLException var2) {
             System.out.println("SQLException: " + var2.getMessage());
