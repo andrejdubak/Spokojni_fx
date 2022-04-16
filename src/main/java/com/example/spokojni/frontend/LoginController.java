@@ -1,10 +1,10 @@
 package com.example.spokojni.frontend;
 
-import com.calendarfx.model.Entry;
-import com.calendarfx.model.Interval;
-import com.example.spokojni.backend.Subject;
-import com.example.spokojni.backend.Term;
+import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
+import com.example.spokojni.backend.users.Admin;
+import com.example.spokojni.backend.users.Student;
+import com.example.spokojni.backend.users.Teacher;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
@@ -14,6 +14,13 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class LoginController {
+
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
     @FXML
     private Button LoginClick;
 
@@ -25,22 +32,24 @@ public class LoginController {
 
     @FXML
     protected void loginClick() throws IOException {
-        int role_number = 2;
-
-        /*try {
-            DB.checkPassword(username.toString(), password.toString());
+        user = new Teacher(1,"admin"," "," "); //tu zmenit pre login do ineho typu usera
+        //User user = null;
+        try {
+            if(DB.checkPassword(username.getText(), password.getText())) {
+                user = DB.getUserByLogin(username.getText());
+            };
         } catch (SQLException var2) {
             System.out.println("SQLException: " + var2.getMessage());
             System.out.println("SQLState: " + var2.getSQLState());
             System.out.println("VendorError: " + var2.getErrorCode());
             var2.printStackTrace();
-        }*/
-        //int role_number = userRoleGetByEmail(username, password); //TODO vytvorit getter na backende pre rolu
-        if (role_number == 1)
+        }
+
+        if (user instanceof Student)
             new ChangeWindowController(LoginClick,"student-view.fxml");
-        else if (role_number == 2)
+        else if (user instanceof Teacher)
             new ChangeWindowController(LoginClick,"teacher-view.fxml");
-        else if (role_number == 3)
+        else if (user instanceof Admin)
             new ChangeWindowController(LoginClick,"admin-view.fxml");
         else
             System.out.println("Login Error!!");

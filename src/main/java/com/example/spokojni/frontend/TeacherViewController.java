@@ -4,6 +4,7 @@ import com.calendarfx.model.*;
 import com.example.spokojni.backend.Subject;
 import com.example.spokojni.backend.Term;
 import com.example.spokojni.backend.db.DB;
+import com.mysql.jdbc.log.Log;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -16,12 +17,15 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Integer.parseInt;
+
 public class TeacherViewController {
+    ArrayList<Term> terms = new ArrayList<>();
     @FXML
     private CalendarView calendarView;
 
     @FXML
-    private Button button;
+    private Button loadButton;
 
     @FXML
     protected void buttonClick() throws IOException {
@@ -36,6 +40,7 @@ public class TeacherViewController {
 
         ArrayList<Subject> subjects = new ArrayList<>();
         ArrayList<Calendar> calendars = new ArrayList<>();
+
         try {
             //subjects = new ArrayList<Subject>();
             subjects.addAll(DB.getSubjects());
@@ -46,9 +51,14 @@ public class TeacherViewController {
             var2.printStackTrace();
         }
 
+        int counter1 = 0;
         for (Subject sub: subjects) {
             calendars.add(new Calendar(sub.getName()));
-            System.out.println(sub.getName());
+            //System.out.println(sub.getMaster().getId());
+            if(sub.getMaster().getId() != 5) //TODO staticke cislo zmenit na idcko ucitela aby vedel modifikovat iba sebe pridelene predmety
+                calendars.get(counter1).setReadOnly(true);
+            //System.out.println(sub.getName());
+            counter1++;
         }
 
         EventHandler<CalendarEvent> handler = evt -> eventListener(evt);
@@ -68,11 +78,13 @@ public class TeacherViewController {
 
         calendarView.getCalendarSources().setAll(schoolCalendarSource);
 
-        calendarView.createEntryAt(europeDateTime, calendars.get(1));
+        //calendarView.createEntryAt(europeDateTime, calendars.get(1));
 
         try {
             for (Term term : DB.getTerms()) {
+                terms.add(term);
                 int counter = 0;
+                System.out.println(term.getId() + " " + term.getSubject().getName());
                 Interval interval = new Interval(term.getStart_time(), term.getEnd_time());
                 Entry<String> entry = new Entry<>(term.getSubject().getName(), interval);
                 entry.setLocation(term.getDescription());
@@ -90,8 +102,23 @@ public class TeacherViewController {
             var2.printStackTrace();
         }
     }
+
+    @FXML
+    protected void saveClick() throws IOException {
+        System.out.println("save");
+        //TODO comparne vsetky s idckami mensimi ako list, ostatne vytvori
+    }
+
     protected void eventListener (CalendarEvent evt) {
-        System.out.println(evt.getEventType());
+        System.out.println(evt.getEventType() + evt.getEntry().getId());
+        Entry entry = evt.getEntry();
+        System.out.println(entry.getId()+ " " + entry.getTitle());
+        if (parseInt(entry.getId()) + 1 < terms.size()) {
+            System.out.println("existujuci");
+        }
+        else {
+            System.out.println("novy");
+        }
 
     }
 }

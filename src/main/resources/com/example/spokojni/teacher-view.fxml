@@ -7,6 +7,7 @@
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.spokojni.frontend.TeacherViewController">
    <children>
       <CalendarView fx:id="calendarView" prefHeight="760.0" prefWidth="750.0" showAddCalendarButton="false" showPrintButton="false" />
-      <Button fx:id="button" mnemonicParsing="false" onAction="#buttonClick" prefHeight="26.0" prefWidth="93.0" text="Load calendar" />
+      <Button fx:id="loadButton" mnemonicParsing="false" onAction="#buttonClick" prefHeight="26.0" prefWidth="93.0" text="Load calendar" />
+      <Button fx:id="saveButton" mnemonicParsing="false"  onAction="#saveClick" prefHeight="26.0" prefWidth="92.0" text="Save" />
    </children>
 </VBox>
