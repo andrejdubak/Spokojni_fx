@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.*;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import static java.lang.Integer.parseInt;
 public class TeacherViewController {
     ArrayList<Term> terms = new ArrayList<>();
     ArrayList<Term> new_terms = new ArrayList<>();
+    ArrayList<Term> terms_to_del = new ArrayList<>();
 
     @FXML
     private CalendarView calendarView;
@@ -87,7 +89,7 @@ public class TeacherViewController {
             for (Term term : DB.getTerms()) {
                 terms.add(term);
                 int counter = 0;
-                //System.out.println(term.getId() + " " + term.getSubject().getName());
+                //System.out.println(term.getId() + " " + term.getStart_time() + " " + term.getEnd_time());
                 Interval interval = new Interval(term.getStart_time(), term.getEnd_time());
                 Entry<String> entry = new Entry<>(term.getSubject().getName(), interval);
                 entry.setLocation(term.getDescription());
@@ -108,27 +110,45 @@ public class TeacherViewController {
 
     @FXML
     protected void saveClick() throws IOException, SQLException {
-        System.out.println("save");
-        for (Term term : terms) {
-            DB.update(term);
+        try {
+            DB.makeConn();
+        } catch (Exception var3) {
+            var3.printStackTrace();
         }
-        for (Term term : new_terms) {
-            DB.add(term);
+
+        System.out.println("save");
+        try {
+            for (Term term : terms) {
+                //System.out.println(term.toString());
+                DB.update(term);
+            }
+
+            for (Term term : new_terms) {
+                System.out.println(term.toString());
+                DB.add(term);
+            }
+            for (Term term : terms_to_del) {
+                System.out.println("delete term id: " + term.getId());
+                // DB.delete(term.getId()); //TODO spravit funkciu na deletovanie termov
+            }
+        } catch (SQLException var2) {
+            System.out.println("SQLException: " + var2.getMessage());
+            System.out.println("SQLState: " + var2.getSQLState());
+            System.out.println("VendorError: " + var2.getErrorCode());
+            var2.printStackTrace();
         }
     }
 
     protected void eventListener (CalendarEvent evt) {
-        //System.out.println(evt.getEventType() + evt.getEntry().getId());
+        System.out.println(evt.getEventType() + evt.getEntry().getId());
         Entry entry = evt.getEntry();
         int entry_id = parseInt(entry.getId());
 
-        if (evt.isEntryRemoved()) {
+        if (evt.isEntryRemoved()) { //ak sa jedna o vymazanie
             System.out.println("removed");
             //initial terms
-            for (Term term : terms) {
-                if (entry_id < terms.size()) {
-                    terms.get(entry_id).setId(-1); //vymazanym prvkom nastavime id -1
-                }
+            if (entry_id < terms.size()) {
+                terms_to_del.add(terms.get(entry_id));
             }
 
             //newly added terms
@@ -140,9 +160,9 @@ public class TeacherViewController {
             }
         }
 
-        //ak sa jedna o existujuci prvok
-        if (entry_id < terms.size()) {
-            System.out.println("existujuci " + entry_id);
+        //ak iba modifikujeme
+        if (entry_id < terms.size()) { //ak sa jedna o existujuci prvok
+            //System.out.println("existujuci " + entry_id);
             //System.out.println(terms.get(parseInt(entry.getId())).getStart_time() + " " + entry.getStartAsLocalDateTime());
             updateTerm(entry);
 
@@ -152,14 +172,15 @@ public class TeacherViewController {
             int counter = 0;
             for (Term term : new_terms) {
                 if (entry_id == term.getId()){
-                    System.out.println("naslo" + " " + new_terms.get(counter).getStart_time());
+                    //System.out.println("naslo" + " " + new_terms.get(counter).getStart_time());
                     new_terms.set(counter, createTerm(entry));
-                    System.out.println("naslo" + " " + new_terms.get(counter).getStart_time());
+                    //System.out.println("naslo" + " " + new_terms.get(counter).getStart_time());
                     return;
                 }
                 counter++;
             }
             new_terms.add(createTerm(entry));
+            entry.setTitle(entry.getCalendar().getName()); //automaticke nastavenie mena podla kalendaru
             System.out.println("pridany");
         }
 
@@ -180,14 +201,24 @@ public class TeacherViewController {
     }
 
     private Term createTerm (Entry entry) {
-        int entry_id = parseInt(entry.getId());
 
-        int id = entry_id;
+        int entry_id = parseInt(entry.getId());
         LocalDateTime new_start = entry.getStartAsLocalDateTime();
         LocalDateTime new_end = entry.getEndAsLocalDateTime();
         String new_desc = entry.getLocation();
-        Term new_term = new Term(id, terms.get(1).getSubject(), new_start, new_end, new_desc); //TODO pridat funkciu do backedu co vrati subject podla mena (vynemit terms.get(1).getSubjects)
+        Subject subject = terms.get(0).getSubject();//default subject
 
-        return new_term;
+        try {
+            subject = DB.getSubjectByName(entry.getCalendar().getName());
+        } catch (Exception var2) {
+            System.out.println("SQLException: " + var2.getMessage());
+            var2.printStackTrace();
+        }
+        return new Term(entry_id, subject, new_start, new_end, new_desc);
     }
 }
+
+
+
+
+

@@ -18,13 +18,13 @@ public class MainApplication extends Application {
         } catch (Exception var3) {
             var3.printStackTrace();
         }
-        try {
+        /*try {
             Term term = DB.getTermById(1);
             term.setDescription("Toto je prvý termín.......");
             DB.add(term);
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }*/
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("login-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1500, 1000);
         stage.setTitle("Hello!");

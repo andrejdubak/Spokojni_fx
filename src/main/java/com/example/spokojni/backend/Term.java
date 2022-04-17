@@ -23,6 +23,11 @@ public class Term {
         return obj instanceof Term && ((Term) obj).getId() == this.id;
     }
 
+    @Override
+    public String toString() {
+        return "ID: " + this.id + " Subject name: " + this.subject.getName() + " Start time: " + this.start_time + " End time: " + this.end_time + " Description: " + this.description;
+    }
+
     public int getId() {
         return id;
     }

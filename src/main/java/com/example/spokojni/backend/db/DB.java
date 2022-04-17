@@ -170,7 +170,7 @@ public class DB {
         ResultSet rs = stmt.executeQuery("SELECT * FROM terms");
         while(rs.next()){
             LocalDateTime start_time = rs.getTimestamp(3).toLocalDateTime();
-            LocalDateTime end_time = rs.getTimestamp(3).toLocalDateTime();
+            LocalDateTime end_time = rs.getTimestamp(4).toLocalDateTime();
             String description = rs.getString(5);
             Terms.add(new Term(rs.getInt(1),getSubject(rs.getInt(2)), start_time, end_time, description));
         }
