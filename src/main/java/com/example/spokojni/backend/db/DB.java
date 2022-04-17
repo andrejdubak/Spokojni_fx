@@ -143,6 +143,19 @@ public class DB {
         Subjects = newSubjects;
         return Subjects;
     }
+    public static Subject getSubjectByName(String name) throws Exception {
+        for(Subject subject : Subjects)
+            if(subject.getName().equals(name))
+                return subject;
+        getSubjects();
+        for(Subject subject : Subjects)
+            if(subject.getName().equals(name))
+                return subject;
+        for(Subject subject : Subjects)
+            if(subject.getName().equalsIgnoreCase(name))
+                return subject;
+        throw new Exception("Subject " + name + " not found");
+    }
     public static ArrayList<Subject> getSubjectsByTeacherId(int id) throws SQLException{
         getTeachers();
         ArrayList<Subject> newSubjects = new ArrayList<>();
@@ -228,20 +241,34 @@ public class DB {
     }
     public static void update(Object obj) throws SQLException{
         if(obj instanceof User){
-            stmt.executeQuery("UPDATE users SET name='" + ((User) obj).getName() + "', email='" + ((User) obj).getEmail() + "', login='" + ((User) obj).getLogin() + "', role=" + ((User) obj).getRole() + " WHERE id=" + ((User) obj).getId());
+            stmt.executeUpdate("UPDATE users SET name='" + ((User) obj).getName() + "', email='" + ((User) obj).getEmail() + "', login='" + ((User) obj).getLogin() + "', role=" + ((User) obj).getRole() + " WHERE id=" + ((User) obj).getId());
         }
         else if(obj instanceof Subject){
-            stmt.executeQuery("UPDATE subjects SET name='" + ((Subject) obj).getName() + "', master_id=" + ((Subject) obj).getMaster().getId() + " WHERE id=" + ((Subject) obj).getId());
+            stmt.executeUpdate("UPDATE subjects SET name='" + ((Subject) obj).getName() + "', master_id=" + ((Subject) obj).getMaster().getId() + " WHERE id=" + ((Subject) obj).getId());
         }
         else if(obj instanceof Term){
-            stmt.executeQuery("UPDATE terms SET subject_id=" + ((Term) obj).getSubject().getId() + ", start_time='" + ((Term) obj).getStart_time() + "' WHERE id=" + ((Term) obj).getId());
+            stmt.executeUpdate("UPDATE terms SET subject_id=" + ((Term) obj).getSubject().getId() + ", start_time='" + ((Term) obj).getStart_time() + "', end_time='" + ((Term) obj).getEnd_time() + "', description='" + ((Term) obj).getDescription() + "' WHERE id=" + ((Term) obj).getId());
         }
         else if(obj instanceof Agreement){
-            stmt.executeQuery("UPDATE terms SET student_id=" + ((Agreement) obj).getStudent().getId() + ", term_id=" + ((Agreement) obj).getTerm().getId() + " WHERE id=" + ((Agreement) obj).getId());
+            stmt.executeUpdate("UPDATE agreements SET student_id=" + ((Agreement) obj).getStudent().getId() + ", term_id=" + ((Agreement) obj).getTerm().getId() + " WHERE id=" + ((Agreement) obj).getId());
+        }
+    }
+    public static void add(Object obj) throws SQLException{
+        if(obj instanceof User){
+            stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
+        }
+        else if(obj instanceof Subject){
+            stmt.executeUpdate("INSERT INTO subjects (id, name, master_id) VALUES (NULL, '" + ((Subject) obj).getName() + "', " + ((Subject) obj).getMaster().getId() + ")");
+        }
+        else if(obj instanceof Term){
+            stmt.executeUpdate("INSERT INTO terms (id, subject_id, start_time, end_time, description) VALUES (NULL, " + ((Term) obj).getSubject().getId() + ", '" + ((Term) obj).getStart_time() + "', '" + ((Term) obj).getEnd_time() + "', '" + ((Term) obj).getDescription() + "')");
+        }
+        else if(obj instanceof Agreement){
+            stmt.executeUpdate("INSERT INTO agreements (id, student_id, term_id) VALUES (NULL, " + ((Agreement) obj).getStudent().getId() + ", " + ((Agreement) obj).getTerm().getId() + ")");
         }
     }
     public static void updatePassword(User user, String new_password) throws SQLException{
-        stmt.executeQuery("UPDATE users SET pass=SHA1('" + new_password + "') WHERE id=" + user.getId());
+        stmt.executeUpdate("UPDATE users SET pass=SHA1('" + new_password + "') WHERE id=" + user.getId());
     }
     public static void closeConn() throws SQLException {
         con.close();

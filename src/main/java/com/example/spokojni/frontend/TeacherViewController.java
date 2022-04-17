@@ -107,15 +107,14 @@ public class TeacherViewController {
     }
 
     @FXML
-    protected void saveClick() throws IOException {
+    protected void saveClick() throws IOException, SQLException {
         System.out.println("save");
-        //TODO vytvorit funkcie na aktualizaciu termu a vytvorenie termu
-/*        for (Term term : terms) {
-            DB.updateTerms(term);
+        for (Term term : terms) {
+            DB.update(term);
         }
         for (Term term : new_terms) {
-            DB.addTerms(term);
-        }*/
+            DB.add(term);
+        }
     }
 
     protected void eventListener (CalendarEvent evt) {
