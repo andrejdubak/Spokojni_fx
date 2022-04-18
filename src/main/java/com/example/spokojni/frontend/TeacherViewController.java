@@ -59,6 +59,7 @@ public class TeacherViewController {
         int counter1 = 0;
         for (Subject sub: subjects) {
             calendars.add(new Calendar(sub.getName()));
+            calendars.get(counter1).setStyle(Calendar.Style.getStyle(counter1));
             //System.out.println(sub.getMaster().getId());
             if(sub.getMaster().getId() != 5) //TODO staticke cislo zmenit na idcko ucitela aby vedel modifikovat iba sebe pridelene predmety
                 calendars.get(counter1).setReadOnly(true);
@@ -67,14 +68,11 @@ public class TeacherViewController {
         }
 
         EventHandler<CalendarEvent> handler = evt -> eventListener(evt);
-        //calendarView.setEntryDetailsPopOverContentCallback(param -> new NewPopup(param.getEntry(),param.getDateControl().getCalendars())); //TODO modify NewPop to fit student needs
+        calendarView.setEntryDetailsPopOverContentCallback(param -> new NewPopup(param.getEntry(),param.getDateControl().getCalendars())); //TODO modify NewPop to fit student needs
 
         for (Calendar cal: calendars) {
             cal.addEventHandler(handler);
         }
-
-        calendars.get(0).setStyle(Calendar.Style.STYLE1);
-        calendars.get(1).setStyle(Calendar.Style.STYLE2);
 
         CalendarSource schoolCalendarSource = new CalendarSource("School");
 
