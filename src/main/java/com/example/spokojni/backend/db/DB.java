@@ -267,6 +267,20 @@ public class DB {
             stmt.executeUpdate("INSERT INTO agreements (id, student_id, term_id) VALUES (NULL, " + ((Agreement) obj).getStudent().getId() + ", " + ((Agreement) obj).getTerm().getId() + ")");
         }
     }
+    public static void delete(Object obj) throws SQLException{
+        if(obj instanceof User){
+            stmt.executeUpdate("DELETE FROM users WHERE id=" + ((User) obj).getId());
+        }
+        else if(obj instanceof Subject){
+            stmt.executeUpdate("DELETE FROM subjects WHERE id=" + ((Subject) obj).getId());
+        }
+        else if(obj instanceof Term){
+            stmt.executeUpdate("DELETE FROM terms WHERE id=" + ((Term) obj).getId());
+        }
+        else if(obj instanceof Agreement){
+            stmt.executeUpdate("DELETE FROM agreements WHERE id=" + ((Agreement) obj).getId());
+        }
+    }
     public static void updatePassword(User user, String new_password) throws SQLException{
         stmt.executeUpdate("UPDATE users SET pass=SHA1('" + new_password + "') WHERE id=" + user.getId());
     }
