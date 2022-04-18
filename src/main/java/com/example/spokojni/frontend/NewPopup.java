@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.VPos;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -32,6 +33,7 @@ public class NewPopup extends GridPane {
         locationField.getStyleClass().add("location");
         locationField.setEditable(true);
         locationField.setPromptText(Messages.getString("EntryHeaderView.PROMPT_LOCATION"));
+        locationField.setMinWidth(400.0D);
         locationField.setMaxWidth(500.0D);
         locationField.disableProperty().bind(entry.getCalendar().readOnlyProperty());
         this.calendarSelector = new CalendarSelector();
@@ -63,6 +65,13 @@ public class NewPopup extends GridPane {
         titleField.setMaxWidth(500.0D);
         Calendar calendar = entry.getCalendar();
         titleField.getStyleClass().add(calendar.getStyle() + "-entry-popover-title");
+        //moje zmeny
+        titleField.setEditable(false);
+        locationField.setEditable(false);
+        CheckBox checkBox = new CheckBox("Add to my");
+        checkBox.disableProperty().bind(entry.getCalendar().readOnlyProperty());
+        this.add(checkBox,0,2);
+
         entry.calendarProperty().addListener((observable, oldCalendar, newCalendar) -> {
             if (oldCalendar != null) {
                 titleField.getStyleClass().remove(oldCalendar.getStyle() + "-entry-popover-title");
@@ -72,6 +81,19 @@ public class NewPopup extends GridPane {
                 titleField.getStyleClass().add(newCalendar.getStyle() + "-entry-popover-title");
             }
 
+        });
+
+        checkBox.setOnAction((evt) -> {
+            if (checkBox.isSelected()) //prida do vlastneho calendaru
+                entry.setCalendar(calendars.get(2));
+            else {
+                for (Calendar cal : calendars) { //vtari do povodneho calendaru
+                    if (cal.getName().equals(entry.getTitle()))
+                        entry.setCalendar(cal);
+                }
+            }
+
+            System.out.println(entry.getCalendar().getName());
         });
     }
 

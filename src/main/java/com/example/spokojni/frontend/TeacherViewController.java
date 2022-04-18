@@ -67,6 +67,7 @@ public class TeacherViewController {
         }
 
         EventHandler<CalendarEvent> handler = evt -> eventListener(evt);
+        //calendarView.setEntryDetailsPopOverContentCallback(param -> new NewPopup(param.getEntry(),param.getDateControl().getCalendars())); //TODO modify NewPop to fit student needs
 
         for (Calendar cal: calendars) {
             cal.addEventHandler(handler);
@@ -143,7 +144,7 @@ public class TeacherViewController {
         System.out.println(evt.getEventType() + evt.getEntry().getId());
         Entry entry = evt.getEntry();
         int entry_id = parseInt(entry.getId());
-        //calendarView.setEntryDetailsPopOverContentCallback(param -> new NewPopup(entry,calendarView.getCalendars())); //TODO modify NewPop to fit student needs
+
         if (evt.isEntryRemoved()) { //ak sa jedna o vymazanie
             System.out.println("removed");
             //initial terms
