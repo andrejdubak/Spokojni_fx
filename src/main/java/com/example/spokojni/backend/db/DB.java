@@ -227,6 +227,15 @@ public class DB {
             Agreements.add(new Agreement(rs.getInt(1), getStudent(rs.getInt(2)), getTerm(rs.getInt(3))));
         return Agreements;
     }
+    public static ArrayList<Agreement> getAgreementsByTermId(int id) throws SQLException{
+        getTerms();
+        getStudents();
+        ArrayList<Agreement> Agreements = new ArrayList<>();
+        ResultSet rs = stmt.executeQuery("SELECT agreements.* FROM agreements JOIN terms ON terms.id=term_id WHERE term_id=" + id);
+        while(rs.next())
+            Agreements.add(new Agreement(rs.getInt(1), getStudent(rs.getInt(2)), getTerm(rs.getInt(3))));
+        return Agreements;
+    }
     public static boolean checkPassword(int user_id, String password) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT pass FROM users WHERE id=" + user_id + " AND pass=SHA1('" + password + "')");
         return rs.next();
