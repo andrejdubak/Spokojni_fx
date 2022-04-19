@@ -106,9 +106,9 @@ public class DB {
         ResultSet rs = stmt.executeQuery("SELECT * FROM terms WHERE id=" + id);
         rs.first();
         LocalDateTime start_time = rs.getTimestamp(3).toLocalDateTime();
-        LocalDateTime end_time = rs.getTimestamp(3).toLocalDateTime();
+        LocalDateTime end_time = rs.getTimestamp(4).toLocalDateTime();
         String description = rs.getString(5);
-        return new Term(rs.getInt(1), getSubject(rs.getInt(2)), start_time, end_time, description);
+        return new Term(rs.getInt(1), getSubject(rs.getInt(2)), start_time, end_time, description, rs.getInt(6));
     }
     public static ArrayList<Student> getStudents() throws SQLException{
         ArrayList<Student> newStudents = new ArrayList<>();
@@ -172,7 +172,7 @@ public class DB {
             LocalDateTime start_time = rs.getTimestamp(3).toLocalDateTime();
             LocalDateTime end_time = rs.getTimestamp(4).toLocalDateTime();
             String description = rs.getString(5);
-            Terms.add(new Term(rs.getInt(1),getSubject(rs.getInt(2)), start_time, end_time, description));
+            Terms.add(new Term(rs.getInt(1),getSubject(rs.getInt(2)), start_time, end_time, description, rs.getInt(6)));
         }
         return Terms;
     }
@@ -184,7 +184,7 @@ public class DB {
             LocalDateTime start_time = rs.getTimestamp(3).toLocalDateTime();
             LocalDateTime end_time = rs.getTimestamp(3).toLocalDateTime();
             String description = rs.getString(5);
-            Terms.add(new Term(rs.getInt(1),getSubject(rs.getInt(2)), start_time, end_time, description));
+            Terms.add(new Term(rs.getInt(1),getSubject(rs.getInt(2)), start_time, end_time, description, rs.getInt(6)));
         }
         return Terms;
     }
@@ -196,7 +196,7 @@ public class DB {
             LocalDateTime start_time = rs.getTimestamp(3).toLocalDateTime();
             LocalDateTime end_time = rs.getTimestamp(3).toLocalDateTime();
             String description = rs.getString(5);
-            Terms.add(new Term(rs.getInt(1),getSubject(rs.getInt(2)), start_time, end_time, description));
+            Terms.add(new Term(rs.getInt(1),getSubject(rs.getInt(2)), start_time, end_time, description, rs.getInt(6)));
         }
         return Terms;
     }
@@ -227,6 +227,15 @@ public class DB {
             Agreements.add(new Agreement(rs.getInt(1), getStudent(rs.getInt(2)), getTerm(rs.getInt(3))));
         return Agreements;
     }
+    public static ArrayList<Agreement> getAgreementsByTermId(int id) throws SQLException{
+        getTerms();
+        getStudents();
+        ArrayList<Agreement> Agreements = new ArrayList<>();
+        ResultSet rs = stmt.executeQuery("SELECT agreements.* FROM agreements JOIN terms ON terms.id=term_id WHERE term_id=" + id);
+        while(rs.next())
+            Agreements.add(new Agreement(rs.getInt(1), getStudent(rs.getInt(2)), getTerm(rs.getInt(3))));
+        return Agreements;
+    }
     public static boolean checkPassword(int user_id, String password) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT pass FROM users WHERE id=" + user_id + " AND pass=SHA1('" + password + "')");
         return rs.next();
@@ -247,7 +256,7 @@ public class DB {
             stmt.executeUpdate("UPDATE subjects SET name='" + ((Subject) obj).getName() + "', master_id=" + ((Subject) obj).getMaster().getId() + " WHERE id=" + ((Subject) obj).getId());
         }
         else if(obj instanceof Term){
-            stmt.executeUpdate("UPDATE terms SET subject_id=" + ((Term) obj).getSubject().getId() + ", start_time='" + ((Term) obj).getStart_time() + "', end_time='" + ((Term) obj).getEnd_time() + "', description='" + ((Term) obj).getDescription() + "' WHERE id=" + ((Term) obj).getId());
+            stmt.executeUpdate("UPDATE terms SET subject_id=" + ((Term) obj).getSubject().getId() + ", start_time='" + ((Term) obj).getStart_time() + "', end_time='" + ((Term) obj).getEnd_time() + "', description='" + ((Term) obj).getDescription() + "', capacity='" + ((Term) obj).getCapacity() + "' WHERE id=" + ((Term) obj).getId());
         }
         else if(obj instanceof Agreement){
             stmt.executeUpdate("UPDATE agreements SET student_id=" + ((Agreement) obj).getStudent().getId() + ", term_id=" + ((Agreement) obj).getTerm().getId() + " WHERE id=" + ((Agreement) obj).getId());
@@ -261,7 +270,7 @@ public class DB {
             stmt.executeUpdate("INSERT INTO subjects (id, name, master_id) VALUES (NULL, '" + ((Subject) obj).getName() + "', " + ((Subject) obj).getMaster().getId() + ")");
         }
         else if(obj instanceof Term){
-            stmt.executeUpdate("INSERT INTO terms (id, subject_id, start_time, end_time, description) VALUES (NULL, " + ((Term) obj).getSubject().getId() + ", '" + ((Term) obj).getStart_time() + "', '" + ((Term) obj).getEnd_time() + "', '" + ((Term) obj).getDescription() + "')");
+            stmt.executeUpdate("INSERT INTO terms (id, subject_id, start_time, end_time, description) VALUES (NULL, " + ((Term) obj).getSubject().getId() + ", '" + ((Term) obj).getStart_time() + "', '" + ((Term) obj).getEnd_time() + "', '" + ((Term) obj).getDescription() + "', '" + ((Term) obj).getCapacity() + "')");
         }
         else if(obj instanceof Agreement){
             stmt.executeUpdate("INSERT INTO agreements (id, student_id, term_id) VALUES (NULL, " + ((Agreement) obj).getStudent().getId() + ", " + ((Agreement) obj).getTerm().getId() + ")");

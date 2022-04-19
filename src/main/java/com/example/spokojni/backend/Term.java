@@ -9,6 +9,16 @@ public class Term {
     private LocalDateTime start_time;
     private LocalDateTime end_time;
     private String description;
+    private int capacity;
+
+    public Term(int id, Subject subject, LocalDateTime start_time, LocalDateTime end_time, String description, int capacity) {
+        this.id = id;
+        this.subject = subject;
+        this.start_time = start_time;
+        this.end_time = end_time;
+        this.description = description;
+        this.capacity = capacity;
+    }
 
     public Term(int id, Subject subject, LocalDateTime start_time, LocalDateTime end_time, String description) {
         this.id = id;
@@ -25,7 +35,7 @@ public class Term {
 
     @Override
     public String toString() {
-        return "ID: " + this.id + " Subject name: " + this.subject.getName() + " Start time: " + this.start_time + " End time: " + this.end_time + " Description: " + this.description;
+        return "ID: " + this.id + " Subject name: " + this.subject.getName() + " Start time: " + this.start_time + " End time: " + this.end_time + " Description: " + this.description + " Capacity: " + this.capacity;
     }
 
     public int getId() {
@@ -66,5 +76,13 @@ public class Term {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 }
