@@ -123,14 +123,15 @@ public class AdminViewController {
                 for (int itr = 0; itr < nodeList.getLength(); itr++)
                 {
                     Node node = nodeList.item(itr);
-                    System.out.println("\nNode Name :" + node.getNodeName());
                     if (node.getNodeType() == Node.ELEMENT_NODE)
                     {
                         Element eElement = (Element) node;
-                        importedUsers[itr].setId(Integer.parseInt(eElement.getAttribute("id")));
-                        importedUsers[itr].setName(eElement.getElementsByTagName("name").item(0).getTextContent());
-                        importedUsers[itr].setEmail(eElement.getElementsByTagName("email").item(0).getTextContent());
-                        importedUsers[itr].setLogin(eElement.getElementsByTagName("login").item(0).getTextContent());
+                        importedUsers[itr] = new User(
+                                Integer.parseInt(eElement.getAttribute("id")),
+                                eElement.getElementsByTagName("name").item(0).getTextContent(),
+                                eElement.getElementsByTagName("email").item(0).getTextContent(),
+                                eElement.getElementsByTagName("login").item(0).getTextContent()
+                        );
                     }
                 }
 
