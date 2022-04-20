@@ -264,7 +264,7 @@ public class DB {
     }
     public static void add(Object obj) throws SQLException{
         if(obj instanceof User){
-            stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,'', '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
+            stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
         }
         else if(obj instanceof Subject){
             stmt.executeUpdate("INSERT INTO subjects (id, name, master_id) VALUES (NULL, '" + ((Subject) obj).getName() + "', " + ((Subject) obj).getMaster().getId() + ")");
