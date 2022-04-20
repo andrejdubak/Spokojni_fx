@@ -10,4 +10,5 @@ module com.example.spokojni {
     exports com.example.spokojni;
     exports com.example.spokojni.frontend;
     opens com.example.spokojni.frontend to javafx.fxml;
+    opens  com.example.spokojni.backend to javafx.base;
 }
