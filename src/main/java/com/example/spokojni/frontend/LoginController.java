@@ -32,9 +32,9 @@ public class LoginController {
 
     @FXML
     protected void loginClick() throws IOException {
-       // user = new Teacher(1,"admin"," "," "); //tu zmenit pre login do ineho typu usera
+        user = new Teacher(1,"admin"," "," "); //tu zmenit pre login do ineho typu usera
         //User user = null;
-        user = new Admin(3,"Admin ", "", "");
+       // user = new Admin(3,"Admin ", "", "");
         try {
             if(DB.checkPassword(username.getText(), password.getText())) {
                 user = DB.getUserByLogin(username.getText());
