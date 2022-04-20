@@ -2,23 +2,21 @@ package com.example.spokojni.frontend;
 
 import com.calendarfx.view.CalendarView;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-
-import java.io.IOException;
 
 public class StudentViewController {
+    CreateCalendarView cw;
+
     @FXML
     private CalendarView calendarView;
 
     @FXML
-    private Button saveButton;
-
-    public StudentViewController() {
-        System.out.println("const");
+    private void buttonClick() {
+        cw = new CreateCalendarView(calendarView);
+        cw.setStudentPopup();
     }
 
     @FXML
-    protected void saveClick() throws IOException {
+    private void saveClick() {
         System.out.println("save");
     }
 }
