@@ -32,7 +32,7 @@ public class LoginController {
 
     @FXML
     protected void loginClick() throws IOException {
-        user = new Teacher(1,"admin"," "," "); //tu zmenit pre login do ineho typu usera
+        user = new Admin(1,"admin"," "," "); //tu zmenit pre login do ineho typu usera
         //User user = null;
        // user = new Admin(3,"Admin ", "", "");
         try {
@@ -47,11 +47,11 @@ public class LoginController {
         }
 
         if (user instanceof Student)
-            new ChangeWindowController(LoginClick,"student-view.fxml");
+            new ChangeWindowController("student-view.fxml").changeWindow(LoginClick);
         else if (user instanceof Teacher)
-            new ChangeWindowController(LoginClick,"teacher-view.fxml");
+            new ChangeWindowController("teacher-view.fxml").changeWindow(LoginClick);
         else if (user instanceof Admin)
-            new ChangeWindowController(LoginClick,"admin-view.fxml");
+            new ChangeWindowController("admin-view.fxml").changeWindow(LoginClick);
         else
             System.out.println("Login Error!!");
     }
