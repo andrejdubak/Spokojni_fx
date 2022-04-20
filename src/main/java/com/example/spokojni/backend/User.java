@@ -18,9 +18,7 @@ public class User {
         return obj instanceof User && ((User) obj).getId() == this.id;
     }
 
-    public int getRole(){
-        return 0;
-    }
+    public int getRole(){return 0;}
 
     public int getId() {
         return id;

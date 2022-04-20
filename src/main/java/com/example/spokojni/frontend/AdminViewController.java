@@ -1,15 +1,24 @@
 package com.example.spokojni.frontend;
 
+import com.example.spokojni.MainApplication;
 import com.example.spokojni.backend.User;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -23,6 +32,8 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
 
 public class AdminViewController {
 
@@ -55,7 +66,32 @@ public class AdminViewController {
 
     @FXML
     private void logoutClick() throws IOException{
-        new ChangeWindowController(logOut, "login-view.fxml");
+        new ChangeWindowController( "login-view.fxml").changeWindow(logOut);
+    }
+
+    @FXML
+    private void registerPersonClick() throws IOException{
+        Stage stage = new Stage();
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("register-person-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        stage.setTitle("User Registration");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
+        //new ChangeWindowController(registerPerson, "register-person-view.fxml");
+    }
+
+    @FXML
+    private void ProfileClick() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("profile-dialog.fxml"));
+        DialogPane dialogPane = fxmlLoader.load();
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setDialogPane(dialogPane);
+        dialog.setTitle("Profile");
+
+        Optional<ButtonType> clickedButton = dialog.showAndWait();
+
     }
 
     @FXML

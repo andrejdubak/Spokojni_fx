@@ -8,8 +8,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
-<AnchorPane prefHeight="409.0" prefWidth="611.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.spokojni.frontend.AdminViewController">
+<AnchorPane prefHeight="409.0" prefWidth="611.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.spokojni.frontend.AdminViewController">
     <children>
         <TableView layoutX="15.0" layoutY="48.0" prefHeight="310.0" prefWidth="367.0">
             <columns>
@@ -20,10 +19,10 @@
         </TableView>
         <Button fx:id="Students" layoutX="14.0" layoutY="367.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="85.0" text="Students" />
         <Button fx:id="Teachers" layoutX="113.0" layoutY="367.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="85.0" text="Teachers" />
-        <Button fx:id="Profile" layoutX="503.0" layoutY="46.0" mnemonicParsing="false" prefHeight="75.0" prefWidth="105.0" text="Profile" />
+        <Button fx:id="Profile" layoutX="503.0" layoutY="46.0" mnemonicParsing="false" onAction="#ProfileClick" prefHeight="75.0" prefWidth="105.0" text="Profile" />
         <Button fx:id="exportPeople" layoutX="389.0" layoutY="138.0" mnemonicParsing="false" onAction="#exportClick" prefHeight="75.0" prefWidth="105.0" text="Export people" />
         <Button fx:id="importPeople" layoutX="389.0" layoutY="256.0" mnemonicParsing="false" onAction="#importClick" prefHeight="75.0" prefWidth="105.0" text="Import people" />
-        <Button fx:id="registerPerson" layoutX="503.0" layoutY="138.0" mnemonicParsing="false" prefHeight="75.0" prefWidth="105.0" text="Register person" />
+        <Button fx:id="registerPerson" layoutX="503.0" layoutY="138.0" mnemonicParsing="false" onAction="#registerPersonClick" prefHeight="75.0" prefWidth="105.0" text="Register person" />
         <Button fx:id="logOut" layoutX="503.0" layoutY="256.0" mnemonicParsing="false" onAction="#logoutClick" prefHeight="75.0" prefWidth="105.0" text="Log out" />
         <TextField fx:id="search" layoutX="206.0" layoutY="367.0" prefHeight="35.0" prefWidth="149.0" promptText="Search" />
         <Text layoutX="20.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome" wrappingWidth="92.30078125">
