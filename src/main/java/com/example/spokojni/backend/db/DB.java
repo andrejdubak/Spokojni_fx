@@ -166,14 +166,15 @@ public class DB {
     }
     public static ArrayList<Term> getTerms() throws SQLException{
         getSubjects();
-        ArrayList<Term> Terms = new ArrayList<>();
+        ArrayList<Term> newTerms = new ArrayList<>();
         ResultSet rs = stmt.executeQuery("SELECT * FROM terms");
         while(rs.next()){
             LocalDateTime start_time = rs.getTimestamp(3).toLocalDateTime();
             LocalDateTime end_time = rs.getTimestamp(4).toLocalDateTime();
             String description = rs.getString(5);
-            Terms.add(new Term(rs.getInt(1),getSubject(rs.getInt(2)), start_time, end_time, description, rs.getInt(6)));
+            newTerms.add(new Term(rs.getInt(1),getSubject(rs.getInt(2)), start_time, end_time, description, rs.getInt(6)));
         }
+        Terms = newTerms;
         return Terms;
     }
     public static ArrayList<Term> getTermsBySubjectId(int id) throws SQLException{
@@ -208,6 +209,14 @@ public class DB {
         while(rs.next())
             Agreements.add(new Agreement(rs.getInt(1), getStudent(rs.getInt(2)), getTerm(rs.getInt(3))));
         return Agreements;
+    }
+    public static Agreement getAgreement(int userId, int termId) throws SQLException{
+        getAgreements();
+        for(Agreement agreement : Agreements){
+            if(agreement.getStudent().getId() == userId && agreement.getTerm().getId() == termId)
+                return agreement;
+        }
+        return null;
     }
     public static ArrayList<Agreement> getAgreementsByStudentId(int id) throws SQLException{
         getTerms();
