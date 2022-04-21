@@ -33,7 +33,7 @@ public class LoginController {
 
     @FXML
     protected void loginClick() throws IOException {
-        user = new Student(5,"admin"," "," "); //tu zmenit pre login do ineho typu usera
+        user = new Student(4,"admin"," "," "); //tu zmenit pre login do ineho typu usera
         //User user = null;
        // user = new Admin(3,"Admin ", "", "");
         try {

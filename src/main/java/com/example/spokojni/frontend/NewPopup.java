@@ -8,6 +8,7 @@ import com.calendarfx.view.CalendarView;
 import com.calendarfx.view.Messages;
 
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -87,9 +88,11 @@ public class NewPopup extends GridPane {
         if (entry.getCalendar().getName().equals("Moj")) checkBox.setSelected(true);
         //checkBox.disableProperty().bind(entry.getCalendar().readOnlyProperty());
         this.add(checkBox,0,5);
-        Label startDate = new Label("Skúška od: " + entry.getStartAsLocalDateTime().toString());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        Label startDate = new Label("Skúška od: " + entry.getStartAsLocalDateTime().format(formatter));
         this.add(startDate, 0,2);
-        Label endDate = new Label("Skúška do: " + entry.getEndAsLocalDateTime().toString());
+        Label endDate = new Label("Skúška do: " + entry.getEndAsLocalDateTime().format(formatter));
         this.add(endDate, 0,3);
         if (!updateNumberOfSignedStudents() && !checkBox.isSelected()) checkBox.setDisable(true); //disabluje moznost pridat predmet do svojich ak uz nieje miesto
         //
@@ -119,12 +122,13 @@ public class NewPopup extends GridPane {
                 for (Calendar cal : calendars) { //vtari do povodneho calendaru
                     if (cal.getName().equals(entry.getTitle()))
                         entry.setCalendar(cal);
-                    /*try { //TODO tu poriesit delete
+                    try {
+                        Agreement agr = DB.getAgreement( user.getId(), terms.get(parseInt(entry.getId())).getId());
                         DB.makeConn();
-                        DB.delete(new Agreement(1, new Student(1, "ds", "ds", "ds"), terms.get(parseInt(entry.getId()))));//TODO vymaze z databazy agreement by id, potrebujem ho najprv getnut na zaklade id usera a id termu
+                        DB.delete(agr);//vymaze z databazy agreement
                     } catch (Exception e) {
                         e.printStackTrace();
-                    }*/
+                    }
                 }
             }
             System.out.println(entry.getCalendar().getName());
@@ -134,7 +138,7 @@ public class NewPopup extends GridPane {
     private boolean updateNumberOfSignedStudents() {
         //for (Term tr : terms) System.out.println(tr);
         int term_id = terms.get(parseInt(entry.getId())).getId();
-        int actualNum = 20; //TODO getNumberOfAssignedStudents(term_id)
+        int actualNum = getNumberOfAssignedStudents(term_id); //spocita prihlasenych studenotov pre dany termin
         int maxNum = terms.get(parseInt(entry.getId())).getCapacity();
         Label numberOfStudents = new Label("Počet prihlásených študentov: " + actualNum + "/" + maxNum);
         this.add(numberOfStudents, 0,4);
@@ -155,6 +159,7 @@ public class NewPopup extends GridPane {
         try {
             DB.makeConn();
             list = DB.getAgreementsByTermId(term_id);
+            System.out.println(list);
         } catch (Exception var3) {
             var3.printStackTrace();
         }
