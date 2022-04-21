@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class DB {
     static Connection con=null;
-    static Statement stmt=null;
+    static PreparedStatement stmt=null;
     static ArrayList<Teacher> Teachers;
     private static Teacher getTeacher(int id){
         for(Teacher teacher : Teachers){
@@ -68,8 +68,8 @@ public class DB {
 
     public static void makeConn() throws Exception {
         Class.forName("com.mysql.jdbc.Driver");
-        Connection con=DriverManager.getConnection("jdbc:mysql://vesta.mojhosting.eu:3306/admin_vava?useSSL=false","admin_vava","KP2E2fvxcA");
-        stmt=con.createStatement();
+        con=DriverManager.getConnection("jdbc:mysql://vesta.mojhosting.eu:3306/admin_vava?useSSL=false","admin_vava","KP2E2fvxcA");
+        stmt=con.prepareStatement("");
     }
     public static User getUserById(int id) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE id=" + id);
@@ -260,17 +260,39 @@ public class DB {
     }
     public static void update(Object obj) throws SQLException{
         if(obj instanceof User){
-            stmt.executeUpdate("UPDATE users SET name='" + ((User) obj).getName() + "', email='" + ((User) obj).getEmail() + "', login='" + ((User) obj).getLogin() + "', role=" + ((User) obj).getRole() + " WHERE id=" + ((User) obj).getId());
+            stmt = con.prepareStatement("UPDATE users SET name=?, email=?, login=?, role=? WHERE id=?");
+            stmt.setString(1, ((User) obj).getName());
+            stmt.setString(2, ((User) obj).getEmail());
+            stmt.setString(3, ((User) obj).getLogin());
+            stmt.setInt(4, ((User) obj).getRole());
+            stmt.setInt(5, ((User) obj).getId());
+            //stmt.executeUpdate("UPDATE users SET name='" + ((User) obj).getName() + "', email='" + ((User) obj).getEmail() + "', login='" + ((User) obj).getLogin() + "', role=" + ((User) obj).getRole() + " WHERE id=" + ((User) obj).getId());
         }
         else if(obj instanceof Subject){
-            stmt.executeUpdate("UPDATE subjects SET name='" + ((Subject) obj).getName() + "', master_id=" + ((Subject) obj).getMaster().getId() + " WHERE id=" + ((Subject) obj).getId());
+            stmt = con.prepareStatement("UPDATE subjects SET name=?, master_id=? WHERE id=?");
+            stmt.setString(1, ((Subject) obj).getName());
+            stmt.setInt(2, ((Subject) obj).getMaster().getId());
+            stmt.setInt(3, ((Subject) obj).getId());
+            //stmt.executeUpdate("UPDATE subjects SET name='" + ((Subject) obj).getName() + "', master_id=" + ((Subject) obj).getMaster().getId() + " WHERE id=" + ((Subject) obj).getId());
         }
         else if(obj instanceof Term){
-            stmt.executeUpdate("UPDATE terms SET subject_id=" + ((Term) obj).getSubject().getId() + ", start_time='" + ((Term) obj).getStart_time() + "', end_time='" + ((Term) obj).getEnd_time() + "', description='" + ((Term) obj).getDescription() + "', capacity='" + ((Term) obj).getCapacity() + "' WHERE id=" + ((Term) obj).getId());
+            stmt = con.prepareStatement("UPDATE terms SET subject_id=?, start_time=?, end_time=?, description=?, capacity=? WHERE id=?");
+            stmt.setInt(1, ((Term) obj).getSubject().getId());
+            stmt.setString(2, ((Term) obj).getStart_time().toString());
+            stmt.setString(3, ((Term) obj).getEnd_time().toString());
+            stmt.setString(4, ((Term) obj).getDescription());
+            stmt.setInt(5, ((Term) obj).getCapacity());
+            stmt.setInt(6, ((Term) obj).getId());
+            //stmt.executeUpdate("UPDATE terms SET subject_id=" + ((Term) obj).getSubject().getId() + ", start_time='" + ((Term) obj).getStart_time() + "', end_time='" + ((Term) obj).getEnd_time() + "', description='" + ((Term) obj).getDescription() + "', capacity='" + ((Term) obj).getCapacity() + "' WHERE id=" + ((Term) obj).getId());
         }
         else if(obj instanceof Agreement){
-            stmt.executeUpdate("UPDATE agreements SET student_id=" + ((Agreement) obj).getStudent().getId() + ", term_id=" + ((Agreement) obj).getTerm().getId() + " WHERE id=" + ((Agreement) obj).getId());
+            stmt = con.prepareStatement("UPDATE agreements SET student_id=?, term_id=? WHERE id=?");
+            stmt.setInt(1, ((Agreement) obj).getStudent().getId());
+            stmt.setInt(2, ((Agreement) obj).getTerm().getId());
+            stmt.setInt(3, ((Agreement) obj).getId());
+            //stmt.executeUpdate("UPDATE agreements SET student_id=" + ((Agreement) obj).getStudent().getId() + ", term_id=" + ((Agreement) obj).getTerm().getId() + " WHERE id=" + ((Agreement) obj).getId());
         }
+        stmt.executeUpdate();
     }
     public static void add(Object obj) throws SQLException{
         if(obj instanceof User){
