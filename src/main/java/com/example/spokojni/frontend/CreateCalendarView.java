@@ -2,8 +2,10 @@ package com.example.spokojni.frontend;
 
 import com.calendarfx.model.*;
 import com.calendarfx.view.CalendarView;
+import com.calendarfx.view.DateControl;
 import com.example.spokojni.backend.Subject;
 import com.example.spokojni.backend.Term;
+import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
 import javafx.event.EventHandler;
 
@@ -19,10 +21,14 @@ public class CreateCalendarView {
     private ArrayList<Term> new_terms = new ArrayList<>();
     private ArrayList<Term> terms_to_del = new ArrayList<>();
     ArrayList<Calendar> calendars = new ArrayList<>();
+    ArrayList<Subject> subjects = new ArrayList<>();
+    CalendarSource schoolCalendarSource;
+    User user;
 
-    public CreateCalendarView(CalendarView calendarView) {
+    public CreateCalendarView(CalendarView calendarView, User user) {
         this.calendarView = calendarView;
-        ArrayList<Subject> subjects = new ArrayList<>();
+        this.user = user;
+
 
         try {
             subjects.addAll(DB.getSubjects());
@@ -35,13 +41,13 @@ public class CreateCalendarView {
             calendars.add(new Calendar(sub.getName()));
             calendars.get(counter1).setStyle(Calendar.Style.getStyle(counter1));
             //System.out.println(sub.getMaster().getId());
-            if(sub.getMaster().getId() != 5) //TODO staticke cislo zmenit na idcko ucitela aby vedel modifikovat iba sebe pridelene predmety
-                calendars.get(counter1).setReadOnly(true);
+/*            if(sub.getMaster().getId() != user.getId()) //sidabluje kalendare, ktorych dany ucitel nie je garant, teda nema prava ich menit
+                calendars.get(counter1).setReadOnly(true);*/
             //System.out.println(sub.getName());
             counter1++;
         }
 
-        CalendarSource schoolCalendarSource = new CalendarSource("School");
+        schoolCalendarSource = new CalendarSource("School");
 
         for (Calendar cal: calendars) {
             schoolCalendarSource.getCalendars().add(cal);
@@ -70,7 +76,7 @@ public class CreateCalendarView {
     }
 
     public void setStudentPopup() {
-        calendarView.setEntryDetailsPopOverContentCallback(param -> new NewPopup(param.getEntry(),param.getDateControl().getCalendars())); //TODO modify NewPop to fit student needs
+        calendarView.setEntryDetailsPopOverContentCallback(param -> new NewPopup(param.getEntry(),param.getDateControl().getCalendars(), terms, user));
     }
 
     public void addTeacherHandler() {
@@ -164,6 +170,28 @@ public class CreateCalendarView {
             var2.printStackTrace();
         }
         return new Term(entry_id, subject, new_start, new_end, new_desc);
+    }
+
+    public void addStudentCalendar () {
+        calendars.add(0, new Calendar("Moj"));
+        calendars.get(0).setStyle(Calendar.Style.getStyle(0));
+        schoolCalendarSource.getCalendars().add(calendars.get(0));
+        calendarView.getCalendarSources().setAll(schoolCalendarSource);
+        //handler
+    }
+
+    public void disableOtherTeachersCalendars() {
+        int counter1 = 0;
+        for (Subject sub: subjects) {
+            if(sub.getMaster().getId() != user.getId()) //sidabluje kalendare, ktorych dany ucitel nie je garant, teda nema prava ich menit
+                calendars.get(counter1).setReadOnly(true);
+            counter1++;
+        }
+    }
+
+    public void disableActionForStudent() {
+        calendarView.setEntryFactory(param -> null);
+        calendarView.setEntryEditPolicy(param -> false);
     }
 
     public ArrayList<Term> getTerms() {

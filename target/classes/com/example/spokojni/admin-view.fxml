@@ -8,24 +8,28 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
+<AnchorPane prefHeight="516.0" prefWidth="779.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.spokojni.frontend.AdminViewController">
 
-<AnchorPane prefHeight="409.0" prefWidth="611.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.spokojni.frontend.AdminViewController">
+
     <children>
-        <TableView layoutX="15.0" layoutY="48.0" prefHeight="310.0" prefWidth="367.0">
+        <TableView fx:id="Table" layoutX="15.0" layoutY="48.0" prefHeight="364.0" prefWidth="483.0">
             <columns>
-                <TableColumn fx:id="nameTable" prefWidth="87.0" text="Name" />
-                <TableColumn fx:id="emailTable" prefWidth="182.0" text="Email" />
-                <TableColumn fx:id="roleTable" prefWidth="97.0" text="Role" />
+                <TableColumn fx:id="nameTable" prefWidth="198.0" text="Name" />
+                <TableColumn fx:id="emailTable" prefWidth="165.0" text="Email" />
+                <TableColumn fx:id="roleTable" prefWidth="119.0" text="Role" />
             </columns>
         </TableView>
-        <Button fx:id="Students" layoutX="14.0" layoutY="367.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="85.0" text="Students" />
-        <Button fx:id="Teachers" layoutX="113.0" layoutY="367.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="85.0" text="Teachers" />
-        <Button fx:id="Profile" layoutX="503.0" layoutY="46.0" mnemonicParsing="false" prefHeight="75.0" prefWidth="105.0" text="Profile" />
-        <Button fx:id="exportPeople" layoutX="389.0" layoutY="138.0" mnemonicParsing="false" onAction="#exportClick" prefHeight="75.0" prefWidth="105.0" text="Export people" />
-        <Button fx:id="importPeople" layoutX="389.0" layoutY="256.0" mnemonicParsing="false" onAction="#importClick" prefHeight="75.0" prefWidth="105.0" text="Import people" />
-        <Button fx:id="registerPerson" layoutX="503.0" layoutY="138.0" mnemonicParsing="false" prefHeight="75.0" prefWidth="105.0" text="Register person" />
-        <Button fx:id="logOut" layoutX="503.0" layoutY="256.0" mnemonicParsing="false" onAction="#logoutClick" prefHeight="75.0" prefWidth="105.0" text="Log out" />
-        <TextField fx:id="search" layoutX="206.0" layoutY="367.0" prefHeight="35.0" prefWidth="149.0" promptText="Search" />
+
+        <Button fx:id="Students" layoutX="14.0" layoutY="442.0" mnemonicParsing="false" onAction="#showStudents" prefHeight="35.0" prefWidth="85.0" text="Students" />
+        <Button fx:id="Teachers" layoutX="112.0" layoutY="442.0" mnemonicParsing="false" onAction="#showTeachers" prefHeight="35.0" prefWidth="85.0" text="Teachers" />
+        <Button fx:id="Profile" layoutX="638.0" layoutY="58.0" mnemonicParsing="false" onAction="#ProfileClick" prefHeight="75.0" prefWidth="105.0" text="Profile" />
+        <Button fx:id="exportPeople" layoutX="509.0" layoutY="231.0" mnemonicParsing="false" onAction="#exportClick" prefHeight="75.0" prefWidth="105.0" text="Export people" />
+        <Button fx:id="importPeople" layoutX="509.0" layoutY="331.0" mnemonicParsing="false" onAction="#importClick" prefHeight="75.0" prefWidth="105.0" text="Import people" />
+        <Button fx:id="registerPerson" layoutX="652.0" layoutY="231.0" mnemonicParsing="false" onAction="#registerPersonClick" prefHeight="75.0" prefWidth="105.0" text="Register person" />
+        <Button fx:id="logOut" layoutX="652.0" layoutY="331.0" mnemonicParsing="false" onAction="#logoutClick" prefHeight="75.0" prefWidth="105.0" text="Log out" />
+        <TextField fx:id="search" layoutX="322.0" layoutY="442.0" prefHeight="35.0" prefWidth="149.0" promptText="Search" />
+
+
         <Text layoutX="20.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome" wrappingWidth="92.30078125">
             <font>
                 <Font size="17.0" />
@@ -36,5 +40,6 @@
                 <Font size="16.0" />
             </font>
         </Text>
+      <Button fx:id="allUsers" layoutX="218.0" layoutY="442.0" mnemonicParsing="false" onAction="#showUsers" prefHeight="35.0" prefWidth="85.0" text="All" />
     </children>
 </AnchorPane>

@@ -1,5 +1,6 @@
 package com.example.spokojni.frontend;
 import com.example.spokojni.backend.Term;
+import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -8,6 +9,7 @@ import com.calendarfx.view.CalendarView;
 import java.sql.SQLException;
 
 public class TeacherViewController {
+    private User currentUser;
     CreateCalendarView cw;
 
     @FXML
@@ -15,8 +17,10 @@ public class TeacherViewController {
 
     @FXML
     private void buttonClick() {
-        cw = new CreateCalendarView(calendarView);
+        System.out.println(currentUser.getName());
+        cw = new CreateCalendarView(calendarView, currentUser);
         cw.addTeacherHandler();
+        cw.disableOtherTeachersCalendars();
     }
 
     @FXML
@@ -48,6 +52,9 @@ public class TeacherViewController {
             System.out.println("VendorError: " + var2.getErrorCode());
             var2.printStackTrace();
         }
+    }
+    public void setCurrentUser(User user){
+        this.currentUser=user;
     }
 }
 

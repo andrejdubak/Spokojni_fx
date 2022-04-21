@@ -1,15 +1,30 @@
 package com.example.spokojni.frontend;
 
+import com.example.spokojni.MainApplication;
 import com.example.spokojni.backend.User;
+import com.example.spokojni.backend.UserTable;
+import com.example.spokojni.backend.db.DB;
+import com.example.spokojni.backend.users.Student;
+import com.example.spokojni.backend.users.Teacher;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -20,17 +35,41 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
-public class AdminViewController {
+public class AdminViewController implements Initializable {
+    private User currentUser;
+    ArrayList<Student> students = new ArrayList<>();
+    ArrayList<Teacher> teachers = new ArrayList<>();
+    ArrayList<UserTable> users = new ArrayList<>();
+    ObservableList<UserTable> student = FXCollections.observableArrayList(users);
 
     @FXML
     private Button Profile;
 
     @FXML
     private Button Students;
+
+    @FXML
+    private TableView<UserTable> Table;
+
+    @FXML
+    private TableColumn<UserTable, String> emailTable;
+
+    @FXML
+    private TableColumn<UserTable, String> nameTable;
+
+    @FXML
+    private TableColumn<UserTable, String> roleTable;
 
     @FXML
     private Button Teachers;
@@ -55,7 +94,101 @@ public class AdminViewController {
 
     @FXML
     private void logoutClick() throws IOException{
-        new ChangeWindowController(logOut, "login-view.fxml");
+        new ChangeWindowController( "login-view.fxml").changeWindow(logOut);
+    }
+
+
+    private void Teacher(){
+        try {
+            DB.makeConn();
+        } catch (Exception var3) {
+            var3.printStackTrace();
+        }
+
+        try {
+            teachers.addAll(DB.getTeachers());
+
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            e.printStackTrace();
+        }
+
+        for (User t : teachers){
+            student.add(new UserTable(t.getName(), t.getEmail(), "Teacher", t.getId()));
+
+        }
+    }
+    private void Student(){
+        try {
+            DB.makeConn();
+        } catch (Exception var3) {
+            var3.printStackTrace();
+        }
+
+        try {
+            students.addAll(DB.getStudents());
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            e.printStackTrace();
+        }
+        for (User s : students){
+            student.add(new UserTable(s.getName(), s.getEmail(), "Student", s.getId()));
+        }
+
+    }
+    @FXML
+    void showUsers(ActionEvent event)  {
+        student.clear();
+        teachers.clear();
+        students.clear();
+
+        Student();
+        Teacher();
+    }
+
+    @FXML
+    void showStudents(ActionEvent event) {
+        student.clear();
+        students.clear();
+        Student();
+    }
+
+    @FXML
+    void showTeachers(ActionEvent event) {
+        student.clear();
+        teachers.clear();
+        Teacher();
+
+    }
+
+    @FXML
+    private void registerPersonClick() throws IOException{
+        Stage stage = new Stage();
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("register-person-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        stage.setTitle("User Registration");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
+        //new ChangeWindowController(registerPerson, "register-person-view.fxml");
+    }
+
+    @FXML
+    private void ProfileClick() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("profile-dialog.fxml"));
+        DialogPane dialogPane = fxmlLoader.load();
+        ProfilePopupController profilePopupController = fxmlLoader.getController();
+        profilePopupController.setCurrentUser(currentUser);
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setDialogPane(dialogPane);
+        dialog.setTitle("Profile");
+
+        Optional<ButtonType> clickedButton = dialog.showAndWait();
+
     }
 
     @FXML
@@ -123,14 +256,15 @@ public class AdminViewController {
                 for (int itr = 0; itr < nodeList.getLength(); itr++)
                 {
                     Node node = nodeList.item(itr);
-                    System.out.println("\nNode Name :" + node.getNodeName());
                     if (node.getNodeType() == Node.ELEMENT_NODE)
                     {
                         Element eElement = (Element) node;
-                        importedUsers[itr].setId(Integer.parseInt(eElement.getAttribute("id")));
-                        importedUsers[itr].setName(eElement.getElementsByTagName("name").item(0).getTextContent());
-                        importedUsers[itr].setEmail(eElement.getElementsByTagName("email").item(0).getTextContent());
-                        importedUsers[itr].setLogin(eElement.getElementsByTagName("login").item(0).getTextContent());
+                        importedUsers[itr] = new User(
+                                Integer.parseInt(eElement.getAttribute("id")),
+                                eElement.getElementsByTagName("name").item(0).getTextContent(),
+                                eElement.getElementsByTagName("email").item(0).getTextContent(),
+                                eElement.getElementsByTagName("login").item(0).getTextContent()
+                        );
                     }
                 }
 
@@ -146,5 +280,23 @@ public class AdminViewController {
         }
 
 
+    }
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+       // System.out.println(this.currentUser.getName());
+        nameTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("name"));
+        emailTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("email"));
+        roleTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("role"));
+        Table.setItems(student);
+        
+        Table.setOnMouseClicked( event -> {
+            if( event.getClickCount() == 1 ) {
+                System.out.println( Table.getSelectionModel().getSelectedItem().getId());
+
+            }});
+    }
+
+    public void setCurrentUser(User user){
+        this.currentUser=user;
     }
 }
