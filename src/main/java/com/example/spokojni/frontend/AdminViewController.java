@@ -198,10 +198,15 @@ public class AdminViewController implements Initializable {
 
     @FXML
     private void exportClick() throws ParserConfigurationException {
-        User[] selectedUsers = new User[2];
-        selectedUsers[0] = new User(5,"andrej", "dmail", "xdubovski");
-        selectedUsers[1] = new User(6, "sumo", "smail", "xkadzeriak");
-
+        User[] selectedUsers = new User[student.size()];
+        for (int i = 0; i < student.size(); i++){
+            selectedUsers[i] = new User(
+                student.get(i).getId(),
+                student.get(i).getName(),
+                student.get(i).getEmail(),
+                student.get(i).getRole()
+            );
+        }
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
@@ -225,12 +230,12 @@ public class AdminViewController implements Initializable {
             emails[i].setTextContent(selectedUsers[i].getEmail());
             users[i].appendChild(emails[i]);
 
-            logins[i] = doc.createElement("login");
+            logins[i] = doc.createElement("role");
             logins[i].setTextContent(selectedUsers[i].getLogin());
             users[i].appendChild(logins[i]);
         }
 
-        try (FileOutputStream output = new FileOutputStream(".\\test.xml")) {
+        try (FileOutputStream output = new FileOutputStream(".\\exported.xml")) {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -268,7 +273,7 @@ public class AdminViewController implements Initializable {
                                 Integer.parseInt(eElement.getAttribute("id")),
                                 eElement.getElementsByTagName("name").item(0).getTextContent(),
                                 eElement.getElementsByTagName("email").item(0).getTextContent(),
-                                eElement.getElementsByTagName("login").item(0).getTextContent()
+                                eElement.getElementsByTagName("role").item(0).getTextContent()
                         );
                     }
                 }
