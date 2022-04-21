@@ -19,6 +19,7 @@ public class CreateCalendarView {
     private ArrayList<Term> new_terms = new ArrayList<>();
     private ArrayList<Term> terms_to_del = new ArrayList<>();
     ArrayList<Calendar> calendars = new ArrayList<>();
+    CalendarSource schoolCalendarSource;
 
     public CreateCalendarView(CalendarView calendarView) {
         this.calendarView = calendarView;
@@ -41,7 +42,7 @@ public class CreateCalendarView {
             counter1++;
         }
 
-        CalendarSource schoolCalendarSource = new CalendarSource("School");
+        schoolCalendarSource = new CalendarSource("School");
 
         for (Calendar cal: calendars) {
             schoolCalendarSource.getCalendars().add(cal);
@@ -70,7 +71,7 @@ public class CreateCalendarView {
     }
 
     public void setStudentPopup() {
-        calendarView.setEntryDetailsPopOverContentCallback(param -> new NewPopup(param.getEntry(),param.getDateControl().getCalendars())); //TODO modify NewPop to fit student needs
+        calendarView.setEntryDetailsPopOverContentCallback(param -> new NewPopup(param.getEntry(),param.getDateControl().getCalendars(), terms)); //TODO modify NewPop to fit student needs
     }
 
     public void addTeacherHandler() {
@@ -164,6 +165,14 @@ public class CreateCalendarView {
             var2.printStackTrace();
         }
         return new Term(entry_id, subject, new_start, new_end, new_desc);
+    }
+
+    public void addStudentCalendar () {
+        calendars.add(0, new Calendar("Moj"));
+        calendars.get(0).setStyle(Calendar.Style.getStyle(0));
+        schoolCalendarSource.getCalendars().add(calendars.get(0));
+        calendarView.getCalendarSources().setAll(schoolCalendarSource);
+        //handler
     }
 
     public ArrayList<Term> getTerms() {

@@ -47,6 +47,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AdminViewController implements Initializable {
+    private User currentUser;
     ArrayList<Student> students = new ArrayList<>();
     ArrayList<Teacher> teachers = new ArrayList<>();
     ArrayList<UserTable> users = new ArrayList<>();
@@ -180,7 +181,8 @@ public class AdminViewController implements Initializable {
     private void ProfileClick() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("profile-dialog.fxml"));
         DialogPane dialogPane = fxmlLoader.load();
-
+        ProfilePopupController profilePopupController = fxmlLoader.getController();
+        profilePopupController.setCurrentUser(currentUser);
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setDialogPane(dialogPane);
         dialog.setTitle("Profile");
@@ -281,7 +283,7 @@ public class AdminViewController implements Initializable {
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+       // System.out.println(this.currentUser.getName());
         nameTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("name"));
         emailTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("email"));
         roleTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("role"));
@@ -292,5 +294,9 @@ public class AdminViewController implements Initializable {
                 System.out.println( Table.getSelectionModel().getSelectedItem().getId());
 
             }});
+    }
+
+    public void setCurrentUser(User user){
+        this.currentUser=user;
     }
 }

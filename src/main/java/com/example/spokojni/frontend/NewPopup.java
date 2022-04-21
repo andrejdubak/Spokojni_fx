@@ -6,23 +6,34 @@ import com.calendarfx.model.Entry;
 import com.calendarfx.view.CalendarSelector;
 import com.calendarfx.view.CalendarView;
 import com.calendarfx.view.Messages;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import com.example.spokojni.backend.Agreement;
+import com.example.spokojni.backend.Term;
+import com.example.spokojni.backend.db.DB;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.VPos;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 
+import static java.lang.Integer.parseInt;
+
 public class NewPopup extends GridPane {
     private final CalendarSelector calendarSelector;
     private Entry<?> entry;
+    private ArrayList<Term> terms;
 
-    public NewPopup(Entry<?> entry, List<Calendar> calendars) {
+    public NewPopup(Entry<?> entry, List<Calendar> calendars, ArrayList<Term> terms) {
         this.entry = (Entry)Objects.requireNonNull(entry);
+        this.terms = terms;
         Objects.requireNonNull(calendars);
         this.getStylesheets().add(CalendarView.class.getResource("calendar.css").toExternalForm());
         TextField titleField = new TextField(entry.getTitle());
@@ -65,12 +76,19 @@ public class NewPopup extends GridPane {
         titleField.setMaxWidth(500.0D);
         Calendar calendar = entry.getCalendar();
         titleField.getStyleClass().add(calendar.getStyle() + "-entry-popover-title");
+
         //moje zmeny
         titleField.setEditable(false);
         locationField.setEditable(false);
         CheckBox checkBox = new CheckBox("Add to my");
         checkBox.disableProperty().bind(entry.getCalendar().readOnlyProperty());
-        this.add(checkBox,0,2);
+        this.add(checkBox,0,5);
+        Label startDate = new Label("Skúška od: " + entry.getStartAsLocalDateTime().toString());
+        this.add(startDate, 0,2);
+        Label endDate = new Label("Skúška do: " + entry.getEndAsLocalDateTime().toString());
+        this.add(endDate, 0,3);
+        updateNumberOfSignedStudents();
+        //
 
         entry.calendarProperty().addListener((observable, oldCalendar, newCalendar) -> {
             if (oldCalendar != null) {
@@ -92,9 +110,19 @@ public class NewPopup extends GridPane {
                         entry.setCalendar(cal);
                 }
             }
-
             System.out.println(entry.getCalendar().getName());
         });
+    }
+
+    private boolean updateNumberOfSignedStudents() {
+        for (Term tr : terms) System.out.println(tr);
+        int term_id = terms.get(parseInt(entry.getId())).getId();
+        int actualNum = 1; //TODO getNumberOfAssignedStudents(term_id)
+        int maxNum = terms.get(parseInt(entry.getId())).getCapacity();
+        Label numberOfStudents = new Label("Počet prihlásených študentov: " + actualNum + "/" + maxNum);
+        this.add(numberOfStudents, 0,4);
+        System.out.println(actualNum < maxNum);
+        return actualNum < maxNum;
     }
 
     public final Calendar getCalendar() {
@@ -104,5 +132,15 @@ public class NewPopup extends GridPane {
         }
 
         return calendar;
+    }
+    private int getNumberOfAssignedStudents(int term_id) {
+        ArrayList<Agreement> list = new ArrayList<>();
+        try {
+            DB.makeConn();
+            list = DB.getAgreementsByTermId(term_id);
+        } catch (Exception var3) {
+            var3.printStackTrace();
+        }
+        return list.size();
     }
 }
