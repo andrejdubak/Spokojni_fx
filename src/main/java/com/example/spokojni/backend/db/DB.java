@@ -204,10 +204,11 @@ public class DB {
     public static ArrayList<Agreement> getAgreements() throws SQLException{
         getTerms();
         getStudents();
-        ArrayList<Agreement> Agreements = new ArrayList<>();
+        ArrayList<Agreement> newAgreements = new ArrayList<>();
         ResultSet rs = stmt.executeQuery("SELECT * FROM agreements");
         while(rs.next())
-            Agreements.add(new Agreement(rs.getInt(1), getStudent(rs.getInt(2)), getTerm(rs.getInt(3))));
+            newAgreements.add(new Agreement(rs.getInt(1), getStudent(rs.getInt(2)), getTerm(rs.getInt(3))));
+        Agreements = newAgreements;
         return Agreements;
     }
     public static Agreement getAgreement(int userId, int termId) throws SQLException{
