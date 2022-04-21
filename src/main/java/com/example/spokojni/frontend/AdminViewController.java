@@ -35,13 +35,18 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+<<<<<<< HEAD
 import java.util.Locale;
+=======
+import java.util.Date;
+>>>>>>> b12eb28e6bb985e5821c3114b0a8b595a49ce0dd
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -98,6 +103,11 @@ public class AdminViewController implements Initializable {
 
 
     private void Teacher(){
+        try {
+            DB.makeConn();
+        } catch (Exception var3) {
+            var3.printStackTrace();
+        }
 
         try {
             teachers.addAll(DB.getTeachers());
@@ -110,11 +120,16 @@ public class AdminViewController implements Initializable {
         }
 
         for (User t : teachers){
-            student.add(new UserTable(t.getName(), t.getEmail(), "Teacher"));
+            student.add(new UserTable(t.getName(), t.getEmail(), "Teacher", t.getId()));
 
         }
     }
     private void Student(){
+        try {
+            DB.makeConn();
+        } catch (Exception var3) {
+            var3.printStackTrace();
+        }
 
         try {
             students.addAll(DB.getStudents());
@@ -125,7 +140,7 @@ public class AdminViewController implements Initializable {
             e.printStackTrace();
         }
         for (User s : students){
-            student.add(new UserTable(s.getName(), s.getEmail(), "Student"));
+            student.add(new UserTable(s.getName(), s.getEmail(), "Student", s.getId()));
         }
 
     }
@@ -277,6 +292,12 @@ public class AdminViewController implements Initializable {
         emailTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("email"));
         roleTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("role"));
         Table.setItems(student);
+        
+        Table.setOnMouseClicked( event -> {
+            if( event.getClickCount() == 1 ) {
+                System.out.println( Table.getSelectionModel().getSelectedItem().getId());
+
+            }});
     }
 
     public void setCurrentUser(User user){

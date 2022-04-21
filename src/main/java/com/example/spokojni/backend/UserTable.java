@@ -7,10 +7,14 @@ public class UserTable {
     private String email;
     private String role;
 
-    public UserTable(String name, String email, String role) {
+
+    private Integer id;
+
+    public UserTable(String name, String email, String role, Integer id) {
         this.name = name;
         this.email = email;
         this.role = role;
+        this.id = id;
     }
 
     public String getName() {
@@ -23,6 +27,10 @@ public class UserTable {
 
     public String getRole() {
         return role;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
 
