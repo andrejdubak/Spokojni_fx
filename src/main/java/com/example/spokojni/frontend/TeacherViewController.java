@@ -18,8 +18,9 @@ public class TeacherViewController {
     @FXML
     private void buttonClick() {
         System.out.println(currentUser.getName());
-        cw = new CreateCalendarView(calendarView);
+        cw = new CreateCalendarView(calendarView, currentUser);
         cw.addTeacherHandler();
+        cw.disableOtherTeachersCalendars();
     }
 
     @FXML
