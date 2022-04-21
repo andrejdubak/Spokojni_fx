@@ -6,6 +6,7 @@ import com.example.spokojni.backend.users.Admin;
 import com.example.spokojni.backend.users.Student;
 import com.example.spokojni.backend.users.Teacher;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -46,12 +47,24 @@ public class LoginController {
             var2.printStackTrace();
         }
 
-        if (user instanceof Student)
-            new ChangeWindowController("student-view.fxml").changeWindow(LoginClick);
-        else if (user instanceof Teacher)
-            new ChangeWindowController("teacher-view.fxml").changeWindow(LoginClick);
-        else if (user instanceof Admin)
-            new ChangeWindowController("admin-view.fxml").changeWindow(LoginClick);
+        if (user instanceof Student) {
+            ChangeWindowController controller = new ChangeWindowController("student-view.fxml");
+            StudentViewController studentViewController = controller.getFxmlLoader().getController();
+            studentViewController.setCurrentUser(user);
+            controller.changeWindow(LoginClick);
+        }
+        else if (user instanceof Teacher) {
+            ChangeWindowController controller = new ChangeWindowController("teacher-view.fxml");
+            TeacherViewController teacherViewController = controller.getFxmlLoader().getController();
+            teacherViewController.setCurrentUser(user);
+            controller.changeWindow(LoginClick);
+        }
+        else if (user instanceof Admin) {
+            ChangeWindowController controller = new ChangeWindowController("admin-view.fxml");
+            AdminViewController adminViewController = controller.getFxmlLoader().getController();
+            adminViewController.setCurrentUser(user);
+            controller.changeWindow(LoginClick);
+        }
         else
             System.out.println("Login Error!!");
     }

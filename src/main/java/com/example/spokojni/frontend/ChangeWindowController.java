@@ -13,15 +13,17 @@ import java.util.Objects;
 
 public class ChangeWindowController {
     private FXMLLoader fxmlLoader;
+    private Parent pane;
     public ChangeWindowController(String file) throws IOException {
         fxmlLoader = new FXMLLoader(MainApplication.class.getResource(file));
+        pane = fxmlLoader.load();
         //Parent pane =FXMLLoader.load(Objects.requireNonNull(MainApplication.class.getResource(file)));
     }
     public FXMLLoader getFxmlLoader(){
         return fxmlLoader;
     }
+
     public void changeWindow(Button button) throws IOException {
-        Parent pane = fxmlLoader.load();
         Stage stage = (Stage) button.getScene().getWindow();
         stage.getScene().setRoot(pane);
     }

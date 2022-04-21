@@ -45,6 +45,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AdminViewController implements Initializable {
+    private User currentUser;
     ArrayList<Student> students = new ArrayList<>();
     ArrayList<Teacher> teachers = new ArrayList<>();
     ArrayList<UserTable> users = new ArrayList<>();
@@ -269,10 +270,14 @@ public class AdminViewController implements Initializable {
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+       // System.out.println(this.currentUser.getName());
         nameTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("name"));
         emailTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("email"));
         roleTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("role"));
         Table.setItems(student);
+    }
+
+    public void setCurrentUser(User user){
+        this.currentUser=user;
     }
 }
