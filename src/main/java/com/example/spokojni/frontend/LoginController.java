@@ -41,6 +41,7 @@ public class LoginController {
         //User user = null;
        // user = new Admin(3,"Admin ", "", "");
         try {
+            DB.makeConn();
             if(DB.checkPassword(username.getText(), password.getText())) {
                 user = DB.getUserByLogin(username.getText());
             };
@@ -49,6 +50,8 @@ public class LoginController {
             System.out.println("SQLState: " + var2.getSQLState());
             System.out.println("VendorError: " + var2.getErrorCode());
             var2.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         if (user instanceof Student) {
