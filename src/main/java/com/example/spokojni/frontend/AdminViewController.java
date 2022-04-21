@@ -169,7 +169,8 @@ public class AdminViewController implements Initializable {
     private void ProfileClick() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("profile-dialog.fxml"));
         DialogPane dialogPane = fxmlLoader.load();
-
+        ProfilePopupController profilePopupController = fxmlLoader.getController();
+        profilePopupController.setCurrentUser(currentUser);
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setDialogPane(dialogPane);
         dialog.setTitle("Profile");
