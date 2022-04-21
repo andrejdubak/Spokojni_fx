@@ -46,6 +46,10 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class AdminViewController implements Initializable {
     private User currentUser;
@@ -95,7 +99,7 @@ public class AdminViewController implements Initializable {
 
     @FXML
     private void logoutClick() throws IOException{
-        new ChangeWindowController( "login-view.fxml").changeWindow(logOut);
+        new ChangeWindowController( "login-view.fxml", new Locale("en", "UK")).changeWindow(logOut);
     }
 
 

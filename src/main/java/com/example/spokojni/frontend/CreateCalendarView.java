@@ -2,8 +2,11 @@ package com.example.spokojni.frontend;
 
 import com.calendarfx.model.*;
 import com.calendarfx.view.CalendarView;
+import com.calendarfx.view.DateControl;
+import com.example.spokojni.backend.Agreement;
 import com.example.spokojni.backend.Subject;
 import com.example.spokojni.backend.Term;
+import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
 import javafx.event.EventHandler;
 
@@ -19,11 +22,14 @@ public class CreateCalendarView {
     private ArrayList<Term> new_terms = new ArrayList<>();
     private ArrayList<Term> terms_to_del = new ArrayList<>();
     ArrayList<Calendar> calendars = new ArrayList<>();
+    ArrayList<Subject> subjects = new ArrayList<>();
     CalendarSource schoolCalendarSource;
+    User user;
 
-    public CreateCalendarView(CalendarView calendarView) {
+    public CreateCalendarView(CalendarView calendarView, User user) {
         this.calendarView = calendarView;
-        ArrayList<Subject> subjects = new ArrayList<>();
+        this.user = user;
+
 
         try {
             subjects.addAll(DB.getSubjects());
@@ -36,8 +42,8 @@ public class CreateCalendarView {
             calendars.add(new Calendar(sub.getName()));
             calendars.get(counter1).setStyle(Calendar.Style.getStyle(counter1));
             //System.out.println(sub.getMaster().getId());
-            if(sub.getMaster().getId() != 5) //TODO staticke cislo zmenit na idcko ucitela aby vedel modifikovat iba sebe pridelene predmety
-                calendars.get(counter1).setReadOnly(true);
+/*            if(sub.getMaster().getId() != user.getId()) //sidabluje kalendare, ktorych dany ucitel nie je garant, teda nema prava ich menit
+                calendars.get(counter1).setReadOnly(true);*/
             //System.out.println(sub.getName());
             counter1++;
         }
@@ -49,15 +55,43 @@ public class CreateCalendarView {
         }
 
         calendarView.getCalendarSources().setAll(schoolCalendarSource);
+    }
 
+    public void setStudentCalendars() {
+        try {
+            ArrayList<Agreement> agreements = DB.getAgreementsByStudentId(user.getId());
+            for (Term term : DB.getTerms()) {
+                Entry entry = entryHelper(term);
+                int counter = 0;
+                boolean flag = true;
+                for(Calendar cal: calendars) {
+                    //System.out.println(cal.getName());
+                    for (Agreement agr : agreements) {
+                        if (agr.getTerm().getId() == term.getId()) {
+                            calendars.get(0).addEntry(entry);
+                            flag = false;
+                        }
+                    }
+                    if (flag){
+                        if (cal.getName().equals(term.getSubject().getName()))
+                            calendars.get(counter).addEntry(entry);
+                        else
+                            counter++;
+                    }
+                }
+            }
+        } catch (SQLException var2) {
+            sqlException(var2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setTeacherCalendars() {
         try {
             for (Term term : DB.getTerms()) {
-                terms.add(term);
+                Entry entry = entryHelper(term);
                 int counter = 0;
-                //System.out.println(term.getId() + " " + term.getStart_time() + " " + term.getEnd_time());
-                Interval interval = new Interval(term.getStart_time(), term.getEnd_time());
-                Entry<String> entry = new Entry<>(term.getSubject().getName(), interval);
-                entry.setLocation(term.getDescription());
                 for(Calendar cal: calendars) {
                     if (cal.getName().equals(term.getSubject().getName()))
                         calendars.get(counter).addEntry(entry);
@@ -70,8 +104,17 @@ public class CreateCalendarView {
         }
     }
 
+    private Entry entryHelper(Term term) {
+        terms.add(term);
+        //System.out.println(term.getId() + " " + term.getStart_time() + " " + term.getEnd_time());
+        Interval interval = new Interval(term.getStart_time(), term.getEnd_time());
+        Entry<String> entry = new Entry<>(term.getSubject().getName(), interval);
+        entry.setLocation(term.getDescription());
+        return entry;
+    }
+
     public void setStudentPopup() {
-        calendarView.setEntryDetailsPopOverContentCallback(param -> new NewPopup(param.getEntry(),param.getDateControl().getCalendars(), terms)); //TODO modify NewPop to fit student needs
+        calendarView.setEntryDetailsPopOverContentCallback(param -> new NewPopup(param.getEntry(),param.getDateControl().getCalendars(), terms, user));
     }
 
     public void addTeacherHandler() {
@@ -169,10 +212,24 @@ public class CreateCalendarView {
 
     public void addStudentCalendar () {
         calendars.add(0, new Calendar("Moj"));
-        calendars.get(0).setStyle(Calendar.Style.getStyle(0));
+        calendars.get(0).setStyle(Calendar.Style.getStyle(6));
         schoolCalendarSource.getCalendars().add(calendars.get(0));
         calendarView.getCalendarSources().setAll(schoolCalendarSource);
         //handler
+    }
+
+    public void disableOtherTeachersCalendars() {
+        int counter1 = 0;
+        for (Subject sub: subjects) {
+            if(sub.getMaster().getId() != user.getId()) //sidabluje kalendare, ktorych dany ucitel nie je garant, teda nema prava ich menit
+                calendars.get(counter1).setReadOnly(true);
+            counter1++;
+        }
+    }
+
+    public void disableActionForStudent() {
+        calendarView.setEntryFactory(param -> null);
+        calendarView.setEntryEditPolicy(param -> false);
     }
 
     public ArrayList<Term> getTerms() {

@@ -1,5 +1,6 @@
 package com.example.spokojni.frontend;
 
+import com.example.spokojni.MainApplication;
 import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
 import com.example.spokojni.backend.users.Admin;
@@ -7,12 +8,15 @@ import com.example.spokojni.backend.users.Student;
 import com.example.spokojni.backend.users.Teacher;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class LoginController {
 
@@ -33,7 +37,7 @@ public class LoginController {
 
     @FXML
     protected void loginClick() throws IOException {
-        user = new Student(1,"admin"," "," "); //tu zmenit pre login do ineho typu usera
+        user = new Admin(4,"admin"," "," "); //tu zmenit pre login do ineho typu usera
         //User user = null;
        // user = new Admin(3,"Admin ", "", "");
         try {
@@ -48,19 +52,19 @@ public class LoginController {
         }
 
         if (user instanceof Student) {
-            ChangeWindowController controller = new ChangeWindowController("student-view.fxml");
+            ChangeWindowController controller = new ChangeWindowController("student-view.fxml", new Locale("en", "UK"));
             StudentViewController studentViewController = controller.getFxmlLoader().getController();
             studentViewController.setCurrentUser(user);
             controller.changeWindow(LoginClick);
         }
         else if (user instanceof Teacher) {
-            ChangeWindowController controller = new ChangeWindowController("teacher-view.fxml");
+            ChangeWindowController controller = new ChangeWindowController("teacher-view.fxml", new Locale("en", "UK"));
             TeacherViewController teacherViewController = controller.getFxmlLoader().getController();
             teacherViewController.setCurrentUser(user);
             controller.changeWindow(LoginClick);
         }
         else if (user instanceof Admin) {
-            ChangeWindowController controller = new ChangeWindowController("admin-view.fxml");
+            ChangeWindowController controller = new ChangeWindowController("admin-view.fxml", new Locale("en", "UK"));
             AdminViewController adminViewController = controller.getFxmlLoader().getController();
             adminViewController.setCurrentUser(user);
             controller.changeWindow(LoginClick);

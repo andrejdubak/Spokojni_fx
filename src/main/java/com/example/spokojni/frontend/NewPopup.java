@@ -7,13 +7,17 @@ import com.calendarfx.view.CalendarSelector;
 import com.calendarfx.view.CalendarView;
 import com.calendarfx.view.Messages;
 
+import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import com.example.spokojni.backend.Agreement;
 import com.example.spokojni.backend.Term;
+import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
+import com.example.spokojni.backend.users.Student;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.VPos;
 import javafx.scene.control.CheckBox;
@@ -30,8 +34,9 @@ public class NewPopup extends GridPane {
     private final CalendarSelector calendarSelector;
     private Entry<?> entry;
     private ArrayList<Term> terms;
+    Label numberOfStudents = new Label();
 
-    public NewPopup(Entry<?> entry, List<Calendar> calendars, ArrayList<Term> terms) {
+    public NewPopup(Entry<?> entry, List<Calendar> calendars, ArrayList<Term> terms, User user) {
         this.entry = (Entry)Objects.requireNonNull(entry);
         this.terms = terms;
         Objects.requireNonNull(calendars);
@@ -54,7 +59,7 @@ public class NewPopup extends GridPane {
         Bindings.bindBidirectional(this.calendarSelector.calendarProperty(), entry.calendarProperty());
         titleField.getStyleClass().add("default-style-entry-popover-title");
         this.add(titleField, 0, 0);
-        this.add(this.calendarSelector, 1, 0, 1, 2);
+        //this.add(this.calendarSelector, 1, 0, 1, 2);
         this.add(locationField, 0, 1);
         RowConstraints row1 = new RowConstraints();
         row1.setValignment(VPos.TOP);
@@ -81,14 +86,17 @@ public class NewPopup extends GridPane {
         titleField.setEditable(false);
         locationField.setEditable(false);
         CheckBox checkBox = new CheckBox("Add to my");
-        checkBox.disableProperty().bind(entry.getCalendar().readOnlyProperty());
+        if (entry.getCalendar().getName().equals("Moj")) checkBox.setSelected(true);
+        //checkBox.disableProperty().bind(entry.getCalendar().readOnlyProperty());
         this.add(checkBox,0,5);
-        Label startDate = new Label("Skúška od: " + entry.getStartAsLocalDateTime().toString());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        Label startDate = new Label("Skúška od: " + entry.getStartAsLocalDateTime().format(formatter));
         this.add(startDate, 0,2);
-        Label endDate = new Label("Skúška do: " + entry.getEndAsLocalDateTime().toString());
+        Label endDate = new Label("Skúška do: " + entry.getEndAsLocalDateTime().format(formatter));
         this.add(endDate, 0,3);
-        updateNumberOfSignedStudents();
-        //
+        if (!updateNumberOfSignedStudents() && !checkBox.isSelected()) checkBox.setDisable(true); //disabluje moznost pridat predmet do svojich ak uz nieje miesto
+        this.add(numberOfStudents, 0,4);
 
         entry.calendarProperty().addListener((observable, oldCalendar, newCalendar) -> {
             if (oldCalendar != null) {
@@ -102,25 +110,39 @@ public class NewPopup extends GridPane {
         });
 
         checkBox.setOnAction((evt) -> {
-            if (checkBox.isSelected()) //prida do vlastneho calendaru
-                entry.setCalendar(calendars.get(2));
+            if (checkBox.isSelected()) { //prida do vlastneho calendaru
+                entry.setCalendar(calendars.get(calendars.size() - 1));
+                try {
+                    DB.makeConn();
+                    DB.add(new Agreement(1, new Student(user.getId(), user.getName(), user.getEmail(), user.getLogin()), terms.get(parseInt(entry.getId()))));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             else {
                 for (Calendar cal : calendars) { //vtari do povodneho calendaru
                     if (cal.getName().equals(entry.getTitle()))
                         entry.setCalendar(cal);
+                    try {
+                        Agreement agr = DB.getAgreement( user.getId(), terms.get(parseInt(entry.getId())).getId());
+                        DB.makeConn();
+                        DB.delete(agr);//vymaze z databazy agreement
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-            System.out.println(entry.getCalendar().getName());
+            updateNumberOfSignedStudents();
+            //System.out.println(entry.getCalendar().getName());
         });
     }
 
     private boolean updateNumberOfSignedStudents() {
-        for (Term tr : terms) System.out.println(tr);
+        //for (Term tr : terms) System.out.println(tr);
         int term_id = terms.get(parseInt(entry.getId())).getId();
-        int actualNum = 1; //TODO getNumberOfAssignedStudents(term_id)
+        int actualNum = getNumberOfAssignedStudents(term_id); //spocita prihlasenych studenotov pre dany termin
         int maxNum = terms.get(parseInt(entry.getId())).getCapacity();
-        Label numberOfStudents = new Label("Počet prihlásených študentov: " + actualNum + "/" + maxNum);
-        this.add(numberOfStudents, 0,4);
+        numberOfStudents.setText("Počet prihlásených študentov: " + actualNum + "/" + maxNum);
         System.out.println(actualNum < maxNum);
         return actualNum < maxNum;
     }
@@ -138,6 +160,7 @@ public class NewPopup extends GridPane {
         try {
             DB.makeConn();
             list = DB.getAgreementsByTermId(term_id);
+            //System.out.println(list);
         } catch (Exception var3) {
             var3.printStackTrace();
         }

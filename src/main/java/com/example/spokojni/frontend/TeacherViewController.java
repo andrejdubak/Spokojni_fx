@@ -6,7 +6,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import com.calendarfx.view.CalendarView;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Locale;
 
 public class TeacherViewController {
     private User currentUser;
@@ -16,10 +18,25 @@ public class TeacherViewController {
     private CalendarView calendarView;
 
     @FXML
+    private Button languageEN, languageSK;
+
+    @FXML
     private void buttonClick() {
         System.out.println(currentUser.getName());
-        cw = new CreateCalendarView(calendarView);
+        cw = new CreateCalendarView(calendarView, currentUser);
         cw.addTeacherHandler();
+        cw.disableOtherTeachersCalendars();
+        cw.setTeacherCalendars();
+    }
+
+    @FXML
+    private void languageENClick() throws IOException {
+        new ChangeWindowController( "teacher-view.fxml", new Locale("en", "UK")).changeWindow(languageEN);
+    }
+
+    @FXML
+    private void languageSKClick() throws IOException {
+        new ChangeWindowController( "teacher-view.fxml", new Locale("sk", "SK")).changeWindow(languageSK);
     }
 
     @FXML

@@ -40,6 +40,6 @@
                 <Font size="16.0" />
             </font>
         </Text>
-      <Button fx:id="allUsers" layoutX="218.0" layoutY="442.0" mnemonicParsing="false" onAction="#showUsers" prefHeight="35.0" prefWidth="85.0" text="All" />
+        <Button fx:id="allUsers" layoutX="218.0" layoutY="442.0" mnemonicParsing="false" onAction="#showUsers" prefHeight="35.0" prefWidth="85.0" text="All" />
     </children>
 </AnchorPane>
