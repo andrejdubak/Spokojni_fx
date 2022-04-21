@@ -1,5 +1,6 @@
 package com.example.spokojni.frontend;
 
+import com.example.spokojni.MainApplication;
 import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
 import com.example.spokojni.backend.users.Admin;
@@ -7,6 +8,7 @@ import com.example.spokojni.backend.users.Student;
 import com.example.spokojni.backend.users.Teacher;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -14,6 +16,7 @@ import javafx.scene.control.TextField;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class LoginController {
 
@@ -34,7 +37,7 @@ public class LoginController {
 
     @FXML
     protected void loginClick() throws IOException {
-        user = new Student(4,"admin"," "," "); //tu zmenit pre login do ineho typu usera
+        user = new Admin(4,"admin"," "," "); //tu zmenit pre login do ineho typu usera
         //User user = null;
        // user = new Admin(3,"Admin ", "", "");
         try {
