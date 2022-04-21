@@ -8,6 +8,8 @@ import com.example.spokojni.backend.users.Student;
 import com.example.spokojni.backend.users.Teacher;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -41,10 +43,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AdminViewController implements Initializable {
     private User currentUser;
@@ -288,12 +289,55 @@ public class AdminViewController implements Initializable {
         emailTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("email"));
         roleTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("role"));
         Table.setItems(student);
-        
-        Table.setOnMouseClicked( event -> {
-            if( event.getClickCount() == 1 ) {
-                System.out.println( Table.getSelectionModel().getSelectedItem().getId());
+        try{
+            Table.setOnMouseClicked( event -> {
+                if( event.getClickCount() == 1  && !Table.getSelectionModel().isEmpty()) {
+                    System.out.println( Table.getSelectionModel().getSelectedItem().getId());
 
-            }});
+                }});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        FilteredList<UserTable> filterUsers = new FilteredList<>(student, b -> true);
+
+
+            search.textProperty().addListener((observable, oldValue, newValue) ->{
+                filterUsers.setPredicate(userName ->{
+
+                    if(newValue.isEmpty() || newValue.isBlank() || newValue == null){
+                        return true;
+                    }
+                    Pattern patternName = Pattern.compile("name:", Pattern.CASE_INSENSITIVE);
+                    Pattern patternEmail = Pattern.compile("email:", Pattern.CASE_INSENSITIVE);
+
+                    String searchedName = newValue.toLowerCase();
+
+                    Matcher matcherName = patternName.matcher(searchedName.toLowerCase());
+                    Matcher matcherEmail = patternEmail.matcher(searchedName.toLowerCase());
+
+                    boolean userFound = matcherName.find();
+                    boolean emailFound = matcherEmail.find();
+
+
+                    if (userFound && userName.getName().toLowerCase().contains(searchedName.replaceFirst("name: ", ""))){
+                        return true;
+                    }
+                    if(emailFound && userName.getEmail().toLowerCase().contains(searchedName.replaceFirst("email: ", ""))){
+                        return true;
+                    }
+
+                    return  false;
+                });
+
+            });
+            SortedList<UserTable> sortedUser = new SortedList<>(filterUsers);
+
+            sortedUser.comparatorProperty().bind(Table.comparatorProperty());
+
+            Table.setItems(sortedUser);
+
     }
 
     public void setCurrentUser(User user){
