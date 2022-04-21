@@ -14,6 +14,7 @@ public class StudentViewController {
     @FXML
     private void buttonClick() {
         cw = new CreateCalendarView(calendarView);
+        cw.addStudentCalendar();
         cw.setStudentPopup();
     }
 
