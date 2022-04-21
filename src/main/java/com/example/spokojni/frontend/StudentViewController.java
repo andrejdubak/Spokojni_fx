@@ -17,6 +17,7 @@ public class StudentViewController {
         cw.addStudentCalendar();
         cw.setStudentPopup();
         cw.disableActionForStudent();
+        cw.setStudentCalendars();
     }
 
     @FXML

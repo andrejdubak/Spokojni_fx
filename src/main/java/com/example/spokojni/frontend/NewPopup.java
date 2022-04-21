@@ -34,6 +34,7 @@ public class NewPopup extends GridPane {
     private final CalendarSelector calendarSelector;
     private Entry<?> entry;
     private ArrayList<Term> terms;
+    Label numberOfStudents = new Label();
 
     public NewPopup(Entry<?> entry, List<Calendar> calendars, ArrayList<Term> terms, User user) {
         this.entry = (Entry)Objects.requireNonNull(entry);
@@ -58,7 +59,7 @@ public class NewPopup extends GridPane {
         Bindings.bindBidirectional(this.calendarSelector.calendarProperty(), entry.calendarProperty());
         titleField.getStyleClass().add("default-style-entry-popover-title");
         this.add(titleField, 0, 0);
-        this.add(this.calendarSelector, 1, 0, 1, 2);
+        //this.add(this.calendarSelector, 1, 0, 1, 2);
         this.add(locationField, 0, 1);
         RowConstraints row1 = new RowConstraints();
         row1.setValignment(VPos.TOP);
@@ -95,7 +96,7 @@ public class NewPopup extends GridPane {
         Label endDate = new Label("Skúška do: " + entry.getEndAsLocalDateTime().format(formatter));
         this.add(endDate, 0,3);
         if (!updateNumberOfSignedStudents() && !checkBox.isSelected()) checkBox.setDisable(true); //disabluje moznost pridat predmet do svojich ak uz nieje miesto
-        //
+        this.add(numberOfStudents, 0,4);
 
         entry.calendarProperty().addListener((observable, oldCalendar, newCalendar) -> {
             if (oldCalendar != null) {
@@ -131,7 +132,8 @@ public class NewPopup extends GridPane {
                     }
                 }
             }
-            System.out.println(entry.getCalendar().getName());
+            updateNumberOfSignedStudents();
+            //System.out.println(entry.getCalendar().getName());
         });
     }
 
@@ -140,8 +142,7 @@ public class NewPopup extends GridPane {
         int term_id = terms.get(parseInt(entry.getId())).getId();
         int actualNum = getNumberOfAssignedStudents(term_id); //spocita prihlasenych studenotov pre dany termin
         int maxNum = terms.get(parseInt(entry.getId())).getCapacity();
-        Label numberOfStudents = new Label("Počet prihlásených študentov: " + actualNum + "/" + maxNum);
-        this.add(numberOfStudents, 0,4);
+        numberOfStudents.setText("Počet prihlásených študentov: " + actualNum + "/" + maxNum);
         System.out.println(actualNum < maxNum);
         return actualNum < maxNum;
     }
@@ -159,7 +160,7 @@ public class NewPopup extends GridPane {
         try {
             DB.makeConn();
             list = DB.getAgreementsByTermId(term_id);
-            System.out.println(list);
+            //System.out.println(list);
         } catch (Exception var3) {
             var3.printStackTrace();
         }

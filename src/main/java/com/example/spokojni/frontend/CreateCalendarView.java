@@ -3,6 +3,7 @@ package com.example.spokojni.frontend;
 import com.calendarfx.model.*;
 import com.calendarfx.view.CalendarView;
 import com.calendarfx.view.DateControl;
+import com.example.spokojni.backend.Agreement;
 import com.example.spokojni.backend.Subject;
 import com.example.spokojni.backend.Term;
 import com.example.spokojni.backend.User;
@@ -54,15 +55,43 @@ public class CreateCalendarView {
         }
 
         calendarView.getCalendarSources().setAll(schoolCalendarSource);
+    }
 
+    public void setStudentCalendars() {
+        try {
+            ArrayList<Agreement> agreements = DB.getAgreementsByStudentId(user.getId());
+            for (Term term : DB.getTerms()) {
+                Entry entry = entryHelper(term);
+                int counter = 0;
+                boolean flag = true;
+                for(Calendar cal: calendars) {
+                    //System.out.println(cal.getName());
+                    for (Agreement agr : agreements) {
+                        if (agr.getTerm().getId() == term.getId()) {
+                            calendars.get(0).addEntry(entry);
+                            flag = false;
+                        }
+                    }
+                    if (flag){
+                        if (cal.getName().equals(term.getSubject().getName()))
+                            calendars.get(counter).addEntry(entry);
+                        else
+                            counter++;
+                    }
+                }
+            }
+        } catch (SQLException var2) {
+            sqlException(var2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setTeacherCalendars() {
         try {
             for (Term term : DB.getTerms()) {
-                terms.add(term);
+                Entry entry = entryHelper(term);
                 int counter = 0;
-                //System.out.println(term.getId() + " " + term.getStart_time() + " " + term.getEnd_time());
-                Interval interval = new Interval(term.getStart_time(), term.getEnd_time());
-                Entry<String> entry = new Entry<>(term.getSubject().getName(), interval);
-                entry.setLocation(term.getDescription());
                 for(Calendar cal: calendars) {
                     if (cal.getName().equals(term.getSubject().getName()))
                         calendars.get(counter).addEntry(entry);
@@ -73,6 +102,15 @@ public class CreateCalendarView {
         } catch (SQLException var2) {
             sqlException(var2);
         }
+    }
+
+    private Entry entryHelper(Term term) {
+        terms.add(term);
+        //System.out.println(term.getId() + " " + term.getStart_time() + " " + term.getEnd_time());
+        Interval interval = new Interval(term.getStart_time(), term.getEnd_time());
+        Entry<String> entry = new Entry<>(term.getSubject().getName(), interval);
+        entry.setLocation(term.getDescription());
+        return entry;
     }
 
     public void setStudentPopup() {
@@ -174,7 +212,7 @@ public class CreateCalendarView {
 
     public void addStudentCalendar () {
         calendars.add(0, new Calendar("Moj"));
-        calendars.get(0).setStyle(Calendar.Style.getStyle(0));
+        calendars.get(0).setStyle(Calendar.Style.getStyle(6));
         schoolCalendarSource.getCalendars().add(calendars.get(0));
         calendarView.getCalendarSources().setAll(schoolCalendarSource);
         //handler

@@ -26,6 +26,7 @@ public class TeacherViewController {
         cw = new CreateCalendarView(calendarView, currentUser);
         cw.addTeacherHandler();
         cw.disableOtherTeachersCalendars();
+        cw.setTeacherCalendars();
     }
 
     @FXML

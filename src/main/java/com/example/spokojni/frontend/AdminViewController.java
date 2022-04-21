@@ -42,11 +42,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-<<<<<<< HEAD
 import java.util.Locale;
-=======
-import java.util.Date;
->>>>>>> b12eb28e6bb985e5821c3114b0a8b595a49ce0dd
 import java.util.Optional;
 import java.util.ResourceBundle;
 
