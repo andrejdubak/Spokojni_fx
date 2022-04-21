@@ -9,13 +9,17 @@ import javafx.scene.control.DialogPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class ChangeWindowController {
     private FXMLLoader fxmlLoader;
     private Parent pane;
-    public ChangeWindowController(String file) throws IOException {
+    public ChangeWindowController(String file, Locale loc) throws IOException {
         fxmlLoader = new FXMLLoader(MainApplication.class.getResource(file));
+        ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", loc));
+        fxmlLoader.setResources(rb);
         pane = fxmlLoader.load();
         //Parent pane =FXMLLoader.load(Objects.requireNonNull(MainApplication.class.getResource(file)));
     }

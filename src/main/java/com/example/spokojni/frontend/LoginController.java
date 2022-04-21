@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Locale;
 
 public class LoginController {
 
@@ -33,7 +34,7 @@ public class LoginController {
 
     @FXML
     protected void loginClick() throws IOException {
-        user = new Admin(1,"admin"," "," "); //tu zmenit pre login do ineho typu usera
+        user = new Teacher(1,"admin"," "," "); //tu zmenit pre login do ineho typu usera
         //User user = null;
        // user = new Admin(3,"Admin ", "", "");
         try {
@@ -48,19 +49,19 @@ public class LoginController {
         }
 
         if (user instanceof Student) {
-            ChangeWindowController controller = new ChangeWindowController("student-view.fxml");
+            ChangeWindowController controller = new ChangeWindowController("student-view.fxml", new Locale("en", "UK"));
             StudentViewController studentViewController = controller.getFxmlLoader().getController();
             studentViewController.setCurrentUser(user);
             controller.changeWindow(LoginClick);
         }
         else if (user instanceof Teacher) {
-            ChangeWindowController controller = new ChangeWindowController("teacher-view.fxml");
+            ChangeWindowController controller = new ChangeWindowController("teacher-view.fxml", new Locale("en", "UK"));
             TeacherViewController teacherViewController = controller.getFxmlLoader().getController();
             teacherViewController.setCurrentUser(user);
             controller.changeWindow(LoginClick);
         }
         else if (user instanceof Admin) {
-            ChangeWindowController controller = new ChangeWindowController("admin-view.fxml");
+            ChangeWindowController controller = new ChangeWindowController("admin-view.fxml", new Locale("en", "UK"));
             AdminViewController adminViewController = controller.getFxmlLoader().getController();
             adminViewController.setCurrentUser(user);
             controller.changeWindow(LoginClick);

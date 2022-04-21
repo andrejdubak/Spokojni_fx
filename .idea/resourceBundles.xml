@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ResourceBundleManager">
+    <file url="file://$PROJECT_DIR$/src/main/resources/com/example/spokojni/messages.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/com/example/spokojni/messages_en_UK.properties" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/com/example/spokojni/messages_sk_SK.properties" />
+    <custom-resource-bundle>
+      <file value="file://$PROJECT_DIR$/src/main/resources/com/example/spokojni/messages.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/com/example/spokojni/messages_en_UK.properties" />
+      <file value="file://$PROJECT_DIR$/src/main/resources/com/example/spokojni/messages_sk_SK.properties" />
+      <base-name>messages</base-name>
+    </custom-resource-bundle>
+  </component>
+</project>

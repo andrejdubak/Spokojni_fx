@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class MainApplication extends Application {
     @Override
