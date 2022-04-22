@@ -58,7 +58,7 @@ public class AdminPopupController {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setDialogPane(dialogPane);
         dialog.setTitle("Generate password");
-        generatePasswordController.setCurrentUser(user);
+        generatePasswordController.setCurrentUser(user,dialog);
 
         dialog.showAndWait();
     }
