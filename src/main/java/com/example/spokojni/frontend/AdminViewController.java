@@ -174,6 +174,8 @@ public class AdminViewController implements Initializable {
     private void registerPersonClick() throws IOException{
         Stage stage = new Stage();
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("register-person-view.fxml"));
+        ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
+        fxmlLoader.setResources(rb);
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
         stage.setTitle("User Registration");
         stage.setResizable(false);
@@ -185,6 +187,8 @@ public class AdminViewController implements Initializable {
     @FXML
     private void ProfileClick() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("profile-dialog.fxml"));
+        ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
+        fxmlLoader.setResources(rb);
         DialogPane dialogPane = fxmlLoader.load();
         ProfilePopupController profilePopupController = fxmlLoader.getController();
         profilePopupController.setCurrentUser(currentUser);
