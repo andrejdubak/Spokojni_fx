@@ -79,7 +79,8 @@ public class DB {
     }
     public static String getHostIP() throws SQLException {
         ResultSet rs = stmt.executeQuery("select host from information_schema.processlist WHERE ID=connection_id()");
-        rs.first();
+        if(!rs.first())
+            return null;
         return rs.getString(1);
     }
     public static void log(String description, int importance, int user_id) throws SQLException{
@@ -105,7 +106,8 @@ public class DB {
     }
     public static User getUserById(int id) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE id=" + id);
-        rs.first();
+        if(!rs.first())
+            return null;
         switch(rs.getInt(6)) {
             case 3:
                 return new Admin(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
@@ -117,7 +119,8 @@ public class DB {
     }
     public static User getUserByLogin(String username) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE login='" + username + "'");
-        rs.first();
+        if(!rs.first())
+            return null;
         switch(rs.getInt(6)) {
             case 3:
                 return new Admin(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
@@ -130,13 +133,15 @@ public class DB {
     public static Subject getSubjectById(int id) throws SQLException{
         getTeachers();
         ResultSet rs = stmt.executeQuery("SELECT * FROM subjects WHERE id=" + id);
-        rs.first();
+        if(!rs.first())
+            return null;
         return new Subject(rs.getInt(1),rs.getString(2), getTeacher(rs.getInt(3)));
     }
     public static Term getTermById(int id) throws SQLException{
         getSubjects();
         ResultSet rs = stmt.executeQuery("SELECT * FROM terms WHERE id=" + id);
-        rs.first();
+        if(!rs.first())
+            return null;
         LocalDateTime start_time = rs.getTimestamp(3).toLocalDateTime();
         LocalDateTime end_time = rs.getTimestamp(4).toLocalDateTime();
         String description = rs.getString(5);
@@ -280,7 +285,8 @@ public class DB {
     }
     public static String getPasswordHash(int user_id) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT pass FROM users WHERE id=" + user_id);
-        rs.first();
+        if(!rs.first())
+            return null;
         return rs.getString(1);
     }
     public static boolean checkPassword(int user_id, String password) throws SQLException{
@@ -332,22 +338,28 @@ public class DB {
         stmt.executeUpdate();
     }
     public static boolean addUser(User user, String password) throws SQLException {
+        if(getUserByLogin(user.getLogin()) == null)
+            return false;
         stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, SHA1(?), ?, ?, ?, ?)");
         stmt.setString(1, password);
         stmt.setString(2, user.getName());
         stmt.setString(3, user.getEmail());
         stmt.setString(4, user.getLogin());
         stmt.setInt(5, user.getRole());
+        stmt.executeUpdate();
         return true;
         //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
     }
     public static boolean addUserImportWithHash(User user, String password_hash) throws SQLException {
+        if(getUserByLogin(user.getLogin()) == null)
+            return false;
         stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, ?, ?, ?, ?, ?)");
         stmt.setString(1, password_hash);
         stmt.setString(2, user.getName());
         stmt.setString(3, user.getEmail());
         stmt.setString(4, user.getLogin());
         stmt.setInt(5, user.getRole());
+        stmt.executeUpdate();
         return true;
         //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
     }
