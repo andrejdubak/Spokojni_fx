@@ -14,7 +14,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -37,13 +36,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
@@ -174,6 +171,8 @@ public class AdminViewController implements Initializable {
     private void registerPersonClick() throws IOException{
         Stage stage = new Stage();
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("register-person-view.fxml"));
+        ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
+        fxmlLoader.setResources(rb);
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
         stage.setTitle("User Registration");
         stage.setResizable(false);
@@ -184,9 +183,11 @@ public class AdminViewController implements Initializable {
 
     @FXML
     private void ProfileClick() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("profile-dialog.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("change-password-dialog.fxml"));
+        ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
+        fxmlLoader.setResources(rb);
         DialogPane dialogPane = fxmlLoader.load();
-        ProfilePopupController profilePopupController = fxmlLoader.getController();
+        ChangePasswordPopupController profilePopupController = fxmlLoader.getController();
         profilePopupController.setCurrentUser(currentUser);
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setDialogPane(dialogPane);
@@ -301,7 +302,11 @@ public class AdminViewController implements Initializable {
         try{
             Table.setOnMouseClicked( event -> {
                 if( event.getClickCount() == 1  && !Table.getSelectionModel().isEmpty()) {
-                    System.out.println( Table.getSelectionModel().getSelectedItem().getId());
+                    try {
+                        chosenUser(Table.getSelectionModel().getSelectedItem());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
                 }});
         } catch (Exception e) {
@@ -349,6 +354,17 @@ public class AdminViewController implements Initializable {
 
     }
 
+    private void chosenUser(UserTable user) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("admin-popup.fxml"));
+        DialogPane dialogPane = fxmlLoader.load();
+        AdminPopupController adminPopupController = fxmlLoader.getController();
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setDialogPane(dialogPane);
+        dialog.setTitle("Selected user");
+        adminPopupController.setCurrentUser(user,dialog,exportPeople);
+
+        Optional<ButtonType> clickedButton = dialog.showAndWait();
+    }
     public void setCurrentUser(User user){
         this.currentUser=user;
     }

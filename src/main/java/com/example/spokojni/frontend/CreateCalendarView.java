@@ -32,9 +32,12 @@ public class CreateCalendarView {
 
 
         try {
+            DB.makeConn();
             subjects.addAll(DB.getSubjects());
         } catch (SQLException var2) {
             sqlException(var2);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         int counter1 = 0;
@@ -59,6 +62,7 @@ public class CreateCalendarView {
 
     public void setStudentCalendars() {
         try {
+            DB.makeConn();
             ArrayList<Agreement> agreements = DB.getAgreementsByStudentId(user.getId());
             for (Term term : DB.getTerms()) {
                 Entry entry = entryHelper(term);
@@ -89,6 +93,7 @@ public class CreateCalendarView {
 
     public void setTeacherCalendars() {
         try {
+            DB.makeConn();
             for (Term term : DB.getTerms()) {
                 Entry entry = entryHelper(term);
                 int counter = 0;
@@ -101,6 +106,8 @@ public class CreateCalendarView {
             }
         } catch (SQLException var2) {
             sqlException(var2);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

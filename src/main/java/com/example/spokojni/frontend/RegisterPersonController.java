@@ -2,6 +2,8 @@ package com.example.spokojni.frontend;
 
 import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
+import com.example.spokojni.backend.users.Student;
+import com.example.spokojni.backend.users.Teacher;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -50,8 +52,7 @@ public class RegisterPersonController {
         nickName.setText(nick);
     }
 
-    @FXML
-    private void generatePassword() {
+    public static String generateNewPass() {
         int length = 20;
         String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
@@ -69,7 +70,12 @@ public class RegisterPersonController {
         for (int i = 4; i < length; i++) {
             password[i] = combinedChars.charAt(random.nextInt(combinedChars.length()));
         }
-        generatedPassword.setText(String.valueOf(password));
+       return String.valueOf(password);
+    }
+
+    @FXML
+    private void generatePassword() {
+        generatedPassword.setText(generateNewPass());
     }
 
     @FXML
@@ -83,25 +89,36 @@ public class RegisterPersonController {
     @FXML
     private void saveUser() throws SQLException, IOException {
         if (checkValues()) {
-            User user = new User(0, userName.getText(), userEmail.getText(), nickName.getText());
+            User user;
+            if(checkBox.isSelected())
+                user = new Teacher(0, userName.getText(), userEmail.getText(), nickName.getText());
+            else
+                user = new Student(0, userName.getText(), userEmail.getText(), nickName.getText());
             try {
                 DB.makeConn();
             } catch (Exception var3) {
                 var3.printStackTrace();
             }
-            registrationSuccessful();
-            /*try {
-                DB.add(user);
-                DB.updatePassword(user, generatedPassword.getText());
-                registrationSuccessful();
+            //registrationSuccessful();
+            try {
+                if(DB.addUser(user,generatedPassword.getText()))
+                    registrationSuccessful();
+                else
+                    registrationFailed();
             } catch (SQLException var2) {
                 System.out.println("SQLException: " + var2.getMessage());
                 System.out.println("SQLState: " + var2.getSQLState());
                 System.out.println("VendorError: " + var2.getErrorCode());
                 var2.printStackTrace();
-            }*/
+            }
         }
         //
+    }
+
+    private void registrationFailed(){
+        errorAlert.setHeaderText("Wrong email address");
+        errorAlert.setContentText("Email address is already taken");
+        errorAlert.showAndWait();
     }
 
     private void registrationSuccessful() {

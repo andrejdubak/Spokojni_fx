@@ -326,6 +326,16 @@ public class DB {
         }
         stmt.executeUpdate();
     }
+    public static boolean addUser(User user, String password) throws SQLException {
+        stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, ?, ?, ?, ?, ?)");
+        stmt.setString(1, password);
+        stmt.setString(2, user.getName());
+        stmt.setString(3, user.getEmail());
+        stmt.setString(4, user.getLogin());
+        stmt.setInt(5, user.getRole());
+        return true;
+        //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
+    }
     public static void add(Object obj) throws SQLException{
         if(obj instanceof User){
             stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, '', ?, ?, ?, ?)");
@@ -366,6 +376,11 @@ public class DB {
             stmt.setInt(1, ((User) obj).getId());
             //stmt.executeUpdate("DELETE FROM users WHERE id=" + ((User) obj).getId());
         }
+        if(obj instanceof UserTable){
+            stmt = con.prepareStatement("DELETE FROM users WHERE id=?");
+            stmt.setInt(1, ((UserTable) obj).getId());
+            //stmt.executeUpdate("DELETE FROM users WHERE id=" + ((User) obj).getId());
+        }
         else if(obj instanceof Subject){
             stmt = con.prepareStatement("DELETE FROM subjects WHERE id=?");
             stmt.setInt(1, ((Subject) obj).getId());
@@ -390,6 +405,9 @@ public class DB {
         stmt.setInt(2, user.getId());
         stmt.executeUpdate();
         //stmt.executeUpdate("UPDATE users SET pass=SHA1('" + new_password + "') WHERE id=" + user.getId());
+    }
+    public static void updatePassword(int user_id, String new_password) throws SQLException{
+        stmt.executeUpdate("UPDATE users SET pass=SHA1('" + new_password + "') WHERE id=" + user_id);
     }
     public static void closeConn() throws SQLException {
         con.close();
