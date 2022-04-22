@@ -2,18 +2,17 @@ package com.example.spokojni.frontend;
 
 import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 
 import java.sql.SQLException;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class ProfilePopupController {
+public class ChangePasswordPopupController {
 
     @FXML
     private Button savePassword;
@@ -26,26 +25,18 @@ public class ProfilePopupController {
 
     private User currentUser;
     private Alert successfulAlert;
-    private Alert oldPasswordError;
-    private Alert repeatPasswordError;
-    private Alert newPasswordError;
-
-    ObservableList<String> languages = FXCollections.observableArrayList("Slovak","English");
-
-    @FXML
-    private ChoiceBox<String> language;
+    private Alert errorAlert;
 
     @FXML
     private void initialize() {
-        language.setValue("English");
-        language.setItems(languages);
         setupAlerts();
     }
 
     @FXML
     private void saveSettings() {
-        if (newPassword.getText().isEmpty())
-            newPasswordError.showAndWait();
+        if (newPassword.getText().isEmpty()) {
+            showError("New password ERROR", "New password cannot be empty");
+        }
         else {
             if (Objects.equals(repeatPassword.getText(), newPassword.getText())) {
                 try {
@@ -55,11 +46,16 @@ public class ProfilePopupController {
                 }
                 try {
                     if (DB.checkPassword(currentUser.getId(), oldPassword.getText())) {
-                        DB.updatePassword(currentUser.getId(),newPassword.getText());
-                        passwordChangeSuccessful();
+                        if(isValidPassword(newPassword.getText())) {
+                            DB.updatePassword(currentUser.getId(), newPassword.getText());
+                            passwordChangeSuccessful();
+                        }
+                        else{
+                            showError("New password is not strong enough","Contain >= 1: [a-z],[A-Z],[0-9], and has 8 to 20 digits");
+                        }
                     }
                     else
-                        oldPasswordError.showAndWait();
+                        showError("Old password ERROR","Old password is not matching");
 
                 } catch (SQLException var2) {
                     System.out.println("SQLException: " + var2.getMessage());
@@ -68,17 +64,27 @@ public class ProfilePopupController {
                     var2.printStackTrace();
                 }
             } else
-                repeatPasswordError.showAndWait();
+                showError("Repeat password ERROR","Repeat password is not matching with new password");
         }
-    }
-
-    @FXML
-    private void changeLanguage(){
-        System.out.println(language.getValue());
     }
 
     public void setCurrentUser(User user){
         this.currentUser = user;
+    }
+
+    private void showError(String header, String content){
+        errorAlert.setHeaderText(header);
+        errorAlert.setContentText(content);
+        errorAlert.showAndWait();
+    }
+
+    private static boolean isValidPassword(String password){
+        String regex = "^(?=.*[0-9])"
+                + "(?=.*[a-z])(?=.*[A-Z])"
+                + "(?=\\S+$).{8,20}$";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(password);
+        return m.matches();
     }
 
     private void passwordChangeSuccessful(){
@@ -92,14 +98,6 @@ public class ProfilePopupController {
         successfulAlert = new Alert(Alert.AlertType.CONFIRMATION);
         successfulAlert.setHeaderText("Successful change of password");
         successfulAlert.setContentText("Password was successfully changed");
-        oldPasswordError = new Alert(Alert.AlertType.ERROR);
-        oldPasswordError.setHeaderText("Old password ERROR");
-        oldPasswordError.setContentText("Old password is not matching");
-        repeatPasswordError = new Alert(Alert.AlertType.ERROR);
-        repeatPasswordError.setHeaderText("Repeat password ERROR");
-        repeatPasswordError.setContentText("Repeat password is not matching with new password");
-        newPasswordError = new Alert(Alert.AlertType.ERROR);
-        newPasswordError.setHeaderText("New password ERROR");
-        newPasswordError.setContentText("New password cannot be empty");
+        errorAlert = new Alert(Alert.AlertType.ERROR);
     }
 }

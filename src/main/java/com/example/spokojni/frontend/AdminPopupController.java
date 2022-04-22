@@ -1,12 +1,12 @@
 package com.example.spokojni.frontend;
 
-import com.example.spokojni.backend.User;
+import com.example.spokojni.MainApplication;
 import com.example.spokojni.backend.UserTable;
 import com.example.spokojni.backend.db.DB;
 import com.example.spokojni.backend.users.Student;
 import com.example.spokojni.backend.users.Teacher;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
 
@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 public class AdminPopupController {
 
@@ -50,14 +51,27 @@ public class AdminPopupController {
     }
 
     @FXML
+    private void generateNewPassword() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("generate-password-popup.fxml"));
+        DialogPane dialogPane = fxmlLoader.load();
+        GeneratePasswordController generatePasswordController = fxmlLoader.getController();
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setDialogPane(dialogPane);
+        dialog.setTitle("Generate password");
+        generatePasswordController.setCurrentUser(user);
+
+        dialog.showAndWait();
+    }
+
+    @FXML
     private void deleteUser() {
-        String choices[] = { "Yes", "No"};
-        ChoiceDialog d = new ChoiceDialog(choices[1],choices);
-        d.setHeaderText("Deleting user");
-        d.setContentText("Are you sure you want to delete user");
-        d.showAndWait();
-        if(Objects.equals(d.getSelectedItem().toString(), "Yes")){
-            System.out.println("deleted");
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Dialog");
+        alert.setHeaderText("Deleting user");
+        alert.setContentText("Are you sure you want to delete user?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
             try {
                 DB.makeConn();
             } catch (Exception var3) {
@@ -72,9 +86,7 @@ public class AdminPopupController {
                 System.out.println("VendorError: " + var2.getErrorCode());
                 var2.printStackTrace();
             }
-
         }
-
     }
 
     @FXML
@@ -95,5 +107,17 @@ public class AdminPopupController {
             controller.changeWindow(this.button);
         }
 
+    }
+
+    @FXML
+    private void addUser() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("subjects-popup.fxml"));
+        DialogPane dialogPane = fxmlLoader.load();
+        SubjectsController addSubjectController = fxmlLoader.getController();
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setDialogPane(dialogPane);
+        dialog.setTitle("Add new subject");
+        addSubjectController.setCurrentUser(user);
+        dialog.showAndWait();
     }
 }

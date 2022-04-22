@@ -52,8 +52,7 @@ public class RegisterPersonController {
         nickName.setText(nick);
     }
 
-    @FXML
-    private void generatePassword() {
+    public static String generateNewPass() {
         int length = 20;
         String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
@@ -71,7 +70,12 @@ public class RegisterPersonController {
         for (int i = 4; i < length; i++) {
             password[i] = combinedChars.charAt(random.nextInt(combinedChars.length()));
         }
-        generatedPassword.setText(String.valueOf(password));
+       return String.valueOf(password);
+    }
+
+    @FXML
+    private void generatePassword() {
+        generatedPassword.setText(generateNewPass());
     }
 
     @FXML
@@ -97,9 +101,10 @@ public class RegisterPersonController {
             }
             //registrationSuccessful();
             try {
-                DB.add(user);
-                DB.updatePassword(user, generatedPassword.getText());
-                registrationSuccessful();
+                if(DB.addUser(user,generatedPassword.getText()))
+                    registrationSuccessful();
+                else
+                    registrationFailed();
             } catch (SQLException var2) {
                 System.out.println("SQLException: " + var2.getMessage());
                 System.out.println("SQLState: " + var2.getSQLState());
@@ -108,6 +113,12 @@ public class RegisterPersonController {
             }
         }
         //
+    }
+
+    private void registrationFailed(){
+        errorAlert.setHeaderText("Wrong email address");
+        errorAlert.setContentText("Email address is already taken");
+        errorAlert.showAndWait();
     }
 
     private void registrationSuccessful() {

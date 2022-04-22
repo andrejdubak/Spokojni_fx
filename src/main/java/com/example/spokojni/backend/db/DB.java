@@ -294,6 +294,16 @@ public class DB {
         }
         stmt.executeUpdate();
     }
+    public static boolean addUser(User user, String password) throws SQLException {
+        stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, ?, ?, ?, ?, ?)");
+        stmt.setString(1, password);
+        stmt.setString(2, user.getName());
+        stmt.setString(3, user.getEmail());
+        stmt.setString(4, user.getLogin());
+        stmt.setInt(5, user.getRole());
+        return true;
+        //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
+    }
     public static void add(Object obj) throws SQLException{
         if(obj instanceof User){
             stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, '', ?, ?, ?, ?)");
