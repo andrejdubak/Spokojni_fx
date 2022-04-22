@@ -296,34 +296,68 @@ public class DB {
     }
     public static void add(Object obj) throws SQLException{
         if(obj instanceof User){
-            stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
+            stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, '', ?, ?, ?, ?)");
+            stmt.setString(1, ((User) obj).getName());
+            stmt.setString(2, ((User) obj).getEmail());
+            stmt.setString(3, ((User) obj).getLogin());
+            stmt.setInt(4, ((User) obj).getRole());
+            //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
         }
         else if(obj instanceof Subject){
-            stmt.executeUpdate("INSERT INTO subjects (id, name, master_id) VALUES (NULL, '" + ((Subject) obj).getName() + "', " + ((Subject) obj).getMaster().getId() + ")");
+            stmt = con.prepareStatement("INSERT INTO subjects (id, name, master_id) VALUES (NULL, ?, ?)");
+            stmt.setString(1, ((Subject) obj).getName());
+            stmt.setInt(2, ((Subject) obj).getMaster().getId());
+            //stmt.executeUpdate("INSERT INTO subjects (id, name, master_id) VALUES (NULL, '" + ((Subject) obj).getName() + "', " + ((Subject) obj).getMaster().getId() + ")");
         }
         else if(obj instanceof Term){
-            stmt.executeUpdate("INSERT INTO terms (id, subject_id, start_time, end_time, description) VALUES (NULL, " + ((Term) obj).getSubject().getId() + ", '" + ((Term) obj).getStart_time() + "', '" + ((Term) obj).getEnd_time() + "', '" + ((Term) obj).getDescription() + "', '" + ((Term) obj).getCapacity() + "')");
+            stmt = con.prepareStatement("INSERT INTO terms (id, subject_id, start_time, end_time, description, capacity) VALUES (NULL, ?, ?, ?, ?, ?)");
+            stmt.setInt(1, ((Term) obj).getSubject().getId());
+            stmt.setString(2, ((Term) obj).getStart_time().toString());
+            stmt.setString(3, ((Term) obj).getEnd_time().toString());
+            stmt.setString(4, ((Term) obj).getDescription());
+            stmt.setInt(5, ((Term) obj).getCapacity());
+            //stmt.executeUpdate("INSERT INTO terms (id, subject_id, start_time, end_time, description) VALUES (NULL, " + ((Term) obj).getSubject().getId() + ", '" + ((Term) obj).getStart_time() + "', '" + ((Term) obj).getEnd_time() + "', '" + ((Term) obj).getDescription() + "', '" + ((Term) obj).getCapacity() + "')");
         }
         else if(obj instanceof Agreement){
-            stmt.executeUpdate("INSERT INTO agreements (id, student_id, term_id) VALUES (NULL, " + ((Agreement) obj).getStudent().getId() + ", " + ((Agreement) obj).getTerm().getId() + ")");
+            stmt = con.prepareStatement("INSERT INTO agreements (id, student_id, term_id) VALUES (NULL, ?, ?)");
+            stmt.setInt(1, ((Agreement) obj).getStudent().getId());
+            stmt.setInt(2, ((Agreement) obj).getTerm().getId());
+            //stmt.executeUpdate("INSERT INTO agreements (id, student_id, term_id) VALUES (NULL, " + ((Agreement) obj).getStudent().getId() + ", " + ((Agreement) obj).getTerm().getId() + ")");
         }
+        else throw new SQLException("Wrong type od Object: " + obj.getClass());
+        stmt.executeUpdate();
     }
-    public static void delete(Object obj) throws SQLException{
+    public static void delete(Object obj) throws SQLException {
+        stmt = con.prepareStatement("DELETE FROM $tableName WHERE id=?");
         if(obj instanceof User){
-            stmt.executeUpdate("DELETE FROM users WHERE id=" + ((User) obj).getId());
+            stmt = con.prepareStatement("DELETE FROM users WHERE id=?");
+            stmt.setInt(1, ((User) obj).getId());
+            //stmt.executeUpdate("DELETE FROM users WHERE id=" + ((User) obj).getId());
         }
         else if(obj instanceof Subject){
-            stmt.executeUpdate("DELETE FROM subjects WHERE id=" + ((Subject) obj).getId());
+            stmt = con.prepareStatement("DELETE FROM subjects WHERE id=?");
+            stmt.setInt(1, ((Subject) obj).getId());
+            //stmt.executeUpdate("DELETE FROM subjects WHERE id=" + ((Subject) obj).getId());
         }
         else if(obj instanceof Term){
-            stmt.executeUpdate("DELETE FROM terms WHERE id=" + ((Term) obj).getId());
+            stmt = con.prepareStatement("DELETE FROM terms WHERE id=?");
+            stmt.setInt(1, ((Term) obj).getId());
+            //stmt.executeUpdate("DELETE FROM terms WHERE id=" + ((Term) obj).getId());
         }
         else if(obj instanceof Agreement){
-            stmt.executeUpdate("DELETE FROM agreements WHERE id=" + ((Agreement) obj).getId());
+            stmt = con.prepareStatement("DELETE FROM agreements WHERE id=?");
+            stmt.setInt(1, ((Agreement) obj).getId());
+            //stmt.executeUpdate("DELETE FROM agreements WHERE id=" + ((Agreement) obj).getId());
         }
+        else throw new SQLException("Wrong type od Object: " + obj.getClass());
+        stmt.executeUpdate();
     }
     public static void updatePassword(User user, String new_password) throws SQLException{
-        stmt.executeUpdate("UPDATE users SET pass=SHA1('" + new_password + "') WHERE id=" + user.getId());
+        stmt = con.prepareStatement("UPDATE users SET pass=SHA1(?) WHERE id=?");
+        stmt.setString(1, new_password);
+        stmt.setInt(2, user.getId());
+        stmt.executeUpdate();
+        //stmt.executeUpdate("UPDATE users SET pass=SHA1('" + new_password + "') WHERE id=" + user.getId());
     }
     public static void updatePassword(int user_id, String new_password) throws SQLException{
         stmt.executeUpdate("UPDATE users SET pass=SHA1('" + new_password + "') WHERE id=" + user_id);
