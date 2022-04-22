@@ -5,10 +5,10 @@ import com.example.spokojni.backend.users.Admin;
 import com.example.spokojni.backend.users.Student;
 import com.example.spokojni.backend.users.Teacher;
 
-import java.security.Timestamp;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Properties;
 
 public class DB {
     static Connection con=null;
@@ -67,9 +67,41 @@ public class DB {
     }
 
     public static void makeConn() throws Exception {
-        Class.forName("com.mysql.jdbc.Driver");
-        con=DriverManager.getConnection("jdbc:mysql://vesta.mojhosting.eu:3306/admin_vava?useSSL=false","admin_vava","KP2E2fvxcA");
+        Properties p = new Properties();
+        p.load(DB.class.getClassLoader().getResourceAsStream("DB_connection.properties"));
+        String db_name = (String) p.get("DB_name");
+        String url = (String) p.get("URL");
+        String username = (String) p.get("Username");
+        String password = (String) p.get("Password");
+        Class.forName(db_name);
+        con = DriverManager.getConnection(url, username, password);
         stmt=con.prepareStatement("");
+    }
+    public static String getHostIP() throws SQLException {
+        ResultSet rs = stmt.executeQuery("select host from information_schema.processlist WHERE ID=connection_id()");
+        rs.first();
+        return rs.getString(1);
+    }
+    public static void log(String description, int importance, int user_id) throws SQLException{
+        stmt = con.prepareStatement("INSERT INTO logs (timestamp, log_ip_address, log_user_id, log_desc, log_importance) VALUES (CURRENT_TIMESTAMP, ?, ?, ?, ?)");
+        stmt.setString(1, getHostIP());
+        stmt.setInt(2, user_id);
+        stmt.setString(3, description);
+        stmt.setInt(4, importance);
+        stmt.executeUpdate();
+    }
+    public static void log(String description, int importance) throws SQLException{
+        stmt = con.prepareStatement("INSERT INTO logs (timestamp, log_ip_address, log_user_id, log_desc, log_importance) VALUES (CURRENT_TIMESTAMP, ?, NULL, ?, ?)");
+        stmt.setString(1, getHostIP());
+        stmt.setString(2, description);
+        stmt.setInt(3, importance);
+        stmt.executeUpdate();
+    }
+    public static void log(String description) throws SQLException{
+        stmt = con.prepareStatement("INSERT INTO logs (timestamp, log_ip_address, log_user_id, log_desc, log_importance) VALUES (CURRENT_TIMESTAMP, ?, NULL, ?, 0)");
+        stmt.setString(1, getHostIP());
+        stmt.setString(2, description);
+        stmt.executeUpdate();
     }
     public static User getUserById(int id) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE id=" + id);
