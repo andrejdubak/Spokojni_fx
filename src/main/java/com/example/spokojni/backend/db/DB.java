@@ -338,6 +338,7 @@ public class DB {
         stmt.setString(3, user.getEmail());
         stmt.setString(4, user.getLogin());
         stmt.setInt(5, user.getRole());
+        stmt.executeUpdate();
         return true;
         //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
     }
@@ -348,6 +349,7 @@ public class DB {
         stmt.setString(3, user.getEmail());
         stmt.setString(4, user.getLogin());
         stmt.setInt(5, user.getRole());
+        stmt.executeUpdate();
         return true;
         //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
     }
