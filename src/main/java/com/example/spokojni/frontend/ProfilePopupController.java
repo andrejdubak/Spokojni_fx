@@ -54,8 +54,8 @@ public class ProfilePopupController {
                     var3.printStackTrace();
                 }
                 try {
-                    if (DB.checkPassword(currentUser, oldPassword.getText())) {
-                        DB.updatePassword(currentUser,newPassword.getText());
+                    if (DB.checkPassword(currentUser.getId(), oldPassword.getText())) {
+                        DB.updatePassword(currentUser.getId(),newPassword.getText());
                         passwordChangeSuccessful();
                     }
                     else

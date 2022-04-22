@@ -301,7 +301,11 @@ public class AdminViewController implements Initializable {
         try{
             Table.setOnMouseClicked( event -> {
                 if( event.getClickCount() == 1  && !Table.getSelectionModel().isEmpty()) {
-                    System.out.println( Table.getSelectionModel().getSelectedItem().getId());
+                    try {
+                        chosenUser(Table.getSelectionModel().getSelectedItem());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
                 }});
         } catch (Exception e) {
@@ -349,6 +353,17 @@ public class AdminViewController implements Initializable {
 
     }
 
+    private void chosenUser(UserTable user) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("admin-popup.fxml"));
+        DialogPane dialogPane = fxmlLoader.load();
+        AdminPopupController adminPopupController = fxmlLoader.getController();
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setDialogPane(dialogPane);
+        dialog.setTitle("Selected user");
+        adminPopupController.setCurrentUser(user,dialog,exportPeople);
+
+        Optional<ButtonType> clickedButton = dialog.showAndWait();
+    }
     public void setCurrentUser(User user){
         this.currentUser=user;
     }

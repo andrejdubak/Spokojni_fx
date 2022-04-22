@@ -2,6 +2,8 @@ package com.example.spokojni.frontend;
 
 import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
+import com.example.spokojni.backend.users.Student;
+import com.example.spokojni.backend.users.Teacher;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -83,14 +85,18 @@ public class RegisterPersonController {
     @FXML
     private void saveUser() throws SQLException, IOException {
         if (checkValues()) {
-            User user = new User(0, userName.getText(), userEmail.getText(), nickName.getText());
+            User user;
+            if(checkBox.isSelected())
+                user = new Teacher(0, userName.getText(), userEmail.getText(), nickName.getText());
+            else
+                user = new Student(0, userName.getText(), userEmail.getText(), nickName.getText());
             try {
                 DB.makeConn();
             } catch (Exception var3) {
                 var3.printStackTrace();
             }
-            registrationSuccessful();
-            /*try {
+            //registrationSuccessful();
+            try {
                 DB.add(user);
                 DB.updatePassword(user, generatedPassword.getText());
                 registrationSuccessful();
@@ -99,7 +105,7 @@ public class RegisterPersonController {
                 System.out.println("SQLState: " + var2.getSQLState());
                 System.out.println("VendorError: " + var2.getErrorCode());
                 var2.printStackTrace();
-            }*/
+            }
         }
         //
     }

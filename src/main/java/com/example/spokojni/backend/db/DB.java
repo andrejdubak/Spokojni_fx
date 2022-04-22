@@ -325,6 +325,9 @@ public class DB {
     public static void updatePassword(User user, String new_password) throws SQLException{
         stmt.executeUpdate("UPDATE users SET pass=SHA1('" + new_password + "') WHERE id=" + user.getId());
     }
+    public static void updatePassword(int user_id, String new_password) throws SQLException{
+        stmt.executeUpdate("UPDATE users SET pass=SHA1('" + new_password + "') WHERE id=" + user_id);
+    }
     public static void closeConn() throws SQLException {
         con.close();
     }
