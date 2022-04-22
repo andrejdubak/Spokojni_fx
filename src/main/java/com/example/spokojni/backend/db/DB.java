@@ -278,6 +278,11 @@ public class DB {
             Agreements.add(new Agreement(rs.getInt(1), getStudent(rs.getInt(2)), getTerm(rs.getInt(3))));
         return Agreements;
     }
+    public static String getPasswordHash(int user_id) throws SQLException{
+        ResultSet rs = stmt.executeQuery("SELECT pass FROM users WHERE id=" + user_id);
+        rs.first();
+        return rs.getString(1);
+    }
     public static boolean checkPassword(int user_id, String password) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT pass FROM users WHERE id=" + user_id + " AND pass=SHA1('" + password + "')");
         return rs.next();
@@ -327,8 +332,18 @@ public class DB {
         stmt.executeUpdate();
     }
     public static boolean addUser(User user, String password) throws SQLException {
-        stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, ?, ?, ?, ?, ?)");
+        stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, SHA1(?), ?, ?, ?, ?)");
         stmt.setString(1, password);
+        stmt.setString(2, user.getName());
+        stmt.setString(3, user.getEmail());
+        stmt.setString(4, user.getLogin());
+        stmt.setInt(5, user.getRole());
+        return true;
+        //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
+    }
+    public static boolean addUserImportWithHash(User user, String password_hash) throws SQLException {
+        stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, ?, ?, ?, ?, ?)");
+        stmt.setString(1, password_hash);
         stmt.setString(2, user.getName());
         stmt.setString(3, user.getEmail());
         stmt.setString(4, user.getLogin());
