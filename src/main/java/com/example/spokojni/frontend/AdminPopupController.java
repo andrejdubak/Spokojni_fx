@@ -2,17 +2,16 @@ package com.example.spokojni.frontend;
 
 import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.UserTable;
+import com.example.spokojni.backend.db.DB;
 import com.example.spokojni.backend.users.Student;
 import com.example.spokojni.backend.users.Teacher;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -52,7 +51,30 @@ public class AdminPopupController {
 
     @FXML
     private void deleteUser() {
-        dialog.close();
+        String choices[] = { "Yes", "No"};
+        ChoiceDialog d = new ChoiceDialog(choices[1],choices);
+        d.setHeaderText("Deleting user");
+        d.setContentText("Are you sure you want to delete user");
+        d.showAndWait();
+        if(Objects.equals(d.getSelectedItem().toString(), "Yes")){
+            System.out.println("deleted");
+            try {
+                DB.makeConn();
+            } catch (Exception var3) {
+                var3.printStackTrace();
+            }
+            try {
+                DB.delete(user);
+                dialog.close();
+            } catch (SQLException var2) {
+                System.out.println("SQLException: " + var2.getMessage());
+                System.out.println("SQLState: " + var2.getSQLState());
+                System.out.println("VendorError: " + var2.getErrorCode());
+                var2.printStackTrace();
+            }
+
+        }
+
     }
 
     @FXML
