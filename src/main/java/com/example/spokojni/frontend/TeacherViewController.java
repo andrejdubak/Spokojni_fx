@@ -41,14 +41,9 @@ public class TeacherViewController {
 
     @FXML
     private void saveClick() {
-        try {
-            DB.makeConn();
-        } catch (Exception var3) {
-            var3.printStackTrace();
-        }
-
         System.out.println("save");
         try {
+            DB.makeConn();
             for (Term term : cw.getTerms()) {
                 //System.out.println(term.toString());
                 DB.update(term);
@@ -67,6 +62,8 @@ public class TeacherViewController {
             System.out.println("SQLState: " + var2.getSQLState());
             System.out.println("VendorError: " + var2.getErrorCode());
             var2.printStackTrace();
+        } catch (Exception var3) {
+            var3.printStackTrace();
         }
     }
     public void setCurrentUser(User user){
