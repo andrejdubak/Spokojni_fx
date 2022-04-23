@@ -4,6 +4,8 @@ import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -11,7 +13,10 @@ import java.util.Random;
 
 public class RegisterPersonController {
 
+    Logger logger = LogManager.getLogger(RegisterPersonController.class);
+
     public RegisterPersonController() {
+        logger.info("Successful Registration");
         succesfullAlert = new Alert(Alert.AlertType.CONFIRMATION);
         succesfullAlert.setHeaderText("Successful Registration");
         errorAlert = new Alert(Alert.AlertType.ERROR);
@@ -52,6 +57,7 @@ public class RegisterPersonController {
 
     @FXML
     private void generatePassword() {
+        logger.info("New password generated");
         int length = 20;
         String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
@@ -74,16 +80,21 @@ public class RegisterPersonController {
 
     @FXML
     private void changeRole() {
-        if(checkBox.isSelected())
+        if(checkBox.isSelected()) {
             checkBox.setText("Teacher");
-        else
+            logger.info("Role teacher selected");
+        }
+        else {
             checkBox.setText("Student");
+            logger.info("Role student selected");
+        }
     }
 
     @FXML
     private void saveUser() throws SQLException, IOException {
         if (checkValues()) {
             User user = new User(0, userName.getText(), userEmail.getText(), nickName.getText());
+            logger.info("User saved");
             try {
                 DB.makeConn();
             } catch (Exception var3) {
@@ -105,6 +116,7 @@ public class RegisterPersonController {
     }
 
     private void registrationSuccessful() {
+        logger.info("Registration successful");
         succesfullAlert.setContentText("nickName: "+nickName.getText()+" \npassword: "+generatedPassword.getText());
         userName.setText("");
         checkBox.setSelected(false);
@@ -138,10 +150,12 @@ public class RegisterPersonController {
                     } else {
                         errorAlert.setHeaderText("Password not generated");
                         errorAlert.setContentText("Password should be generated before saving user");
+
                     }
                 } else {
                     errorAlert.setHeaderText("Email address not valid");
                     errorAlert.setContentText("Email address is not in the correct format");
+
                 }
             }else{
                 errorAlert.setHeaderText("Name not valid");

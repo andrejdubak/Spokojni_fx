@@ -9,6 +9,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
 import java.util.Objects;
@@ -23,7 +25,7 @@ public class ProfilePopupController {
     private PasswordField newPassword;
     @FXML
     private PasswordField oldPassword;
-
+    Logger logger = LogManager.getLogger(ProfilePopupController.class);
     private User currentUser;
     private Alert successfulAlert;
     private Alert oldPasswordError;
@@ -37,6 +39,7 @@ public class ProfilePopupController {
 
     @FXML
     private void initialize() {
+        logger.info("Initialized");
         language.setValue("English");
         language.setItems(languages);
         setupAlerts();
@@ -44,19 +47,23 @@ public class ProfilePopupController {
 
     @FXML
     private void saveSettings() {
-        if (newPassword.getText().isEmpty())
+        if (newPassword.getText().isEmpty()) {
             newPasswordError.showAndWait();
+            logger.warn("No password");
+        }
         else {
             if (Objects.equals(repeatPassword.getText(), newPassword.getText())) {
                 try {
                     DB.makeConn();
                 } catch (Exception var3) {
                     var3.printStackTrace();
+                    logger.error("No database conncetion");
                 }
                 try {
                     if (DB.checkPassword(currentUser, oldPassword.getText())) {
                         DB.updatePassword(currentUser,newPassword.getText());
                         passwordChangeSuccessful();
+                        logger.info("Password changed");
                     }
                     else
                         oldPasswordError.showAndWait();

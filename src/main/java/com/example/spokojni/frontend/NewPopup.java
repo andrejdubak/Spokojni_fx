@@ -27,10 +27,13 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static java.lang.Integer.parseInt;
 
 public class NewPopup extends GridPane {
+    Logger logger = LogManager.getLogger(NewPopup.class);
     private final CalendarSelector calendarSelector;
     private Entry<?> entry;
     private ArrayList<Term> terms;
@@ -138,6 +141,7 @@ public class NewPopup extends GridPane {
     }
 
     private boolean updateNumberOfSignedStudents() {
+        logger.info("Number of students updated");
         //for (Term tr : terms) System.out.println(tr);
         int term_id = terms.get(parseInt(entry.getId())).getId();
         int actualNum = getNumberOfAssignedStudents(term_id); //spocita prihlasenych studenotov pre dany termin
@@ -160,9 +164,11 @@ public class NewPopup extends GridPane {
         try {
             DB.makeConn();
             list = DB.getAgreementsByTermId(term_id);
+            logger.info("Get mumber of assigned Students");
             //System.out.println(list);
         } catch (Exception var3) {
             var3.printStackTrace();
+            logger.error("No database conncetion");
         }
         return list.size();
     }
