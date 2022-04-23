@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.example.spokojni.backend.Agreement;
@@ -146,7 +147,15 @@ public class NewPopup extends GridPane {
         int term_id = terms.get(parseInt(entry.getId())).getId();
         int actualNum = getNumberOfAssignedStudents(term_id); //spocita prihlasenych studenotov pre dany termin
         int maxNum = terms.get(parseInt(entry.getId())).getCapacity();
-        numberOfStudents.setText("Počet prihlásených študentov: " + actualNum + "/" + maxNum);
+        if (Locale.getDefault().equals(new Locale("en", "UK"))){
+            numberOfStudents.setText("Number of assigned students: " + actualNum + "/" + maxNum);
+        }
+        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
+            numberOfStudents.setText("Počet prihlásených študentov: " + actualNum + "/" + maxNum);
+        }
+        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
+            numberOfStudents.setText("Anzahl der zugewiesenen Schüler: " + actualNum + "/" + maxNum);
+        }
         System.out.println(actualNum < maxNum);
         return actualNum < maxNum;
     }

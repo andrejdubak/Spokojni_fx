@@ -10,6 +10,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
 
 import java.sql.SQLException;
+import java.util.Locale;
 
 public class GeneratePasswordController {
 
@@ -23,8 +24,18 @@ public class GeneratePasswordController {
 
     public GeneratePasswordController(){
         successfulAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        successfulAlert.setHeaderText("Successful change of password");
-        successfulAlert.setContentText("Password was successfully changed");
+        if (Locale.getDefault().equals(new Locale("en", "UK"))){
+            successfulAlert.setHeaderText("Successful change of password");
+            successfulAlert.setContentText("Password was successfully changed");
+        }
+        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
+            successfulAlert.setHeaderText("Úspešná zmena hesla");
+            successfulAlert.setContentText("Heslo bolo úspešne zmenené");
+        }
+        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
+            successfulAlert.setHeaderText("Erfolgreiche Passwortänderung");
+            successfulAlert.setContentText("Passwort wurde erfolgreich geändert");
+        }
     }
 
     public void setCurrentUser(UserTable user, Dialog dialog) {

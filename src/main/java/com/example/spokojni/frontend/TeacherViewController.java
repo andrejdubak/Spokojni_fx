@@ -21,27 +21,12 @@ public class TeacherViewController {
     private CalendarView calendarView;
 
     @FXML
-    private Button languageEN, languageSK;
-
-    @FXML
     private void buttonClick() {
         System.out.println(currentUser.getName());
         cw = new CreateCalendarView(calendarView, currentUser);
         cw.addTeacherHandler();
         cw.disableOtherTeachersCalendars();
         cw.setTeacherCalendars();
-    }
-
-    @FXML
-    private void languageENClick() throws IOException {
-        logger.info("Eng language selected");
-        new ChangeWindowController( "teacher-view.fxml", new Locale("en", "UK")).changeWindow(languageEN);
-    }
-
-    @FXML
-    private void languageSKClick() throws IOException {
-        logger.info("SK language selected");
-        new ChangeWindowController( "teacher-view.fxml", new Locale("sk", "SK")).changeWindow(languageSK);
     }
 
     @FXML

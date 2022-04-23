@@ -14,6 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -37,8 +38,18 @@ public class SubjectsController implements Initializable  {
 
     public SubjectsController(){
         errorAlert = new Alert(Alert.AlertType.ERROR);
-        errorAlert.setHeaderText("New Subject Error");
-        errorAlert.setContentText("Subject with this name already exist");
+        if (Locale.getDefault().equals(new Locale("en", "UK"))){
+            errorAlert.setHeaderText("New subject error");
+            errorAlert.setContentText("Subject with this name already exists");
+        }
+        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
+            errorAlert.setHeaderText("Error: Nový predmet");
+            errorAlert.setContentText("Predmet s týmto menom už existuje");
+        }
+        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
+            errorAlert.setHeaderText("Fehler bei neuem Schulfach");
+            errorAlert.setContentText("Schulfach mit diesem Namen existiert bereits");
+        }
         //loadSubjects();
     }
 
@@ -124,9 +135,21 @@ public class SubjectsController implements Initializable  {
 
     private void deleteSubject(Subject subject) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText("Deleting Subject");
-        alert.setContentText("Are you sure you want to delete "+subject.getName()+" ?");
+        if (Locale.getDefault().equals(new Locale("en", "UK"))){
+            alert.setTitle("Confirmation Dialog");
+            alert.setHeaderText("Deleting Subject");
+            alert.setContentText("Are you sure you want to delete "+subject.getName()+" ?");
+        }
+        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
+            alert.setTitle("Potvrdzujúci dialóg");
+            alert.setHeaderText("Vymazávanie predmetu");
+            alert.setContentText("Si si istý, že chceš vymazať "+subject.getName()+" ?");
+        }
+        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
+            alert.setTitle("Bestätigungsdialog");
+            alert.setHeaderText("Schulfach löschen");
+            alert.setContentText("Möchten Sie " +subject.getName()+" wirklich löschen?");
+        }
         Optional<ButtonType> result = alert.showAndWait();
         System.out.println(subject.getId());
         System.out.println(subject.getMaster().getId());

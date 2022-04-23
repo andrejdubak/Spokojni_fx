@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -26,9 +27,21 @@ public class RegisterPersonController  implements Initializable  {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        comboBox.getItems().add("Student");
-        comboBox.getItems().add("Teacher");
-        comboBox.setValue("Student");
+        if (Locale.getDefault().equals(new Locale("en", "UK"))){
+            comboBox.getItems().add("Student");
+            comboBox.getItems().add("Teacher");
+            comboBox.setValue("Student");
+        }
+        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
+            comboBox.getItems().add("Študent");
+            comboBox.getItems().add("Učiteľ");
+            comboBox.setValue("Študent");
+        }
+        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
+            comboBox.getItems().add("Schüler");
+            comboBox.getItems().add("Lehrer");
+            comboBox.setValue("Schüler");
+        }
     }
     public void setAdmin(AdminViewController admin){
         this.admin=admin;
@@ -107,7 +120,7 @@ public class RegisterPersonController  implements Initializable  {
         else {
             if (checkValues()) {
                 User user;
-                if (Objects.equals(comboBox.getValue(), "Teacher"))
+                if (Objects.equals(comboBox.getValue(), "Teacher") || Objects.equals(comboBox.getValue(), "Učiteľ") || Objects.equals(comboBox.getValue(), "Lehrer"))
                     user = new Teacher(0, userName.getText(), userEmail.getText(), nickName.getText());
                 else
                     user = new Student(0, userName.getText(), userEmail.getText(), nickName.getText());
@@ -134,21 +147,44 @@ public class RegisterPersonController  implements Initializable  {
     }
 
     private void registrationFailed(){
-        errorAlert.setHeaderText("Wrong email address");
-        errorAlert.setContentText("Email address is already taken");
+        if (Locale.getDefault().equals(new Locale("en", "UK"))){
+            errorAlert.setHeaderText("Wrong email address");
+            errorAlert.setContentText("Email address is already taken");
+        }
+        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
+            errorAlert.setHeaderText("Zlá emailová adresa");
+            errorAlert.setContentText("Emailová adresa je už používaná");
+        }
+        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
+            errorAlert.setHeaderText("Falsche E-Mail Adresse");
+            errorAlert.setContentText("E-Mail-Adresse ist bereits vergeben");
+        }
+
         errorAlert.showAndWait();
     }
 
     private void registrationSuccessful() {
         admin.refreshUsers();
         added=true;
-        successfulAlert.setContentText("nickName: " + nickName.getText() + " \npassword: " + generatedPassword.getText());
-        successfulAlert.showAndWait();
+        if (Locale.getDefault().equals(new Locale("en", "UK"))){
+            successfulAlert.setContentText("Login: " + nickName.getText() + " \npassword: " + generatedPassword.getText());
+            successfulAlert.showAndWait();
+            saveUser.setText("Register another user");
+        }
+        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
+            successfulAlert.setContentText("Meno: " + nickName.getText() + " \nHeslo: " + generatedPassword.getText());
+            successfulAlert.showAndWait();
+            saveUser.setText("Registrovať ďalšieho používateľa");
+        }
+        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
+            successfulAlert.setContentText("Name: " + nickName.getText() + " \nPasswort: " + generatedPassword.getText());
+            successfulAlert.showAndWait();
+            saveUser.setText("Registrieren Sie einen anderen Benutzer");
+        }
         comboBox.setEditable(false);
         userName.setEditable(false);
         userEmail.setEditable(false);
         generatePassword.setVisible(false);
-        saveUser.setText("Register another user");
     }
 
     private void registerAnotherUser(){
@@ -161,7 +197,15 @@ public class RegisterPersonController  implements Initializable  {
         generatedPassword.setText("");
         userEmail.setText("");
         nickName.setText("");
-        saveUser.setText("Save user");
+        if (Locale.getDefault().equals(new Locale("en", "UK"))){
+            saveUser.setText("Save user");
+        }
+        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
+            saveUser.setText("Uložiť používateľa");
+        }
+        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
+            saveUser.setText("Benutzer speichern");
+        }
     }
 
     private boolean isValidEmailAddress(String email) {
@@ -185,25 +229,62 @@ public class RegisterPersonController  implements Initializable  {
                     if (isPasswordGenerated()) {
                         return true;
                     } else {
-                        errorAlert.setHeaderText("Password not generated");
-                        errorAlert.setContentText("Password should be generated before saving user");
+                        if (Locale.getDefault().equals(new Locale("en", "UK"))){
+                            errorAlert.setHeaderText("Password not generated");
+                            errorAlert.setContentText("Password should be generated before creating new user");
+                        }
+                        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
+                            errorAlert.setHeaderText("Heslo nebolo vygenerované");
+                            errorAlert.setContentText("Pred vytvorením používateľa vygeneruj nové heslo");
+                        }
+                        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
+                            errorAlert.setHeaderText("Passwort wurde nicht generiert");
+                            errorAlert.setContentText("Das Passwort sollte generiert werden, bevor ein neuer Benutzer erstellt wird");
+                        }
                     }
                 } else {
-                    errorAlert.setHeaderText("Email address not valid");
-                    errorAlert.setContentText("Email address is not in the correct format");
+                    if (Locale.getDefault().equals(new Locale("en", "UK"))){
+                        errorAlert.setHeaderText("Email address not valid");
+                        errorAlert.setContentText("Email address is not in the correct format");
+                    }
+                    else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
+                        errorAlert.setHeaderText("Email je neplatný");
+                        errorAlert.setContentText("Email adresa nie je v správnom formáte");
+                    }
+                    else if (Locale.getDefault().equals(new Locale("de", "DE"))){
+                        errorAlert.setHeaderText("Email Adresse nicht gültig");
+                        errorAlert.setContentText("Die E-Mail-Adresse hat nicht das richtige Format");
+                    }
                 }
             }else{
-                errorAlert.setHeaderText("Name not valid");
-                errorAlert.setContentText("Name cannot be empty");
+                if (Locale.getDefault().equals(new Locale("en", "UK"))){
+                    errorAlert.setHeaderText("Name not valid");
+                    errorAlert.setContentText("Name cannot be empty");
+                }
+                else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
+                    errorAlert.setHeaderText("Meno nie je platné");
+                    errorAlert.setContentText("Meno používateľa nemôže byť prázdne");
+                }
+                else if (Locale.getDefault().equals(new Locale("de", "DE"))){
+                    errorAlert.setHeaderText("Name ungültig");
+                    errorAlert.setContentText("Der Name darf nicht leer sein");
+                }
             }
         }else{
-            errorAlert.setHeaderText("Email address not valid");
-            errorAlert.setContentText("Email address cannot be empty");
+            if (Locale.getDefault().equals(new Locale("en", "UK"))){
+                errorAlert.setHeaderText("Email address not valid");
+                errorAlert.setContentText("Email address cannot be empty");
+            }
+            else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
+                errorAlert.setHeaderText("Email je neplatný");
+                errorAlert.setContentText("Email adresa nemôže byť prázdna");
+            }
+            else if (Locale.getDefault().equals(new Locale("de", "DE"))){
+                errorAlert.setHeaderText("Email Adresse nicht gültig");
+                errorAlert.setContentText("Die E-Mail-Adresse darf nicht leer sein");
+            }
         }
         errorAlert.showAndWait();
         return false;
     }
-
-
-
 }
