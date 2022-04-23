@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 public class DB {
-    static Connection con=null;
-    static PreparedStatement stmt=null;
-    static ArrayList<Teacher> Teachers;
+    private static Connection con=null;
+    private static PreparedStatement stmt=null;
+    private static ArrayList<Teacher> Teachers;
     private static Teacher getTeacher(int id){
         for(Teacher teacher : Teachers){
             if(teacher.getId()==id)
@@ -21,7 +21,7 @@ public class DB {
         }
         return null;
     }
-    static ArrayList<Admin> Admins;
+    private static ArrayList<Admin> Admins;
     private static Admin getAdmin(int id){
         for(Admin admin : Admins){
             if(admin.getId()==id)
@@ -29,7 +29,7 @@ public class DB {
         }
         return null;
     }
-    static ArrayList<Student> Students;
+    private static ArrayList<Student> Students;
     private static Student getStudent(int id){
         for(Student student : Students){
             if(student.getId()==id)
@@ -37,7 +37,7 @@ public class DB {
         }
         return null;
     }
-    static ArrayList<Subject> Subjects;
+    private static ArrayList<Subject> Subjects;
     private static Subject getSubject(int id){
         for(Subject subject : Subjects){
             if(subject.getId()==id)
@@ -45,7 +45,7 @@ public class DB {
         }
         return null;
     }
-    static ArrayList<Term> Terms;
+    private static ArrayList<Term> Terms;
     private static Term getTerm(int id){
         for(Term term : Terms){
             if(term.getId()==id)
@@ -53,7 +53,7 @@ public class DB {
         }
         return null;
     }
-    static ArrayList<Agreement> Agreements;
+    private static ArrayList<Agreement> Agreements;
     private static Agreement getAgreement(int id){
         for(Agreement agreement : Agreements){
             if(agreement.getId()==id)
@@ -104,8 +104,7 @@ public class DB {
         stmt.setString(2, description);
         stmt.executeUpdate();
     }
-    public static User getUserById(int id) throws SQLException{
-        ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE id=" + id);
+    public static User getUser(ResultSet rs) throws SQLException {
         if(!rs.first())
             return null;
         switch(rs.getInt(6)) {
@@ -117,18 +116,15 @@ public class DB {
                 return new Student(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
         }
     }
+    public static User getUserById(int id) throws SQLException{
+        ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE id=" + id);
+        return getUser(rs);
+    }
     public static User getUserByLogin(String username) throws SQLException{
-        ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE login='" + username + "'");
-        if(!rs.first())
-            return null;
-        switch(rs.getInt(6)) {
-            case 3:
-                return new Admin(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
-            case 2:
-                return new Teacher(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
-            default:
-                return new Student(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
-        }
+        stmt = con.prepareStatement("SELECT * FROM users WHERE login=?");
+        stmt.setString(1, username);
+        ResultSet rs = stmt.executeQuery();
+        return getUser(rs);
     }
     public static Subject getSubjectById(int id) throws SQLException{
         getTeachers();
@@ -138,8 +134,10 @@ public class DB {
         return new Subject(rs.getInt(1),rs.getString(2), getTeacher(rs.getInt(3)));
     }
 
-    public static boolean controlSubjectByName(String name) throws SQLException{
-        ResultSet rs = stmt.executeQuery("SELECT * FROM subjects WHERE name='" + name+"'");
+    public static boolean checkSubjectByName(String name) throws SQLException{
+        stmt = con.prepareStatement("SELECT * FROM subjects WHERE name=?");
+        stmt.setString(1, name);
+        ResultSet rs = stmt.executeQuery();
         return rs.first();
     }
 
@@ -220,10 +218,8 @@ public class DB {
         Terms = newTerms;
         return Terms;
     }
-    public static ArrayList<Term> getTermsBySubjectId(int id) throws SQLException{
-        getSubjects();
+    public static ArrayList<Term> getTerms(ResultSet rs) throws SQLException {
         ArrayList<Term> Terms = new ArrayList<>();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM terms WHERE subject_id=" + id);
         while(rs.next()){
             LocalDateTime start_time = rs.getTimestamp(3).toLocalDateTime();
             LocalDateTime end_time = rs.getTimestamp(3).toLocalDateTime();
@@ -232,17 +228,15 @@ public class DB {
         }
         return Terms;
     }
+    public static ArrayList<Term> getTermsBySubjectId(int id) throws SQLException{
+        getSubjects();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM terms WHERE subject_id=" + id);
+        return getTerms(rs);
+    }
     public static ArrayList<Term> getTermsByStudentId(int id) throws SQLException{
         getSubjects();
-        ArrayList<Term> Terms = new ArrayList<>();
         ResultSet rs = stmt.executeQuery("SELECT * FROM terms WHERE student_id=" + id);
-        while(rs.next()){
-            LocalDateTime start_time = rs.getTimestamp(3).toLocalDateTime();
-            LocalDateTime end_time = rs.getTimestamp(3).toLocalDateTime();
-            String description = rs.getString(5);
-            Terms.add(new Term(rs.getInt(1),getSubject(rs.getInt(2)), start_time, end_time, description, rs.getInt(6)));
-        }
-        return Terms;
+        return getTerms(rs);
     }
     public static ArrayList<Agreement> getAgreements() throws SQLException{
         getTerms();
@@ -296,15 +290,24 @@ public class DB {
         return rs.getString(1);
     }
     public static boolean checkPassword(int user_id, String password) throws SQLException{
-        ResultSet rs = stmt.executeQuery("SELECT pass FROM users WHERE id=" + user_id + " AND pass=SHA1('" + password + "')");
+        stmt = con.prepareStatement("SELECT pass FROM users WHERE id=? AND pass=SHA1(?)");
+        stmt.setInt(1, user_id);
+        stmt.setString(1, password);
+        ResultSet rs = stmt.executeQuery();
         return rs.next();
     }
     public static boolean checkPassword(String username, String password) throws SQLException{
-        ResultSet rs = stmt.executeQuery("SELECT pass FROM users WHERE login='" + username + "' AND pass=SHA1('" + password + "')");
+        stmt = con.prepareStatement("SELECT pass FROM users WHERE login=? AND pass=SHA1(?)");
+        stmt.setString(1, username);
+        stmt.setString(1, password);
+        ResultSet rs = stmt.executeQuery();
         return rs.next();
     }
     public static boolean checkPassword(User user, String password) throws SQLException{
-        ResultSet rs = stmt.executeQuery("SELECT pass FROM users WHERE id=" + user.getId() + " AND pass=SHA1('" + password + "')");
+        stmt = con.prepareStatement("SELECT pass FROM users WHERE id=? AND pass=SHA1(?)");
+        stmt.setInt(1, user.getId());
+        stmt.setString(1, password);
+        ResultSet rs = stmt.executeQuery();
         return rs.next();
     }
     public static void update(Object obj) throws SQLException{
@@ -357,7 +360,7 @@ public class DB {
         //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
     }
     public static boolean addSubject(Subject subject) throws SQLException {
-        if(controlSubjectByName(subject.getName()))
+        if(checkSubjectByName(subject.getName()))
             return false;
         stmt = con.prepareStatement("INSERT INTO subjects (id, name, master_id) VALUES (NULL, ?, ?)");
         stmt.setString(1, (subject.getName()));
