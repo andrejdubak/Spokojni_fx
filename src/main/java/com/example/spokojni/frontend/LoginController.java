@@ -14,20 +14,25 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+
 public class LoginController implements Initializable {
 
+
+    Logger logger = LogManager.getLogger(LoginController.class);
     private User user;
 
     public User getUser() {
         return user;
     }
+
 
     @FXML
     private Button LoginClick;
@@ -62,6 +67,7 @@ public class LoginController implements Initializable {
             System.out.println("SQLException: " + var2.getMessage());
             System.out.println("SQLState: " + var2.getSQLState());
             System.out.println("VendorError: " + var2.getErrorCode());
+            logger.error("No database connection");
             var2.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
@@ -71,25 +77,41 @@ public class LoginController implements Initializable {
         else if (language.getSelectionModel().getSelectedItem() == "English")
             Locale.setDefault(new Locale("en", "UK"));
         if (user instanceof Student) {
+
+            logger.info("Student logged in");
+
             ChangeWindowController controller = new ChangeWindowController("student-view.fxml", Locale.getDefault());
+
             StudentViewController studentViewController = controller.getFxmlLoader().getController();
             studentViewController.setCurrentUser(user);
             controller.changeWindow(LoginClick);
         }
         else if (user instanceof Teacher) {
+
+            logger.info("Teacher logged in");
+
             ChangeWindowController controller = new ChangeWindowController("teacher-view.fxml", Locale.getDefault());
+
             TeacherViewController teacherViewController = controller.getFxmlLoader().getController();
             teacherViewController.setCurrentUser(user);
             controller.changeWindow(LoginClick);
         }
         else if (user instanceof Admin) {
+
+            logger.info("Admin logged in");
+
             ChangeWindowController controller = new ChangeWindowController("admin-view.fxml", Locale.getDefault());
+
             AdminViewController adminViewController = controller.getFxmlLoader().getController();
             adminViewController.setCurrentUser(user);
             controller.changeWindow(LoginClick);
         }
-        else
+        else{
             System.out.println("Login Error!!");
+            logger.warn("Login failed");
+
+        }
+
     }
 
     @FXML

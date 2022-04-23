@@ -92,7 +92,7 @@ public class RegisterPersonController  implements Initializable  {
         for (int i = 4; i < length; i++) {
             password[i] = combinedChars.charAt(random.nextInt(combinedChars.length()));
         }
-       return String.valueOf(password);
+        return String.valueOf(password);
     }
 
     @FXML

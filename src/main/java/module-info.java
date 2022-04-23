@@ -6,6 +6,7 @@ module com.example.spokojni {
     requires mysql.connector.java;
     requires java.prefs;
     requires java.desktop;
+    requires org.apache.logging.log4j;
 
 
     opens com.example.spokojni to javafx.fxml;

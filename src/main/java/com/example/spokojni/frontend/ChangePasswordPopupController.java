@@ -6,6 +6,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
 import java.util.Objects;
@@ -22,20 +24,25 @@ public class ChangePasswordPopupController {
     private PasswordField newPassword;
     @FXML
     private PasswordField oldPassword;
-
+    Logger logger = LogManager.getLogger(ChangePasswordPopupController.class);
     private User currentUser;
     private Alert successfulAlert;
     private Alert errorAlert;
 
     @FXML
     private void initialize() {
+
+        logger.info("Initialized");
+
         setupAlerts();
     }
 
     @FXML
     private void saveSettings() {
         if (newPassword.getText().isEmpty()) {
+            logger.warn("No password");
             showError("New password ERROR", "New password cannot be empty");
+
         }
         else {
             if (Objects.equals(repeatPassword.getText(), newPassword.getText())) {
@@ -43,16 +50,20 @@ public class ChangePasswordPopupController {
                     DB.makeConn();
                 } catch (Exception var3) {
                     var3.printStackTrace();
+                    logger.error("No database conncetion");
                 }
                 try {
+
                     if (DB.checkPassword(currentUser.getId(), oldPassword.getText())) {
                         if(isValidPassword(newPassword.getText())) {
                             DB.updatePassword(currentUser.getId(), newPassword.getText());
+                            logger.info("Password changed");
                             passwordChangeSuccessful();
                         }
                         else{
                             showError("New password is not strong enough","Contain >= 1: [a-z],[A-Z],[0-9], and has 8 to 20 digits");
                         }
+
                     }
                     else
                         showError("Old password ERROR","Old password is not matching");

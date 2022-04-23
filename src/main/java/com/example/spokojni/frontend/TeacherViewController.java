@@ -5,12 +5,15 @@ import com.example.spokojni.backend.db.DB;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import com.calendarfx.view.CalendarView;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
 
 public class TeacherViewController {
+    Logger logger = LogManager.getLogger(TeacherViewController.class);
     private User currentUser;
     CreateCalendarView cw;
 
@@ -31,16 +34,27 @@ public class TeacherViewController {
 
     @FXML
     private void languageENClick() throws IOException {
+        logger.info("Eng language selected");
         new ChangeWindowController( "teacher-view.fxml", new Locale("en", "UK")).changeWindow(languageEN);
     }
 
     @FXML
     private void languageSKClick() throws IOException {
+        logger.info("SK language selected");
         new ChangeWindowController( "teacher-view.fxml", new Locale("sk", "SK")).changeWindow(languageSK);
     }
 
     @FXML
     private void saveClick() {
+
+        try {
+            DB.makeConn();
+        } catch (Exception var3) {
+            var3.printStackTrace();
+            logger.error("No database conncetion");
+        }
+
+
         System.out.println("save");
         try {
             DB.makeConn();

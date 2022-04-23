@@ -23,6 +23,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -50,6 +52,8 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AdminViewController implements Initializable {
+
+    Logger logger = LogManager.getLogger(AdminViewController.class);
 
     private User currentUser;
     private final ArrayList<Student> students = new ArrayList<>();
@@ -101,6 +105,7 @@ public class AdminViewController implements Initializable {
     @FXML
     private void logoutClick() throws IOException{
         new ChangeWindowController( "login-view.fxml", new Locale("en", "UK")).changeWindow(logOut);
+        logger.info("Admin logget out");
     }
 
 
@@ -109,6 +114,7 @@ public class AdminViewController implements Initializable {
             DB.makeConn();
         } catch (Exception var3) {
             var3.printStackTrace();
+            logger.error("No database conncetion");
         }
 
         try {
@@ -119,6 +125,7 @@ public class AdminViewController implements Initializable {
             System.out.println("SQLState: " + e.getSQLState());
             System.out.println("VendorError: " + e.getErrorCode());
             e.printStackTrace();
+            logger.warn("No teachers found");
         }
 
         for (User t : teachers){
@@ -131,6 +138,7 @@ public class AdminViewController implements Initializable {
             DB.makeConn();
         } catch (Exception var3) {
             var3.printStackTrace();
+            logger.error("No database conncetion");
         }
 
         try {
@@ -140,6 +148,7 @@ public class AdminViewController implements Initializable {
             System.out.println("SQLState: " + e.getSQLState());
             System.out.println("VendorError: " + e.getErrorCode());
             e.printStackTrace();
+            logger.warn("No students found");
         }
         for (User s : students){
             student.add(new UserTable(s.getName(), s.getEmail(), "Student", s.getId()));
@@ -170,6 +179,7 @@ public class AdminViewController implements Initializable {
 
     @FXML
     private void registerPersonClick() throws IOException{
+        logger.info("New person register");
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("register-person-view.fxml"));
         ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
         fxmlLoader.setResources(rb);
@@ -187,6 +197,10 @@ public class AdminViewController implements Initializable {
 
     @FXML
     private void ProfileClick() throws IOException {
+
+        logger.info("Show profile");
+      //  FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("profile-dialog.fxml"));
+
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("change-password-dialog.fxml"));
         ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
         fxmlLoader.setResources(rb);
@@ -247,7 +261,9 @@ public class AdminViewController implements Initializable {
             DOMSource source = new DOMSource(doc);
             StreamResult result = new StreamResult(output);
             transformer.transform(source, result);
+            logger.info("Users exported");
         } catch (IOException | TransformerException e) {
+            logger.warn("Export was unsuccessful");
             e.printStackTrace();
         }
     }
@@ -268,6 +284,7 @@ public class AdminViewController implements Initializable {
                 doc.getDocumentElement().normalize();
                 NodeList nodeList = doc.getElementsByTagName("user");
                 User[] importedUsers = new User[nodeList.getLength()];
+                logger.info("Users imported");
                 for (int itr = 0; itr < nodeList.getLength(); itr++)
                 {
                     Node node = nodeList.item(itr);
@@ -286,6 +303,7 @@ public class AdminViewController implements Initializable {
             }
             catch (Exception e)
             {
+                logger.warn("Import was unsuccessful");
                 e.printStackTrace();
             }
             // TODO: mame user array importedUsers, ktory treba hodit do tabulky
@@ -306,8 +324,10 @@ public class AdminViewController implements Initializable {
         try{
             Table.setOnMouseClicked( event -> {
                 if( event.getClickCount() == 1  && !Table.getSelectionModel().isEmpty()) {
+
                     try {
                         chosenUser(Table.getSelectionModel().getSelectedItem());
+                        logger.info("User selected");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -315,6 +335,7 @@ public class AdminViewController implements Initializable {
                 }});
         } catch (Exception e) {
             e.printStackTrace();
+            logger.warn("Problem with selection");
         }
 
 
@@ -340,9 +361,11 @@ public class AdminViewController implements Initializable {
 
 
                     if (userFound && userName.getName().toLowerCase().contains(searchedName.replaceFirst("name: ", ""))){
+                        logger.info("Filter by user name");
                         return true;
                     }
                     if(emailFound && userName.getEmail().toLowerCase().contains(searchedName.replaceFirst("email: ", ""))){
+                        logger.info("Filter by user email");
                         return true;
                     }
 
