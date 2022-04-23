@@ -26,6 +26,7 @@ public class AdminPopupController {
     private Dialog<ButtonType> dialog;
     private Button button;
     private AdminViewController admin;
+    private ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
 
     @FXML
     private Button addSubject;
@@ -59,21 +60,12 @@ public class AdminPopupController {
     @FXML
     private void generateNewPassword() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("generate-password-popup.fxml"));
-        ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
         fxmlLoader.setResources(rb);
         DialogPane dialogPane = fxmlLoader.load();
         GeneratePasswordController generatePasswordController = fxmlLoader.getController();
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setDialogPane(dialogPane);
-        if (Locale.getDefault().equals(new Locale("en", "UK"))){
-            dialog.setTitle("Generate password");
-        }
-        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
-            dialog.setTitle("Vygenerovať heslo");
-        }
-        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
-            dialog.setTitle("Generiere Passwort");
-        }
+        dialog.setTitle(rb.getString("Generate_password"));
         generatePasswordController.setCurrentUser(user,dialog);
 
         dialog.showAndWait();
@@ -82,21 +74,9 @@ public class AdminPopupController {
     @FXML
     private void deleteUser() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        if (Locale.getDefault().equals(new Locale("en", "UK"))){
-            alert.setTitle("Confirmation Dialog");
-            alert.setHeaderText("Deleting user");
-            alert.setContentText("Are you sure you want to delete this user?");
-        }
-        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
-            alert.setTitle("Potvrdenie");
-            alert.setHeaderText("Vymazávanie používateľa");
-            alert.setContentText("Si si istý, že chceš vymazať tohto používateľa?");
-        }
-        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
-            alert.setTitle("Bestätigungsdialog");
-            alert.setHeaderText("Benutzer löschen");
-            alert.setContentText("Möchten Sie diesen Benutzer wirklich löschen?");
-        }
+        alert.setTitle(rb.getString("Confirmation_dialog"));
+        alert.setHeaderText(rb.getString("Deleting_user"));
+        alert.setContentText(rb.getString("Sure_delete"));
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
             try {
@@ -144,21 +124,12 @@ public class AdminPopupController {
     @FXML
     private void addUser() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("subjects-popup.fxml"));
-        ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
         fxmlLoader.setResources(rb);
         DialogPane dialogPane = fxmlLoader.load();
         SubjectsController addSubjectController = fxmlLoader.getController();
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setDialogPane(dialogPane);
-        if (Locale.getDefault().equals(new Locale("en", "UK"))){
-            dialog.setTitle("Add new subject");
-        }
-        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
-            dialog.setTitle("Pridať predmet");
-        }
-        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
-            dialog.setTitle("Neues Schulfach hinzufügen");
-        }
+        dialog.setTitle(rb.getString("Add_subject"));
         addSubjectController.setCurrentUser(user);
         dialog.showAndWait();
     }

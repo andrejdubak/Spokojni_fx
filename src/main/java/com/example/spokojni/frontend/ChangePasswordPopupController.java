@@ -10,7 +10,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +30,7 @@ public class ChangePasswordPopupController {
     private User currentUser;
     private Alert successfulAlert;
     private Alert errorAlert;
+    private ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
 
     @FXML
     private void initialize() {
@@ -39,7 +42,7 @@ public class ChangePasswordPopupController {
     private void saveSettings() {
         if (newPassword.getText().isEmpty()) {
             logger.warn("No password");
-            showError("New password ERROR", "New password cannot be empty");
+            showError(rb.getString("ERROR_new_password"), rb.getString("New_password_not_empty"));
 
         }
         else {
@@ -59,12 +62,12 @@ public class ChangePasswordPopupController {
                             passwordChangeSuccessful();
                         }
                         else{
-                            showError("New password is not strong enough","Contain >= 1: [a-z],[A-Z],[0-9], and has 8 to 20 digits");
+                            showError(rb.getString("New_password_not_strong"),rb.getString("Contain_shit"));
                         }
 
                     }
                     else
-                        showError("Old password ERROR","Old password is not matching");
+                        showError(rb.getString("ERROR_old_password"),rb.getString("Old_password_not_match"));
 
                 } catch (SQLException var2) {
                     System.out.println("SQLException: " + var2.getMessage());
@@ -73,7 +76,7 @@ public class ChangePasswordPopupController {
                     var2.printStackTrace();
                 }
             } else
-                showError("Repeat password ERROR","Repeat password is not matching with new password");
+                showError(rb.getString("ERROR_repeat_password"),rb.getString("Repeat_password_not_match"));
         }
     }
 
@@ -105,8 +108,8 @@ public class ChangePasswordPopupController {
 
     private void setupAlerts(){
         successfulAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        successfulAlert.setHeaderText("Successful change of password");
-        successfulAlert.setContentText("Password was successfully changed");
+        successfulAlert.setHeaderText(rb.getString("Password_changed_successfully"));
+        successfulAlert.setContentText(rb.getString("Password_was_successfully_changed"));
         errorAlert = new Alert(Alert.AlertType.ERROR);
     }
 }

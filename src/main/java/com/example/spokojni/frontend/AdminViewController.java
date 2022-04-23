@@ -60,6 +60,7 @@ public class AdminViewController implements Initializable {
     private final ArrayList<Teacher> teachers = new ArrayList<>();
     private final ArrayList<UserTable> users = new ArrayList<>();
     private final ObservableList<UserTable> student = FXCollections.observableArrayList(users);
+    private ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
 
     @FXML
     private CheckBox showS;
@@ -104,10 +105,9 @@ public class AdminViewController implements Initializable {
 
     @FXML
     private void logoutClick() throws IOException{
-        new ChangeWindowController( "login-view.fxml", new Locale("en", "UK")).changeWindow(logOut);
+        new ChangeWindowController( "login-view.fxml", Locale.getDefault()).changeWindow(logOut);
         logger.info("Admin logged out");
     }
-
 
     private void loadTeachers(){
         try {
@@ -130,7 +130,6 @@ public class AdminViewController implements Initializable {
 
         for (User t : teachers){
             student.add(new UserTable(t.getName(), t.getEmail(), "Teacher", t.getId()));
-
         }
     }
     private void loadStudents(){
@@ -169,26 +168,23 @@ public class AdminViewController implements Initializable {
         loadStudents();
     }
 
-
-   private void showTeachers() {
-        student.clear();
-        teachers.clear();
-        loadTeachers();
-
+    private void showTeachers() {
+         student.clear();
+         teachers.clear();
+         loadTeachers();
     }
 
     @FXML
     private void registerPersonClick() throws IOException{
         logger.info("New person register");
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("register-person-view.fxml"));
-        ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
         fxmlLoader.setResources(rb);
         Parent dialogPane = fxmlLoader.load();
         RegisterPersonController registerPersonController = fxmlLoader.getController();
         registerPersonController.setAdmin(this);
         Scene scene = new Scene(dialogPane, 600, 400);
         Stage stage = new Stage();
-        stage.setTitle("User Registration");
+        stage.setTitle(rb.getString("User_registration"));
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
@@ -209,7 +205,7 @@ public class AdminViewController implements Initializable {
         profilePopupController.setCurrentUser(currentUser);
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setDialogPane(dialogPane);
-        dialog.setTitle("Profile");
+        dialog.setTitle(rb.getString("Profile"));
 
         Optional<ButtonType> clickedButton = dialog.showAndWait();
 
@@ -270,7 +266,8 @@ public class AdminViewController implements Initializable {
 
     @FXML
     private void importClick(){
-        FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
+
+        FileDialog dialog = new FileDialog((Frame)null, rb.getString("Select_file_to_open"));
         dialog.setMode(FileDialog.LOAD);
         dialog.setVisible(true);
         String path = dialog.getDirectory() + dialog.getFile();
@@ -383,13 +380,12 @@ public class AdminViewController implements Initializable {
 
     private void chosenUser(UserTable user) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("admin-popup.fxml"));
-        ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
         fxmlLoader.setResources(rb);
         DialogPane dialogPane = fxmlLoader.load();
         AdminPopupController adminPopupController = fxmlLoader.getController();
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setDialogPane(dialogPane);
-        dialog.setTitle("Selected user");
+        dialog.setTitle(rb.getString("Selected_user"));
         adminPopupController.setCurrentUser(user,dialog,exportPeople,this);
 
         dialog.showAndWait();

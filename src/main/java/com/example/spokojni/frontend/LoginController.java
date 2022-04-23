@@ -117,9 +117,7 @@ public class LoginController implements Initializable {
             logger.warn("Login failed");
 
         }
-
     }
-
     @FXML
     protected void registerClick() {};
 }
