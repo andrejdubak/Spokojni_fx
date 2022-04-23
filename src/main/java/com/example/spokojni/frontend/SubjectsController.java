@@ -31,14 +31,14 @@ public class SubjectsController implements Initializable  {
     @FXML
     private TextField subject_name;
     private Teacher teacher;
-    private ArrayList<Subject> load_subjects = new ArrayList<>();
-    private ObservableList<Subject> subjects = FXCollections.observableArrayList(load_subjects);
-    private final Alert successfulAlert;
+    private final ArrayList<Subject> load_subjects = new ArrayList<>();
+    private final ObservableList<Subject> subjects = FXCollections.observableArrayList(load_subjects);
+    private final Alert errorAlert;
 
     public SubjectsController(){
-        successfulAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        successfulAlert.setHeaderText("New Subject");
-        successfulAlert.setContentText("New Subject was successfully added to teacher");
+        errorAlert = new Alert(Alert.AlertType.ERROR);
+        errorAlert.setHeaderText("New Subject Error");
+        errorAlert.setContentText("Subject with this name already exist");
         //loadSubjects();
     }
 
@@ -79,7 +79,12 @@ public class SubjectsController implements Initializable  {
                 var3.printStackTrace();
             }
             try {
-                DB.add(subject);
+                if(!DB.addSubject(subject))
+                    objectAlreadyExist();
+                else {
+                    loadSubjects();
+                    subject_name.setText("");
+                }
             } catch (SQLException var2) {
                 System.out.println("SQLException: " + var2.getMessage());
                 System.out.println("SQLState: " + var2.getSQLState());
@@ -87,7 +92,11 @@ public class SubjectsController implements Initializable  {
                 var2.printStackTrace();
             }
         }
-        loadSubjects();
+
+    }
+
+    private void objectAlreadyExist() {
+        errorAlert.showAndWait();
     }
 
     @FXML
@@ -109,7 +118,7 @@ public class SubjectsController implements Initializable  {
             e.printStackTrace();
         }
         for (Subject s : load_subjects){
-            subjects.add(new Subject(0,s.getName(), s.getMaster()));
+            subjects.add(new Subject(s.getId(),s.getName(), s.getMaster()));
         }
     }
 
@@ -119,7 +128,8 @@ public class SubjectsController implements Initializable  {
         alert.setHeaderText("Deleting Subject");
         alert.setContentText("Are you sure you want to delete "+subject.getName()+" ?");
         Optional<ButtonType> result = alert.showAndWait();
-
+        System.out.println(subject.getId());
+        System.out.println(subject.getMaster().getId());
         if (result.get() == ButtonType.OK){
             try {
                 DB.makeConn();

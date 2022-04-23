@@ -5,13 +5,17 @@ import com.example.spokojni.backend.db.DB;
 import com.example.spokojni.backend.users.Student;
 import com.example.spokojni.backend.users.Teacher;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.Random;
+import java.util.ResourceBundle;
 
-public class RegisterPersonController {
+public class RegisterPersonController  implements Initializable  {
 
     public RegisterPersonController() {
         succesfullAlert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -19,15 +23,28 @@ public class RegisterPersonController {
         errorAlert = new Alert(Alert.AlertType.ERROR);
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        comboBox.getItems().add("Student");
+        comboBox.getItems().add("Teacher");
+        comboBox.setValue("Student");
+    }
+
     private final Alert succesfullAlert;
     private final Alert errorAlert;
+    private boolean added= false;
+
+    @FXML
+    private ComboBox<String> comboBox;
+
     @FXML
     private TextField userName;
-    @FXML
-    private CheckBox checkBox;
 
     @FXML
     private Button generatePassword;
+
+    @FXML
+    private Button saveUser;
 
     @FXML
     private TextField generatedPassword;
@@ -79,37 +96,33 @@ public class RegisterPersonController {
     }
 
     @FXML
-    private void changeRole() {
-        if(checkBox.isSelected())
-            checkBox.setText("Teacher");
-        else
-            checkBox.setText("Student");
-    }
-
-    @FXML
     private void saveUser() throws SQLException, IOException {
-        if (checkValues()) {
-            User user;
-            if(checkBox.isSelected())
-                user = new Teacher(0, userName.getText(), userEmail.getText(), nickName.getText());
-            else
-                user = new Student(0, userName.getText(), userEmail.getText(), nickName.getText());
-            try {
-                DB.makeConn();
-            } catch (Exception var3) {
-                var3.printStackTrace();
-            }
-            //registrationSuccessful();
-            try {
-                if(DB.addUser(user,generatedPassword.getText()))
-                    registrationSuccessful();
+        if(added)
+            registerAnotherUser();
+        else {
+            if (checkValues()) {
+                User user;
+                if (Objects.equals(comboBox.getValue(), "Teacher"))
+                    user = new Teacher(0, userName.getText(), userEmail.getText(), nickName.getText());
                 else
-                    registrationFailed();
-            } catch (SQLException var2) {
-                System.out.println("SQLException: " + var2.getMessage());
-                System.out.println("SQLState: " + var2.getSQLState());
-                System.out.println("VendorError: " + var2.getErrorCode());
-                var2.printStackTrace();
+                    user = new Student(0, userName.getText(), userEmail.getText(), nickName.getText());
+                try {
+                    DB.makeConn();
+                } catch (Exception var3) {
+                    var3.printStackTrace();
+                }
+                //registrationSuccessful();
+                try {
+                    if (DB.addUser(user, generatedPassword.getText()))
+                        registrationSuccessful();
+                    else
+                        registrationFailed();
+                } catch (SQLException var2) {
+                    System.out.println("SQLException: " + var2.getMessage());
+                    System.out.println("SQLState: " + var2.getSQLState());
+                    System.out.println("VendorError: " + var2.getErrorCode());
+                    var2.printStackTrace();
+                }
             }
         }
         //
@@ -122,14 +135,27 @@ public class RegisterPersonController {
     }
 
     private void registrationSuccessful() {
-        succesfullAlert.setContentText("nickName: "+nickName.getText()+" \npassword: "+generatedPassword.getText());
+        added=true;
+        succesfullAlert.setContentText("nickName: " + nickName.getText() + " \npassword: " + generatedPassword.getText());
+        succesfullAlert.showAndWait();
+        comboBox.setEditable(false);
+        userName.setEditable(false);
+        userEmail.setEditable(false);
+        generatePassword.setVisible(false);
+        saveUser.setText("Register another user");
+    }
+
+    private void registerAnotherUser(){
+        comboBox.setEditable(true);
+        userName.setEditable(true);
+        userEmail.setEditable(true);
+        generatePassword.setVisible(true);
+        added=false;
         userName.setText("");
-        checkBox.setSelected(false);
-        checkBox.setText("Student");
         generatedPassword.setText("");
         userEmail.setText("");
         nickName.setText("");
-        succesfullAlert.showAndWait();
+        saveUser.setText("Save user");
     }
 
     private boolean isValidEmailAddress(String email) {

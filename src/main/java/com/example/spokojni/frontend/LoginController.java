@@ -39,7 +39,7 @@ public class LoginController implements Initializable {
     private PasswordField password;
 
     @FXML
-    private ChoiceBox language;
+    private ChoiceBox<String> language;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

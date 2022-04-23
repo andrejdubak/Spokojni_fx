@@ -137,6 +137,12 @@ public class DB {
             return null;
         return new Subject(rs.getInt(1),rs.getString(2), getTeacher(rs.getInt(3)));
     }
+
+    public static boolean controlSubjectByName(String name) throws SQLException{
+        ResultSet rs = stmt.executeQuery("SELECT * FROM subjects WHERE name='" + name+"'");
+        return rs.first();
+    }
+
     public static Term getTermById(int id) throws SQLException{
         getSubjects();
         ResultSet rs = stmt.executeQuery("SELECT * FROM terms WHERE id=" + id);
@@ -198,7 +204,7 @@ public class DB {
         ArrayList<Subject> newSubjects = new ArrayList<>();
         ResultSet rs = stmt.executeQuery("SELECT * FROM subjects JOIN users ON master_id=users.id WHERE users.id=" + id);
         while(rs.next())
-            newSubjects.add(new Subject(rs.getInt(1),rs.getString(2), getTeacher(rs.getInt(3))));
+            newSubjects.add(new Subject(rs.getInt(1), rs.getString(2), getTeacher(rs.getInt(3))));
         return newSubjects;
     }
     public static ArrayList<Term> getTerms() throws SQLException{
@@ -338,7 +344,7 @@ public class DB {
         stmt.executeUpdate();
     }
     public static boolean addUser(User user, String password) throws SQLException {
-        if(getUserByLogin(user.getLogin()) == null)
+        if(getUserByLogin(user.getLogin()) != null)
             return false;
         stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, SHA1(?), ?, ?, ?, ?)");
         stmt.setString(1, password);
@@ -346,6 +352,16 @@ public class DB {
         stmt.setString(3, user.getEmail());
         stmt.setString(4, user.getLogin());
         stmt.setInt(5, user.getRole());
+        stmt.executeUpdate();
+        return true;
+        //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
+    }
+    public static boolean addSubject(Subject subject) throws SQLException {
+        if(controlSubjectByName(subject.getName()))
+            return false;
+        stmt = con.prepareStatement("INSERT INTO subjects (id, name, master_id) VALUES (NULL, ?, ?)");
+        stmt.setString(1, (subject.getName()));
+        stmt.setInt(2, (subject.getMaster().getId()));
         stmt.executeUpdate();
         return true;
         //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
@@ -411,6 +427,7 @@ public class DB {
         else if(obj instanceof Subject){
             stmt = con.prepareStatement("DELETE FROM subjects WHERE id=?");
             stmt.setInt(1, ((Subject) obj).getId());
+            //stmt.executeUpdate();
             //stmt.executeUpdate("DELETE FROM subjects WHERE id=" + ((Subject) obj).getId());
         }
         else if(obj instanceof Term){
