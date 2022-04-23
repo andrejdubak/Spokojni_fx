@@ -32,8 +32,6 @@ public class ChangePasswordPopupController {
     @FXML
     private void initialize() {
 
-        logger.info("Initialized");
-
         setupAlerts();
     }
 

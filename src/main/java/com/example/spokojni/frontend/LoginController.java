@@ -62,16 +62,19 @@ public class LoginController implements Initializable {
         try {
             DB.makeConn();
             if(DB.checkPassword(username.getText(), password.getText())) {
+                logger.info("User" + username.getText() + "logged in");
                 user = DB.getUserByLogin(username.getText());
             };
         } catch (SQLException var2) {
             System.out.println("SQLException: " + var2.getMessage());
             System.out.println("SQLState: " + var2.getSQLState());
             System.out.println("VendorError: " + var2.getErrorCode());
-            logger.error("No database connection");
+            logger.warn("User not logged in");
             var2.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error("No database connection");
+
         }
         if (language.getSelectionModel().getSelectedItem() == "Slovenčina")
             Locale.setDefault(new Locale("sk", "SK"));
