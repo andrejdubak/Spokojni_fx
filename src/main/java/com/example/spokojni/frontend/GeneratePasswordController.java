@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class GeneratePasswordController {
     Logger logger = LogManager.getLogger(GeneratePasswordController.class);
@@ -23,21 +24,12 @@ public class GeneratePasswordController {
     private UserTable user;
     private final Alert successfulAlert;
     private Dialog dialog;
+    private ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
 
     public GeneratePasswordController(){
         successfulAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        if (Locale.getDefault().equals(new Locale("en", "UK"))){
-            successfulAlert.setHeaderText("Successful change of password");
-            successfulAlert.setContentText("Password was successfully changed");
-        }
-        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
-            successfulAlert.setHeaderText("Úspešná zmena hesla");
-            successfulAlert.setContentText("Heslo bolo úspešne zmenené");
-        }
-        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
-            successfulAlert.setHeaderText("Erfolgreiche Passwortänderung");
-            successfulAlert.setContentText("Passwort wurde erfolgreich geändert");
-        }
+        successfulAlert.setHeaderText(rb.getString("Password_changed_successfully"));
+        successfulAlert.setContentText(rb.getString("Password_was_successfully_changed"));
     }
 
     public void setCurrentUser(UserTable user, Dialog dialog) {

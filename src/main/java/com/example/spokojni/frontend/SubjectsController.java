@@ -37,21 +37,12 @@ public class SubjectsController implements Initializable  {
     private final ArrayList<Subject> load_subjects = new ArrayList<>();
     private final ObservableList<Subject> subjects = FXCollections.observableArrayList(load_subjects);
     private final Alert errorAlert;
+    private ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
 
     public SubjectsController(){
         errorAlert = new Alert(Alert.AlertType.ERROR);
-        if (Locale.getDefault().equals(new Locale("en", "UK"))){
-            errorAlert.setHeaderText("New subject error");
-            errorAlert.setContentText("Subject with this name already exists");
-        }
-        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
-            errorAlert.setHeaderText("Error: Nový predmet");
-            errorAlert.setContentText("Predmet s týmto menom už existuje");
-        }
-        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
-            errorAlert.setHeaderText("Fehler bei neuem Schulfach");
-            errorAlert.setContentText("Schulfach mit diesem Namen existiert bereits");
-        }
+        errorAlert.setHeaderText(rb.getString("ERROR_new_subject"));
+        errorAlert.setContentText(rb.getString("Subject_already_exists"));
         //loadSubjects();
     }
 
@@ -143,21 +134,9 @@ public class SubjectsController implements Initializable  {
 
     private void deleteSubject(Subject subject) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        if (Locale.getDefault().equals(new Locale("en", "UK"))){
-            alert.setTitle("Confirmation Dialog");
-            alert.setHeaderText("Deleting Subject");
-            alert.setContentText("Are you sure you want to delete "+subject.getName()+" ?");
-        }
-        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
-            alert.setTitle("Potvrdzujúci dialóg");
-            alert.setHeaderText("Vymazávanie predmetu");
-            alert.setContentText("Si si istý, že chceš vymazať "+subject.getName()+" ?");
-        }
-        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
-            alert.setTitle("Bestätigungsdialog");
-            alert.setHeaderText("Schulfach löschen");
-            alert.setContentText("Möchten Sie " +subject.getName()+" wirklich löschen?");
-        }
+        alert.setTitle(rb.getString("Confirmation_dialog"));
+        alert.setHeaderText(rb.getString("Deleting_subject"));
+        alert.setContentText(rb.getString("Sure_delete2")+subject.getName()+rb.getString("End2"));
         Optional<ButtonType> result = alert.showAndWait();
         System.out.println(subject.getId());
         System.out.println(subject.getMaster().getId());

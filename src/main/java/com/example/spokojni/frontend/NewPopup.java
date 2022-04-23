@@ -9,10 +9,7 @@ import com.calendarfx.view.Messages;
 
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 
 import com.example.spokojni.backend.Agreement;
 import com.example.spokojni.backend.Term;
@@ -38,6 +35,7 @@ public class NewPopup extends GridPane {
     private final CalendarSelector calendarSelector;
     private Entry<?> entry;
     private ArrayList<Term> terms;
+    private ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
     Label numberOfStudents = new Label();
 
     public NewPopup(Entry<?> entry, List<Calendar> calendars, ArrayList<Term> terms, User user) {
@@ -89,17 +87,18 @@ public class NewPopup extends GridPane {
         //moje zmeny
         titleField.setEditable(false);
         locationField.setEditable(false);
-        CheckBox checkBox = new CheckBox("Add to my");
+        CheckBox checkBox = new CheckBox(rb.getString("Add_to_my"));
         if (entry.getCalendar().getName().equals("Moj")) checkBox.setSelected(true);
         //checkBox.disableProperty().bind(entry.getCalendar().readOnlyProperty());
         this.add(checkBox,0,5);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-        Label startDate = new Label("Skúška od: " + entry.getStartAsLocalDateTime().format(formatter));
+        Label startDate = new Label(rb.getString("Exam_from:") + entry.getStartAsLocalDateTime().format(formatter));
         this.add(startDate, 0,2);
-        Label endDate = new Label("Skúška do: " + entry.getEndAsLocalDateTime().format(formatter));
+        Label endDate = new Label(rb.getString("Exam_to:") + entry.getEndAsLocalDateTime().format(formatter));
         this.add(endDate, 0,3);
         if (!updateNumberOfSignedStudents() && !checkBox.isSelected()) checkBox.setDisable(true); //disabluje moznost pridat predmet do svojich ak uz nieje miesto
+        if (checkIfAlreadyAdded(user.getId())) checkBox.setDisable(true); //disabluje checkbox ak uz je termin z daneho terminu pridany
         this.add(numberOfStudents, 0,4);
 
         entry.calendarProperty().addListener((observable, oldCalendar, newCalendar) -> {
@@ -131,9 +130,11 @@ public class NewPopup extends GridPane {
                         entry.setCalendar(cal);
                     try {
                         Agreement agr = DB.getAgreement( user.getId(), terms.get(parseInt(entry.getId())).getId());
-                        DB.makeConn();
-                        DB.delete(agr);//vymaze z databazy agreement
-                        logger.info("Deleted agreement");
+                        if (agr != null) {
+                            DB.makeConn();
+                            DB.delete(agr);//vymaze z databazy agreement
+                            logger.info("Deleted agreement");
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         logger.error("No database connection");
@@ -145,21 +146,27 @@ public class NewPopup extends GridPane {
         });
     }
 
+    private boolean checkIfAlreadyAdded(int userId) {
+        try {
+            DB.makeConn();
+            ArrayList<Agreement> agreements = DB.getAgreementsByStudentId(userId);
+            for (Agreement agr : agreements) {
+                if (agr.getTerm().getSubject().getName().equals(entry.getCalendar().getName()))
+                    return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     private boolean updateNumberOfSignedStudents() {
         logger.info("Number of students updated");
         //for (Term tr : terms) System.out.println(tr);
         int term_id = terms.get(parseInt(entry.getId())).getId();
         int actualNum = getNumberOfAssignedStudents(term_id); //spocita prihlasenych studenotov pre dany termin
         int maxNum = terms.get(parseInt(entry.getId())).getCapacity();
-        if (Locale.getDefault().equals(new Locale("en", "UK"))){
-            numberOfStudents.setText("Number of assigned students: " + actualNum + "/" + maxNum);
-        }
-        else if (Locale.getDefault().equals(new Locale("sk", "SK"))){
-            numberOfStudents.setText("Počet prihlásených študentov: " + actualNum + "/" + maxNum);
-        }
-        else if (Locale.getDefault().equals(new Locale("de", "DE"))){
-            numberOfStudents.setText("Anzahl der zugewiesenen Schüler: " + actualNum + "/" + maxNum);
-        }
+        numberOfStudents.setText(rb.getString("Number_of_assigned_students:") + actualNum + "/" + maxNum);
         System.out.println(actualNum < maxNum);
         return actualNum < maxNum;
     }

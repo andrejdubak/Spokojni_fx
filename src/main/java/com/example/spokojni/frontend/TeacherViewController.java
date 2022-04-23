@@ -39,7 +39,6 @@ public class TeacherViewController {
             logger.error("log_user_id:" + currentUser.getId() + "No database connection");
         }
 
-
         System.out.println("save");
         try {
             DB.makeConn();

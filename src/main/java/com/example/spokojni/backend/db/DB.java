@@ -292,21 +292,21 @@ public class DB {
     public static boolean checkPassword(int user_id, String password) throws SQLException{
         stmt = con.prepareStatement("SELECT pass FROM users WHERE id=? AND pass=SHA1(?)");
         stmt.setInt(1, user_id);
-        stmt.setString(1, password);
+        stmt.setString(2, password);
         ResultSet rs = stmt.executeQuery();
         return rs.next();
     }
     public static boolean checkPassword(String username, String password) throws SQLException{
         stmt = con.prepareStatement("SELECT pass FROM users WHERE login=? AND pass=SHA1(?)");
         stmt.setString(1, username);
-        stmt.setString(1, password);
+        stmt.setString(2, password);
         ResultSet rs = stmt.executeQuery();
         return rs.next();
     }
     public static boolean checkPassword(User user, String password) throws SQLException{
         stmt = con.prepareStatement("SELECT pass FROM users WHERE id=? AND pass=SHA1(?)");
         stmt.setInt(1, user.getId());
-        stmt.setString(1, password);
+        stmt.setString(2, password);
         ResultSet rs = stmt.executeQuery();
         return rs.next();
     }
@@ -416,13 +416,12 @@ public class DB {
         stmt.executeUpdate();
     }
     public static void delete(Object obj) throws SQLException {
-        stmt = con.prepareStatement("DELETE FROM $tableName WHERE id=?");
         if(obj instanceof User){
             stmt = con.prepareStatement("DELETE FROM users WHERE id=?");
             stmt.setInt(1, ((User) obj).getId());
             //stmt.executeUpdate("DELETE FROM users WHERE id=" + ((User) obj).getId());
         }
-        if(obj instanceof UserTable){
+        else if(obj instanceof UserTable){
             stmt = con.prepareStatement("DELETE FROM users WHERE id=?");
             stmt.setInt(1, ((UserTable) obj).getId());
             //stmt.executeUpdate("DELETE FROM users WHERE id=" + ((User) obj).getId());
@@ -443,7 +442,6 @@ public class DB {
             stmt.setInt(1, ((Agreement) obj).getId());
             //stmt.executeUpdate("DELETE FROM agreements WHERE id=" + ((Agreement) obj).getId());
         }
-        else throw new SQLException("Wrong type od Object: " + obj.getClass());
         stmt.executeUpdate();
     }
     public static void updatePassword(User user, String new_password) throws SQLException{
