@@ -34,11 +34,17 @@ public class CreateCalendarView {
 
 
         try {
+            DB.makeConn();
             subjects.addAll(DB.getSubjects());
             logger.info("Get subjects from database");
         } catch (SQLException var2) {
             sqlException(var2);
+
             logger.error("No database conncetion");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("No subjects");
         }
 
         int counter1 = 0;
@@ -63,7 +69,11 @@ public class CreateCalendarView {
 
     public void setStudentCalendars() {
         try {
+
             logger.info("Student calendar setted up");
+
+            DB.makeConn();
+
             ArrayList<Agreement> agreements = DB.getAgreementsByStudentId(user.getId());
             for (Term term : DB.getTerms()) {
                 Entry entry = entryHelper(term);
@@ -95,7 +105,11 @@ public class CreateCalendarView {
 
     public void setTeacherCalendars() {
         try {
+
             logger.info("Teacher calendar setted up");
+
+            DB.makeConn();
+
             for (Term term : DB.getTerms()) {
                 Entry entry = entryHelper(term);
                 int counter = 0;
@@ -109,6 +123,8 @@ public class CreateCalendarView {
         } catch (SQLException var2) {
             logger.warn("No calendar setted up");
             sqlException(var2);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

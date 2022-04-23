@@ -5,14 +5,14 @@ import com.example.spokojni.backend.users.Admin;
 import com.example.spokojni.backend.users.Student;
 import com.example.spokojni.backend.users.Teacher;
 
-import java.security.Timestamp;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Properties;
 
 public class DB {
     static Connection con=null;
-    static Statement stmt=null;
+    static PreparedStatement stmt=null;
     static ArrayList<Teacher> Teachers;
     private static Teacher getTeacher(int id){
         for(Teacher teacher : Teachers){
@@ -67,13 +67,47 @@ public class DB {
     }
 
     public static void makeConn() throws Exception {
-        Class.forName("com.mysql.jdbc.Driver");
-        Connection con=DriverManager.getConnection("jdbc:mysql://vesta.mojhosting.eu:3306/admin_vava?useSSL=false","admin_vava","KP2E2fvxcA");
-        stmt=con.createStatement();
+        Properties p = new Properties();
+        p.load(DB.class.getClassLoader().getResourceAsStream("DB_connection.properties"));
+        String db_name = (String) p.get("DB_name");
+        String url = (String) p.get("URL");
+        String username = (String) p.get("Username");
+        String password = (String) p.get("Password");
+        Class.forName(db_name);
+        con = DriverManager.getConnection(url, username, password);
+        stmt=con.prepareStatement("");
+    }
+    public static String getHostIP() throws SQLException {
+        ResultSet rs = stmt.executeQuery("select host from information_schema.processlist WHERE ID=connection_id()");
+        if(!rs.first())
+            return null;
+        return rs.getString(1);
+    }
+    public static void log(String description, int importance, int user_id) throws SQLException{
+        stmt = con.prepareStatement("INSERT INTO logs (timestamp, log_ip_address, log_user_id, log_desc, log_importance) VALUES (CURRENT_TIMESTAMP, ?, ?, ?, ?)");
+        stmt.setString(1, getHostIP());
+        stmt.setInt(2, user_id);
+        stmt.setString(3, description);
+        stmt.setInt(4, importance);
+        stmt.executeUpdate();
+    }
+    public static void log(String description, int importance) throws SQLException{
+        stmt = con.prepareStatement("INSERT INTO logs (timestamp, log_ip_address, log_user_id, log_desc, log_importance) VALUES (CURRENT_TIMESTAMP, ?, NULL, ?, ?)");
+        stmt.setString(1, getHostIP());
+        stmt.setString(2, description);
+        stmt.setInt(3, importance);
+        stmt.executeUpdate();
+    }
+    public static void log(String description) throws SQLException{
+        stmt = con.prepareStatement("INSERT INTO logs (timestamp, log_ip_address, log_user_id, log_desc, log_importance) VALUES (CURRENT_TIMESTAMP, ?, NULL, ?, 0)");
+        stmt.setString(1, getHostIP());
+        stmt.setString(2, description);
+        stmt.executeUpdate();
     }
     public static User getUserById(int id) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE id=" + id);
-        rs.first();
+        if(!rs.first())
+            return null;
         switch(rs.getInt(6)) {
             case 3:
                 return new Admin(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
@@ -85,7 +119,8 @@ public class DB {
     }
     public static User getUserByLogin(String username) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE login='" + username + "'");
-        rs.first();
+        if(!rs.first())
+            return null;
         switch(rs.getInt(6)) {
             case 3:
                 return new Admin(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4));
@@ -98,13 +133,21 @@ public class DB {
     public static Subject getSubjectById(int id) throws SQLException{
         getTeachers();
         ResultSet rs = stmt.executeQuery("SELECT * FROM subjects WHERE id=" + id);
-        rs.first();
+        if(!rs.first())
+            return null;
         return new Subject(rs.getInt(1),rs.getString(2), getTeacher(rs.getInt(3)));
     }
+
+    public static boolean controlSubjectByName(String name) throws SQLException{
+        ResultSet rs = stmt.executeQuery("SELECT * FROM subjects WHERE name='" + name+"'");
+        return rs.first();
+    }
+
     public static Term getTermById(int id) throws SQLException{
         getSubjects();
         ResultSet rs = stmt.executeQuery("SELECT * FROM terms WHERE id=" + id);
-        rs.first();
+        if(!rs.first())
+            return null;
         LocalDateTime start_time = rs.getTimestamp(3).toLocalDateTime();
         LocalDateTime end_time = rs.getTimestamp(4).toLocalDateTime();
         String description = rs.getString(5);
@@ -161,7 +204,7 @@ public class DB {
         ArrayList<Subject> newSubjects = new ArrayList<>();
         ResultSet rs = stmt.executeQuery("SELECT * FROM subjects JOIN users ON master_id=users.id WHERE users.id=" + id);
         while(rs.next())
-            newSubjects.add(new Subject(rs.getInt(1),rs.getString(2), getTeacher(rs.getInt(3))));
+            newSubjects.add(new Subject(rs.getInt(1), rs.getString(2), getTeacher(rs.getInt(3))));
         return newSubjects;
     }
     public static ArrayList<Term> getTerms() throws SQLException{
@@ -246,6 +289,12 @@ public class DB {
             Agreements.add(new Agreement(rs.getInt(1), getStudent(rs.getInt(2)), getTerm(rs.getInt(3))));
         return Agreements;
     }
+    public static String getPasswordHash(int user_id) throws SQLException{
+        ResultSet rs = stmt.executeQuery("SELECT pass FROM users WHERE id=" + user_id);
+        if(!rs.first())
+            return null;
+        return rs.getString(1);
+    }
     public static boolean checkPassword(int user_id, String password) throws SQLException{
         ResultSet rs = stmt.executeQuery("SELECT pass FROM users WHERE id=" + user_id + " AND pass=SHA1('" + password + "')");
         return rs.next();
@@ -260,48 +309,149 @@ public class DB {
     }
     public static void update(Object obj) throws SQLException{
         if(obj instanceof User){
-            stmt.executeUpdate("UPDATE users SET name='" + ((User) obj).getName() + "', email='" + ((User) obj).getEmail() + "', login='" + ((User) obj).getLogin() + "', role=" + ((User) obj).getRole() + " WHERE id=" + ((User) obj).getId());
+            stmt = con.prepareStatement("UPDATE users SET name=?, email=?, login=?, role=? WHERE id=?");
+            stmt.setString(1, ((User) obj).getName());
+            stmt.setString(2, ((User) obj).getEmail());
+            stmt.setString(3, ((User) obj).getLogin());
+            stmt.setInt(4, ((User) obj).getRole());
+            stmt.setInt(5, ((User) obj).getId());
+            //stmt.executeUpdate("UPDATE users SET name='" + ((User) obj).getName() + "', email='" + ((User) obj).getEmail() + "', login='" + ((User) obj).getLogin() + "', role=" + ((User) obj).getRole() + " WHERE id=" + ((User) obj).getId());
         }
         else if(obj instanceof Subject){
-            stmt.executeUpdate("UPDATE subjects SET name='" + ((Subject) obj).getName() + "', master_id=" + ((Subject) obj).getMaster().getId() + " WHERE id=" + ((Subject) obj).getId());
+            stmt = con.prepareStatement("UPDATE subjects SET name=?, master_id=? WHERE id=?");
+            stmt.setString(1, ((Subject) obj).getName());
+            stmt.setInt(2, ((Subject) obj).getMaster().getId());
+            stmt.setInt(3, ((Subject) obj).getId());
+            //stmt.executeUpdate("UPDATE subjects SET name='" + ((Subject) obj).getName() + "', master_id=" + ((Subject) obj).getMaster().getId() + " WHERE id=" + ((Subject) obj).getId());
         }
         else if(obj instanceof Term){
-            stmt.executeUpdate("UPDATE terms SET subject_id=" + ((Term) obj).getSubject().getId() + ", start_time='" + ((Term) obj).getStart_time() + "', end_time='" + ((Term) obj).getEnd_time() + "', description='" + ((Term) obj).getDescription() + "', capacity='" + ((Term) obj).getCapacity() + "' WHERE id=" + ((Term) obj).getId());
+            stmt = con.prepareStatement("UPDATE terms SET subject_id=?, start_time=?, end_time=?, description=?, capacity=? WHERE id=?");
+            stmt.setInt(1, ((Term) obj).getSubject().getId());
+            stmt.setString(2, ((Term) obj).getStart_time().toString());
+            stmt.setString(3, ((Term) obj).getEnd_time().toString());
+            stmt.setString(4, ((Term) obj).getDescription());
+            stmt.setInt(5, ((Term) obj).getCapacity());
+            stmt.setInt(6, ((Term) obj).getId());
+            //stmt.executeUpdate("UPDATE terms SET subject_id=" + ((Term) obj).getSubject().getId() + ", start_time='" + ((Term) obj).getStart_time() + "', end_time='" + ((Term) obj).getEnd_time() + "', description='" + ((Term) obj).getDescription() + "', capacity='" + ((Term) obj).getCapacity() + "' WHERE id=" + ((Term) obj).getId());
         }
         else if(obj instanceof Agreement){
-            stmt.executeUpdate("UPDATE agreements SET student_id=" + ((Agreement) obj).getStudent().getId() + ", term_id=" + ((Agreement) obj).getTerm().getId() + " WHERE id=" + ((Agreement) obj).getId());
+            stmt = con.prepareStatement("UPDATE agreements SET student_id=?, term_id=? WHERE id=?");
+            stmt.setInt(1, ((Agreement) obj).getStudent().getId());
+            stmt.setInt(2, ((Agreement) obj).getTerm().getId());
+            stmt.setInt(3, ((Agreement) obj).getId());
+            //stmt.executeUpdate("UPDATE agreements SET student_id=" + ((Agreement) obj).getStudent().getId() + ", term_id=" + ((Agreement) obj).getTerm().getId() + " WHERE id=" + ((Agreement) obj).getId());
         }
+        stmt.executeUpdate();
+    }
+    public static boolean addUser(User user, String password) throws SQLException {
+        if(getUserByLogin(user.getLogin()) != null)
+            return false;
+        stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, SHA1(?), ?, ?, ?, ?)");
+        stmt.setString(1, password);
+        stmt.setString(2, user.getName());
+        stmt.setString(3, user.getEmail());
+        stmt.setString(4, user.getLogin());
+        stmt.setInt(5, user.getRole());
+        stmt.executeUpdate();
+        return true;
+        //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
+    }
+    public static boolean addSubject(Subject subject) throws SQLException {
+        if(controlSubjectByName(subject.getName()))
+            return false;
+        stmt = con.prepareStatement("INSERT INTO subjects (id, name, master_id) VALUES (NULL, ?, ?)");
+        stmt.setString(1, (subject.getName()));
+        stmt.setInt(2, (subject.getMaster().getId()));
+        stmt.executeUpdate();
+        return true;
+        //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
+    }
+    public static boolean addUserImportWithHash(User user, String password_hash) throws SQLException {
+        if(getUserByLogin(user.getLogin()) == null)
+            return false;
+        stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, ?, ?, ?, ?, ?)");
+        stmt.setString(1, password_hash);
+        stmt.setString(2, user.getName());
+        stmt.setString(3, user.getEmail());
+        stmt.setString(4, user.getLogin());
+        stmt.setInt(5, user.getRole());
+        stmt.executeUpdate();
+        return true;
+        //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
     }
     public static void add(Object obj) throws SQLException{
         if(obj instanceof User){
-            stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
+            stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, '', ?, ?, ?, ?)");
+            stmt.setString(1, ((User) obj).getName());
+            stmt.setString(2, ((User) obj).getEmail());
+            stmt.setString(3, ((User) obj).getLogin());
+            stmt.setInt(4, ((User) obj).getRole());
+            //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
         }
         else if(obj instanceof Subject){
-            stmt.executeUpdate("INSERT INTO subjects (id, name, master_id) VALUES (NULL, '" + ((Subject) obj).getName() + "', " + ((Subject) obj).getMaster().getId() + ")");
+            stmt = con.prepareStatement("INSERT INTO subjects (id, name, master_id) VALUES (NULL, ?, ?)");
+            stmt.setString(1, ((Subject) obj).getName());
+            stmt.setInt(2, ((Subject) obj).getMaster().getId());
+            //stmt.executeUpdate("INSERT INTO subjects (id, name, master_id) VALUES (NULL, '" + ((Subject) obj).getName() + "', " + ((Subject) obj).getMaster().getId() + ")");
         }
         else if(obj instanceof Term){
-            stmt.executeUpdate("INSERT INTO terms (id, subject_id, start_time, end_time, description) VALUES (NULL, " + ((Term) obj).getSubject().getId() + ", '" + ((Term) obj).getStart_time() + "', '" + ((Term) obj).getEnd_time() + "', '" + ((Term) obj).getDescription() + "', '" + ((Term) obj).getCapacity() + "')");
+            stmt = con.prepareStatement("INSERT INTO terms (id, subject_id, start_time, end_time, description, capacity) VALUES (NULL, ?, ?, ?, ?, ?)");
+            stmt.setInt(1, ((Term) obj).getSubject().getId());
+            stmt.setString(2, ((Term) obj).getStart_time().toString());
+            stmt.setString(3, ((Term) obj).getEnd_time().toString());
+            stmt.setString(4, ((Term) obj).getDescription());
+            stmt.setInt(5, ((Term) obj).getCapacity());
+            //stmt.executeUpdate("INSERT INTO terms (id, subject_id, start_time, end_time, description) VALUES (NULL, " + ((Term) obj).getSubject().getId() + ", '" + ((Term) obj).getStart_time() + "', '" + ((Term) obj).getEnd_time() + "', '" + ((Term) obj).getDescription() + "', '" + ((Term) obj).getCapacity() + "')");
         }
         else if(obj instanceof Agreement){
-            stmt.executeUpdate("INSERT INTO agreements (id, student_id, term_id) VALUES (NULL, " + ((Agreement) obj).getStudent().getId() + ", " + ((Agreement) obj).getTerm().getId() + ")");
+            stmt = con.prepareStatement("INSERT INTO agreements (id, student_id, term_id) VALUES (NULL, ?, ?)");
+            stmt.setInt(1, ((Agreement) obj).getStudent().getId());
+            stmt.setInt(2, ((Agreement) obj).getTerm().getId());
+            //stmt.executeUpdate("INSERT INTO agreements (id, student_id, term_id) VALUES (NULL, " + ((Agreement) obj).getStudent().getId() + ", " + ((Agreement) obj).getTerm().getId() + ")");
         }
+        else throw new SQLException("Wrong type od Object: " + obj.getClass());
+        stmt.executeUpdate();
     }
-    public static void delete(Object obj) throws SQLException{
+    public static void delete(Object obj) throws SQLException {
+        stmt = con.prepareStatement("DELETE FROM $tableName WHERE id=?");
         if(obj instanceof User){
-            stmt.executeUpdate("DELETE FROM users WHERE id=" + ((User) obj).getId());
+            stmt = con.prepareStatement("DELETE FROM users WHERE id=?");
+            stmt.setInt(1, ((User) obj).getId());
+            //stmt.executeUpdate("DELETE FROM users WHERE id=" + ((User) obj).getId());
+        }
+        if(obj instanceof UserTable){
+            stmt = con.prepareStatement("DELETE FROM users WHERE id=?");
+            stmt.setInt(1, ((UserTable) obj).getId());
+            //stmt.executeUpdate("DELETE FROM users WHERE id=" + ((User) obj).getId());
         }
         else if(obj instanceof Subject){
-            stmt.executeUpdate("DELETE FROM subjects WHERE id=" + ((Subject) obj).getId());
+            stmt = con.prepareStatement("DELETE FROM subjects WHERE id=?");
+            stmt.setInt(1, ((Subject) obj).getId());
+            //stmt.executeUpdate();
+            //stmt.executeUpdate("DELETE FROM subjects WHERE id=" + ((Subject) obj).getId());
         }
         else if(obj instanceof Term){
-            stmt.executeUpdate("DELETE FROM terms WHERE id=" + ((Term) obj).getId());
+            stmt = con.prepareStatement("DELETE FROM terms WHERE id=?");
+            stmt.setInt(1, ((Term) obj).getId());
+            //stmt.executeUpdate("DELETE FROM terms WHERE id=" + ((Term) obj).getId());
         }
         else if(obj instanceof Agreement){
-            stmt.executeUpdate("DELETE FROM agreements WHERE id=" + ((Agreement) obj).getId());
+            stmt = con.prepareStatement("DELETE FROM agreements WHERE id=?");
+            stmt.setInt(1, ((Agreement) obj).getId());
+            //stmt.executeUpdate("DELETE FROM agreements WHERE id=" + ((Agreement) obj).getId());
         }
+        else throw new SQLException("Wrong type od Object: " + obj.getClass());
+        stmt.executeUpdate();
     }
     public static void updatePassword(User user, String new_password) throws SQLException{
-        stmt.executeUpdate("UPDATE users SET pass=SHA1('" + new_password + "') WHERE id=" + user.getId());
+        stmt = con.prepareStatement("UPDATE users SET pass=SHA1(?) WHERE id=?");
+        stmt.setString(1, new_password);
+        stmt.setInt(2, user.getId());
+        stmt.executeUpdate();
+        //stmt.executeUpdate("UPDATE users SET pass=SHA1('" + new_password + "') WHERE id=" + user.getId());
+    }
+    public static void updatePassword(int user_id, String new_password) throws SQLException{
+        stmt.executeUpdate("UPDATE users SET pass=SHA1('" + new_password + "') WHERE id=" + user_id);
     }
     public static void closeConn() throws SQLException {
         con.close();

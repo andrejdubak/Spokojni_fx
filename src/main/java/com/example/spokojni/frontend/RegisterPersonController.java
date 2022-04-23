@@ -2,35 +2,49 @@ package com.example.spokojni.frontend;
 
 import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
+import com.example.spokojni.backend.users.Student;
+import com.example.spokojni.backend.users.Teacher;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.Random;
+import java.util.ResourceBundle;
 
-public class RegisterPersonController {
-
-    Logger logger = LogManager.getLogger(RegisterPersonController.class);
+public class RegisterPersonController  implements Initializable  {
 
     public RegisterPersonController() {
-        logger.info("Successful Registration");
         succesfullAlert = new Alert(Alert.AlertType.CONFIRMATION);
         succesfullAlert.setHeaderText("Successful Registration");
         errorAlert = new Alert(Alert.AlertType.ERROR);
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        comboBox.getItems().add("Student");
+        comboBox.getItems().add("Teacher");
+        comboBox.setValue("Student");
+    }
+
     private final Alert succesfullAlert;
     private final Alert errorAlert;
+    private boolean added= false;
+
+    @FXML
+    private ComboBox<String> comboBox;
+
     @FXML
     private TextField userName;
-    @FXML
-    private CheckBox checkBox;
 
     @FXML
     private Button generatePassword;
+
+    @FXML
+    private Button saveUser;
 
     @FXML
     private TextField generatedPassword;
@@ -55,9 +69,7 @@ public class RegisterPersonController {
         nickName.setText(nick);
     }
 
-    @FXML
-    private void generatePassword() {
-        logger.info("New password generated");
+    public static String generateNewPass() {
         int length = 20;
         String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
@@ -75,56 +87,75 @@ public class RegisterPersonController {
         for (int i = 4; i < length; i++) {
             password[i] = combinedChars.charAt(random.nextInt(combinedChars.length()));
         }
-        generatedPassword.setText(String.valueOf(password));
+        return String.valueOf(password);
     }
 
     @FXML
-    private void changeRole() {
-        if(checkBox.isSelected()) {
-            checkBox.setText("Teacher");
-            logger.info("Role teacher selected");
-        }
-        else {
-            checkBox.setText("Student");
-            logger.info("Role student selected");
-        }
+    private void generatePassword() {
+        generatedPassword.setText(generateNewPass());
     }
 
     @FXML
     private void saveUser() throws SQLException, IOException {
-        if (checkValues()) {
-            User user = new User(0, userName.getText(), userEmail.getText(), nickName.getText());
-            logger.info("User saved");
-            try {
-                DB.makeConn();
-            } catch (Exception var3) {
-                var3.printStackTrace();
+        if(added)
+            registerAnotherUser();
+        else {
+            if (checkValues()) {
+                User user;
+                if (Objects.equals(comboBox.getValue(), "Teacher"))
+                    user = new Teacher(0, userName.getText(), userEmail.getText(), nickName.getText());
+                else
+                    user = new Student(0, userName.getText(), userEmail.getText(), nickName.getText());
+                try {
+                    DB.makeConn();
+                } catch (Exception var3) {
+                    var3.printStackTrace();
+                }
+                //registrationSuccessful();
+                try {
+                    if (DB.addUser(user, generatedPassword.getText()))
+                        registrationSuccessful();
+                    else
+                        registrationFailed();
+                } catch (SQLException var2) {
+                    System.out.println("SQLException: " + var2.getMessage());
+                    System.out.println("SQLState: " + var2.getSQLState());
+                    System.out.println("VendorError: " + var2.getErrorCode());
+                    var2.printStackTrace();
+                }
             }
-            registrationSuccessful();
-            /*try {
-                DB.add(user);
-                DB.updatePassword(user, generatedPassword.getText());
-                registrationSuccessful();
-            } catch (SQLException var2) {
-                System.out.println("SQLException: " + var2.getMessage());
-                System.out.println("SQLState: " + var2.getSQLState());
-                System.out.println("VendorError: " + var2.getErrorCode());
-                var2.printStackTrace();
-            }*/
         }
         //
     }
 
+    private void registrationFailed(){
+        errorAlert.setHeaderText("Wrong email address");
+        errorAlert.setContentText("Email address is already taken");
+        errorAlert.showAndWait();
+    }
+
     private void registrationSuccessful() {
-        logger.info("Registration successful");
-        succesfullAlert.setContentText("nickName: "+nickName.getText()+" \npassword: "+generatedPassword.getText());
+        added=true;
+        succesfullAlert.setContentText("nickName: " + nickName.getText() + " \npassword: " + generatedPassword.getText());
+        succesfullAlert.showAndWait();
+        comboBox.setEditable(false);
+        userName.setEditable(false);
+        userEmail.setEditable(false);
+        generatePassword.setVisible(false);
+        saveUser.setText("Register another user");
+    }
+
+    private void registerAnotherUser(){
+        comboBox.setEditable(true);
+        userName.setEditable(true);
+        userEmail.setEditable(true);
+        generatePassword.setVisible(true);
+        added=false;
         userName.setText("");
-        checkBox.setSelected(false);
-        checkBox.setText("Student");
         generatedPassword.setText("");
         userEmail.setText("");
         nickName.setText("");
-        succesfullAlert.showAndWait();
+        saveUser.setText("Save user");
     }
 
     private boolean isValidEmailAddress(String email) {
@@ -150,12 +181,10 @@ public class RegisterPersonController {
                     } else {
                         errorAlert.setHeaderText("Password not generated");
                         errorAlert.setContentText("Password should be generated before saving user");
-
                     }
                 } else {
                     errorAlert.setHeaderText("Email address not valid");
                     errorAlert.setContentText("Email address is not in the correct format");
-
                 }
             }else{
                 errorAlert.setHeaderText("Name not valid");
