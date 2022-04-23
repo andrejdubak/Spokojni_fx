@@ -421,7 +421,7 @@ public class DB {
             stmt.setInt(1, ((User) obj).getId());
             //stmt.executeUpdate("DELETE FROM users WHERE id=" + ((User) obj).getId());
         }
-        if(obj instanceof UserTable){
+        else if(obj instanceof UserTable){
             stmt = con.prepareStatement("DELETE FROM users WHERE id=?");
             stmt.setInt(1, ((UserTable) obj).getId());
             //stmt.executeUpdate("DELETE FROM users WHERE id=" + ((User) obj).getId());
@@ -442,7 +442,6 @@ public class DB {
             stmt.setInt(1, ((Agreement) obj).getId());
             //stmt.executeUpdate("DELETE FROM agreements WHERE id=" + ((Agreement) obj).getId());
         }
-        else throw new SQLException("Wrong type od Object: " + obj.getClass());
         stmt.executeUpdate();
     }
     public static void updatePassword(User user, String new_password) throws SQLException{
