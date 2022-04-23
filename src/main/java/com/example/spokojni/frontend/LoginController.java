@@ -50,6 +50,7 @@ public class LoginController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         language.getItems().add("Slovenčina");
         language.getItems().add("English");
+        language.getItems().add("Deutsch");
         language.setValue("Slovenčina");
     }
 
@@ -76,6 +77,8 @@ public class LoginController implements Initializable {
             Locale.setDefault(new Locale("sk", "SK"));
         else if (language.getSelectionModel().getSelectedItem() == "English")
             Locale.setDefault(new Locale("en", "UK"));
+        else if (language.getSelectionModel().getSelectedItem() == "Deutsch")
+            Locale.setDefault(new Locale("de", "DE"));
         if (user instanceof Student) {
 
             logger.info("Student" + user.getName() + "logged in");
