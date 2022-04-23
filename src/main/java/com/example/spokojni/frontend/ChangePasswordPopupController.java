@@ -38,7 +38,7 @@ public class ChangePasswordPopupController {
     @FXML
     private void saveSettings() {
         if (newPassword.getText().isEmpty()) {
-            logger.warn("No password");
+            logger.warn("log_user_id:" + currentUser.getId() + "No password");
             showError("New password ERROR", "New password cannot be empty");
 
         }
@@ -48,14 +48,14 @@ public class ChangePasswordPopupController {
                     DB.makeConn();
                 } catch (Exception var3) {
                     var3.printStackTrace();
-                    logger.error("No database connection");
+                    logger.error("log_user_id:" + currentUser.getId() + "No database connection");
                 }
                 try {
 
                     if (DB.checkPassword(currentUser.getId(), oldPassword.getText())) {
                         if(isValidPassword(newPassword.getText())) {
                             DB.updatePassword(currentUser.getId(), newPassword.getText());
-                            logger.info("Password changed");
+                            logger.info("log_user_id:" + currentUser.getId() + "Password changed");
                             passwordChangeSuccessful();
                         }
                         else{

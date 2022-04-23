@@ -36,15 +36,15 @@ public class CreateCalendarView {
         try {
             DB.makeConn();
             subjects.addAll(DB.getSubjects());
-            logger.info("Get subjects from database");
+            logger.info("log_user_id:" + user.getId() + " Get subjects from database");
         } catch (SQLException var2) {
             sqlException(var2);
 
-            logger.error("No database connection");
+            logger.error("log_user_id:" + user.getId() + "No database connection");
 
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("No subjects");
+            logger.warn("log_user_id:" + user.getId() + "No subjects");
         }
 
         int counter1 = 0;
@@ -70,7 +70,7 @@ public class CreateCalendarView {
     public void setStudentCalendars() {
         try {
 
-            logger.info("Student calendar setted up");
+            logger.info("log_user_id:" + user.getId() + "Student calendar setted up");
 
             DB.makeConn();
 
@@ -96,7 +96,7 @@ public class CreateCalendarView {
                 }
             }
         } catch (SQLException var2) {
-            logger.warn("No calendar setted up");
+            logger.warn("log_user_id:" + user.getId() + "No calendar setted up");
             sqlException(var2);
         } catch (Exception e) {
             e.printStackTrace();
@@ -106,7 +106,7 @@ public class CreateCalendarView {
     public void setTeacherCalendars() {
         try {
 
-            logger.info("Teacher calendar setted up");
+            logger.info("log_user_id:" + user.getId() + "Teacher calendar setted up");
 
             DB.makeConn();
 
@@ -121,7 +121,7 @@ public class CreateCalendarView {
                 }
             }
         } catch (SQLException var2) {
-            logger.warn("No calendar setted up");
+            logger.warn("log_user_id:" + user.getId() + "No calendar setted up");
             sqlException(var2);
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,7 +129,7 @@ public class CreateCalendarView {
     }
 
     private Entry entryHelper(Term term) {
-        logger.info("Added term");
+        logger.info("log_user_id:" + user.getId() + "Added term");
         terms.add(term);
         //System.out.println(term.getId() + " " + term.getStart_time() + " " + term.getEnd_time());
         Interval interval = new Interval(term.getStart_time(), term.getEnd_time());
@@ -205,7 +205,7 @@ public class CreateCalendarView {
     }
 
     private void updateTerm (Entry entry) {
-        logger.info("Term updated");
+        logger.info("log_user_id:" + user.getId() + "Term updated");
         //vytvori a novy modifikovany term a nahradi ho v array
         int entry_id = parseInt(entry.getId());
         Term term = terms.get(entry_id);
@@ -220,7 +220,7 @@ public class CreateCalendarView {
     }
 
     private Term createTerm (Entry entry) {
-        logger.info("Term created");
+        logger.info("log_user_id:" + user.getId() + "Term created");
         int entry_id = parseInt(entry.getId());
         LocalDateTime new_start = entry.getStartAsLocalDateTime();
         LocalDateTime new_end = entry.getEndAsLocalDateTime();
@@ -232,7 +232,7 @@ public class CreateCalendarView {
         } catch (Exception var2) {
             System.out.println("SQLException: " + var2.getMessage());
             var2.printStackTrace();
-            logger.error("No database connection");
+            logger.error("log_user_id:" + user.getId() + "No database connection");
         }
         return new Term(entry_id, subject, new_start, new_end, new_desc);
     }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration packages="com.example.spokojni.MyCustomAppender">
+
+    <Appenders>
+        <MyCustomAppender name="MyCustomAppender">
+            <PatternLayout
+                    pattern="[%t] %c{1}  %msg [%level]" />
+        </MyCustomAppender>
+    </Appenders>
+
+    <Loggers>
+        <Root level="debug" additivity="false">
+            <AppenderRef ref="MyCustomAppender" />
+        </Root>
+    </Loggers>
+
+</Configuration>
