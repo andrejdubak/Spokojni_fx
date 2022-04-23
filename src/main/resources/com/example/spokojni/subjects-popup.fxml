@@ -12,14 +12,14 @@
    <content>
       <AnchorPane prefHeight="278.0" prefWidth="311.0">
          <children>
-            <TextField fx:id="subject_name" alignment="CENTER" layoutX="128.0" layoutY="310.0" prefHeight="25.0" prefWidth="207.0" promptText="subject name" />
-            <Button fx:id="add_subject" layoutX="193.0" layoutY="355.0" mnemonicParsing="false" onAction="#addSubject" text="add subject" />
+            <TextField fx:id="subject_name" alignment="CENTER" layoutX="128.0" layoutY="310.0" prefHeight="25.0" prefWidth="207.0" promptText="%Subject_name" />
+            <Button fx:id="add_subject" layoutX="193.0" layoutY="355.0" mnemonicParsing="false" onAction="#addSubject" text="%Add_subject" />
             <TableView fx:id="table" layoutX="19.0" layoutY="14.0" prefHeight="274.0" prefWidth="438.0">
               <columns>
                 <TableColumn fx:id="table_column" prefWidth="436.6666660308838" text="C1" />
               </columns>
             </TableView>
-            <Button fx:id="load_subject" layoutX="369.0" layoutY="297.0" mnemonicParsing="false" onAction="#loadSubjects" text="Load subjects" />
+            <Button fx:id="load_subject" layoutX="369.0" layoutY="297.0" mnemonicParsing="false" onAction="#loadSubjects" text="%Load_subjects" />
          </children>
       </AnchorPane>
    </content>
