@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -19,9 +20,6 @@
                 <TableColumn fx:id="roleTable" prefWidth="119.0" text="%Role" />
             </columns>
         </TableView>
-
-        <Button fx:id="Students" layoutX="14.0" layoutY="442.0" mnemonicParsing="false" onAction="#showStudents" prefHeight="35.0" prefWidth="85.0" text="%Students" />
-        <Button fx:id="Teachers" layoutX="112.0" layoutY="442.0" mnemonicParsing="false" onAction="#showTeachers" prefHeight="35.0" prefWidth="85.0" text="%Teachers" />
         <Button fx:id="Profile" layoutX="593.0" layoutY="58.0" mnemonicParsing="false" onAction="#ProfileClick" prefHeight="75.0" prefWidth="149.0" text="%Profile" />
         <Button fx:id="exportPeople" layoutX="509.0" layoutY="231.0" mnemonicParsing="false" onAction="#exportClick" prefHeight="75.0" prefWidth="105.0" text="%Export_people" />
         <Button fx:id="importPeople" layoutX="509.0" layoutY="331.0" mnemonicParsing="false" onAction="#importClick" prefHeight="75.0" prefWidth="105.0" text="%Import_people" />
@@ -40,6 +38,7 @@
                 <Font size="16.0" />
             </font>
         </Text>
-        <Button fx:id="allUsers" layoutX="218.0" layoutY="442.0" mnemonicParsing="false" onAction="#showUsers" prefHeight="35.0" prefWidth="85.0" text="%All" />
+      <CheckBox fx:id="showS" layoutX="20.0" layoutY="485.0" mnemonicParsing="false" onAction="#loadUsers" text="%Students" />
+      <CheckBox fx:id="showT" layoutX="108.0" layoutY="485.0" mnemonicParsing="false" onAction="#loadUsers" text="%Teachers" />
     </children>
 </AnchorPane>

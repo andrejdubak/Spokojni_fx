@@ -14,6 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -49,17 +50,22 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AdminViewController implements Initializable {
+
     private User currentUser;
-    ArrayList<Student> students = new ArrayList<>();
-    ArrayList<Teacher> teachers = new ArrayList<>();
-    ArrayList<UserTable> users = new ArrayList<>();
-    ObservableList<UserTable> student = FXCollections.observableArrayList(users);
+    private final ArrayList<Student> students = new ArrayList<>();
+    private final ArrayList<Teacher> teachers = new ArrayList<>();
+    private final ArrayList<UserTable> users = new ArrayList<>();
+    private final ObservableList<UserTable> student = FXCollections.observableArrayList(users);
+
+    @FXML
+    private CheckBox showS;
+
+    @FXML
+    private CheckBox showT;
 
     @FXML
     private Button Profile;
 
-    @FXML
-    private Button Students;
 
     @FXML
     private TableView<UserTable> Table;
@@ -73,8 +79,6 @@ public class AdminViewController implements Initializable {
     @FXML
     private TableColumn<UserTable, String> roleTable;
 
-    @FXML
-    private Button Teachers;
 
     @FXML
     private Button exportPeople;
@@ -100,7 +104,7 @@ public class AdminViewController implements Initializable {
     }
 
 
-    private void Teacher(){
+    private void loadTeachers(){
         try {
             DB.makeConn();
         } catch (Exception var3) {
@@ -122,7 +126,7 @@ public class AdminViewController implements Initializable {
 
         }
     }
-    private void Student(){
+    private void loadStudents(){
         try {
             DB.makeConn();
         } catch (Exception var3) {
@@ -142,38 +146,38 @@ public class AdminViewController implements Initializable {
         }
 
     }
-    @FXML
-    void showUsers(ActionEvent event)  {
+    private void showUsers()  {
         student.clear();
         teachers.clear();
         students.clear();
 
-        Student();
-        Teacher();
+        loadStudents();
+        loadTeachers();
     }
-
-    @FXML
-    void showStudents(ActionEvent event) {
+    private void showStudents() {
         student.clear();
         students.clear();
-        Student();
+        loadStudents();
     }
 
-    @FXML
-    void showTeachers(ActionEvent event) {
+
+   private void showTeachers() {
         student.clear();
         teachers.clear();
-        Teacher();
+        loadTeachers();
 
     }
 
     @FXML
     private void registerPersonClick() throws IOException{
-        Stage stage = new Stage();
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("register-person-view.fxml"));
         ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
         fxmlLoader.setResources(rb);
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        Parent dialogPane = fxmlLoader.load();
+        RegisterPersonController registerPersonController = fxmlLoader.getController();
+        registerPersonController.setAdmin(this);
+        Scene scene = new Scene(dialogPane, 600, 400);
+        Stage stage = new Stage();
         stage.setTitle("User Registration");
         stage.setResizable(false);
         stage.setScene(scene);
@@ -363,11 +367,31 @@ public class AdminViewController implements Initializable {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setDialogPane(dialogPane);
         dialog.setTitle("Selected user");
-        adminPopupController.setCurrentUser(user,dialog,exportPeople);
+        adminPopupController.setCurrentUser(user,dialog,exportPeople,this);
 
-        Optional<ButtonType> clickedButton = dialog.showAndWait();
+        dialog.showAndWait();
     }
     public void setCurrentUser(User user){
         this.currentUser=user;
+    }
+
+    public void refreshUsers(){
+        loadUsers();
+    }
+
+    @FXML
+    private void loadUsers() {
+        if (showS.isSelected() && showT.isSelected()){
+            showUsers();
+        }
+        else{
+            if(showS.isSelected())
+                showStudents();
+            if(showT.isSelected())
+                showTeachers();
+        }
+        if (!showS.isSelected() && !showT.isSelected()){
+            student.clear();
+        }
     }
 }

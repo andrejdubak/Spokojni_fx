@@ -18,9 +18,10 @@ import java.util.ResourceBundle;
 public class RegisterPersonController  implements Initializable  {
 
     public RegisterPersonController() {
-        succesfullAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        succesfullAlert.setHeaderText("Successful Registration");
+        successfulAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        successfulAlert.setHeaderText("Successful Registration");
         errorAlert = new Alert(Alert.AlertType.ERROR);
+
     }
 
     @Override
@@ -29,10 +30,14 @@ public class RegisterPersonController  implements Initializable  {
         comboBox.getItems().add("Teacher");
         comboBox.setValue("Student");
     }
+    public void setAdmin(AdminViewController admin){
+        this.admin=admin;
+    }
 
-    private final Alert succesfullAlert;
+    private final Alert successfulAlert;
     private final Alert errorAlert;
     private boolean added= false;
+    private AdminViewController admin;
 
     @FXML
     private ComboBox<String> comboBox;
@@ -135,9 +140,10 @@ public class RegisterPersonController  implements Initializable  {
     }
 
     private void registrationSuccessful() {
+        admin.refreshUsers();
         added=true;
-        succesfullAlert.setContentText("nickName: " + nickName.getText() + " \npassword: " + generatedPassword.getText());
-        succesfullAlert.showAndWait();
+        successfulAlert.setContentText("nickName: " + nickName.getText() + " \npassword: " + generatedPassword.getText());
+        successfulAlert.showAndWait();
         comboBox.setEditable(false);
         userName.setEditable(false);
         userEmail.setEditable(false);

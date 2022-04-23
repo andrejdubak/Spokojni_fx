@@ -22,6 +22,7 @@ public class AdminPopupController {
     private UserTable user;
     private Dialog<ButtonType> dialog;
     private Button button;
+    private AdminViewController admin;
 
     @FXML
     private Button addSubject;
@@ -41,9 +42,10 @@ public class AdminPopupController {
     @FXML
     private Button newPassword;
 
-    public void setCurrentUser(UserTable user, Dialog<ButtonType> dialog, Button button){
+    public void setCurrentUser(UserTable user, Dialog<ButtonType> dialog, Button button, AdminViewController admin ){
         this.user=user;
         this.button=button;
+        this.admin=admin;
         nameOfUser.setText(user.getName());
         if (Objects.equals(user.getRole(), "Student")) {
             addSubject.setVisible(false);
@@ -82,6 +84,7 @@ public class AdminPopupController {
             }
             try {
                 DB.delete(user);
+                admin.refreshUsers();
                 dialog.close();
             } catch (SQLException var2) {
                 System.out.println("SQLException: " + var2.getMessage());
