@@ -105,7 +105,7 @@ public class AdminViewController implements Initializable {
     @FXML
     private void logoutClick() throws IOException{
         new ChangeWindowController( "login-view.fxml", new Locale("en", "UK")).changeWindow(logOut);
-        logger.info("Admin logget out");
+        logger.info("Admin logged out");
     }
 
 
@@ -114,7 +114,7 @@ public class AdminViewController implements Initializable {
             DB.makeConn();
         } catch (Exception var3) {
             var3.printStackTrace();
-            logger.error("No database conncetion");
+            logger.error("No database connection");
         }
 
         try {
@@ -138,7 +138,7 @@ public class AdminViewController implements Initializable {
             DB.makeConn();
         } catch (Exception var3) {
             var3.printStackTrace();
-            logger.error("No database conncetion");
+            logger.error("No database connection");
         }
 
         try {

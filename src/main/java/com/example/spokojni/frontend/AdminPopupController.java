@@ -9,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -19,6 +21,7 @@ import java.util.ResourceBundle;
 
 public class AdminPopupController {
 
+    Logger logger = LogManager.getLogger(AdminPopupController.class);
     private UserTable user;
     private Dialog<ButtonType> dialog;
     private Button button;
@@ -83,6 +86,7 @@ public class AdminPopupController {
                 var3.printStackTrace();
             }
             try {
+                logger.info("USer" + user.getName() + "deleted");
                 DB.delete(user);
                 admin.refreshUsers();
                 dialog.close();
@@ -91,6 +95,7 @@ public class AdminPopupController {
                 System.out.println("SQLState: " + var2.getSQLState());
                 System.out.println("VendorError: " + var2.getErrorCode());
                 var2.printStackTrace();
+                logger.error("No database connection");
             }
         }
     }
@@ -99,6 +104,7 @@ public class AdminPopupController {
     private void logInUser() throws IOException {
         dialog.close();
         if(Objects.equals(this.user.getRole(), "Student")) {
+            logger.info("Admin logged as" + user.getName());
             ChangeWindowController controller = new ChangeWindowController("student-view.fxml", Locale.getDefault());
             StudentViewController studentViewController = controller.getFxmlLoader().getController();
             Student student = new Student(this.user.getId(),this.user.getName(),this.user.getEmail(),"");
@@ -106,6 +112,7 @@ public class AdminPopupController {
             controller.changeWindow(this.button);
         }
         else{
+            logger.info("Admin logged as" + user.getName());
             ChangeWindowController controller = new ChangeWindowController("teacher-view.fxml", Locale.getDefault());
             TeacherViewController teacherViewController = controller.getFxmlLoader().getController();
             Teacher teacher = new Teacher(this.user.getId(),this.user.getName(),this.user.getEmail(),"");

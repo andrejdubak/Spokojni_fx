@@ -78,7 +78,7 @@ public class LoginController implements Initializable {
             Locale.setDefault(new Locale("en", "UK"));
         if (user instanceof Student) {
 
-            logger.info("Student logged in");
+            logger.info("Student" + user.getName() + "logged in");
 
             ChangeWindowController controller = new ChangeWindowController("student-view.fxml", Locale.getDefault());
 
@@ -88,7 +88,7 @@ public class LoginController implements Initializable {
         }
         else if (user instanceof Teacher) {
 
-            logger.info("Teacher logged in");
+            logger.info("Teacher" + user.getName() + "logged in");
 
             ChangeWindowController controller = new ChangeWindowController("teacher-view.fxml", Locale.getDefault());
 

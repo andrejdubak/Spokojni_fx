@@ -20,7 +20,7 @@ public class ChangeWindowController {
     private Parent pane;
     Logger logger = LogManager.getLogger(ChangeWindowController.class);
     public ChangeWindowController(String file, Locale loc) throws IOException {
-       logger.info("Scene changed");
+       logger.info("Scene changed to" + file);
         fxmlLoader = new FXMLLoader(MainApplication.class.getResource(file));
         ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", loc));
         fxmlLoader.setResources(rb);
@@ -32,7 +32,6 @@ public class ChangeWindowController {
     }
 
     public void changeWindow(Button button) throws IOException {
-        logger.info("Scene changed");
         Stage stage = (Stage) button.getScene().getWindow();
         stage.getScene().setRoot(pane);
     }

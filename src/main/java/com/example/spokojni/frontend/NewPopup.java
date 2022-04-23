@@ -118,8 +118,10 @@ public class NewPopup extends GridPane {
                 try {
                     DB.makeConn();
                     DB.add(new Agreement(1, new Student(user.getId(), user.getName(), user.getEmail(), user.getLogin()), terms.get(parseInt(entry.getId()))));
+                    logger.info("Added to calendar");
                 } catch (Exception e) {
                     e.printStackTrace();
+                    logger.error("No database connection");
                 }
             }
             else {
@@ -130,8 +132,10 @@ public class NewPopup extends GridPane {
                         Agreement agr = DB.getAgreement( user.getId(), terms.get(parseInt(entry.getId())).getId());
                         DB.makeConn();
                         DB.delete(agr);//vymaze z databazy agreement
+                        logger.info("Deleted agreement");
                     } catch (Exception e) {
                         e.printStackTrace();
+                        logger.error("No database connection");
                     }
                 }
             }
@@ -168,7 +172,7 @@ public class NewPopup extends GridPane {
             //System.out.println(list);
         } catch (Exception var3) {
             var3.printStackTrace();
-            logger.error("No database conncetion");
+            logger.error("No database connection");
         }
         return list.size();
     }

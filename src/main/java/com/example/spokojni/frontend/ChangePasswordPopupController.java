@@ -50,7 +50,7 @@ public class ChangePasswordPopupController {
                     DB.makeConn();
                 } catch (Exception var3) {
                     var3.printStackTrace();
-                    logger.error("No database conncetion");
+                    logger.error("No database connection");
                 }
                 try {
 

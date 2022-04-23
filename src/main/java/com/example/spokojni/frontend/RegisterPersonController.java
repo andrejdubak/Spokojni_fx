@@ -7,6 +7,8 @@ import com.example.spokojni.backend.users.Teacher;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -17,6 +19,8 @@ import java.util.ResourceBundle;
 
 public class RegisterPersonController  implements Initializable  {
 
+    static Logger logger = LogManager.getLogger(RegisterPersonController.class);
+
     public RegisterPersonController() {
         successfulAlert = new Alert(Alert.AlertType.CONFIRMATION);
         successfulAlert.setHeaderText("Successful Registration");
@@ -26,6 +30,7 @@ public class RegisterPersonController  implements Initializable  {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        logger.info("initialize");
         comboBox.getItems().add("Student");
         comboBox.getItems().add("Teacher");
         comboBox.setValue("Student");
@@ -92,6 +97,7 @@ public class RegisterPersonController  implements Initializable  {
         for (int i = 4; i < length; i++) {
             password[i] = combinedChars.charAt(random.nextInt(combinedChars.length()));
         }
+        logger.info("password generated");
         return String.valueOf(password);
     }
 
@@ -122,10 +128,12 @@ public class RegisterPersonController  implements Initializable  {
                         registrationSuccessful();
                     else
                         registrationFailed();
+
                 } catch (SQLException var2) {
                     System.out.println("SQLException: " + var2.getMessage());
                     System.out.println("SQLState: " + var2.getSQLState());
                     System.out.println("VendorError: " + var2.getErrorCode());
+                    logger.error("No database connection");
                     var2.printStackTrace();
                 }
             }
@@ -134,12 +142,14 @@ public class RegisterPersonController  implements Initializable  {
     }
 
     private void registrationFailed(){
+        logger.info(" Registration failed");
         errorAlert.setHeaderText("Wrong email address");
         errorAlert.setContentText("Email address is already taken");
         errorAlert.showAndWait();
     }
 
     private void registrationSuccessful() {
+        logger.info("Registration successful");
         admin.refreshUsers();
         added=true;
         successfulAlert.setContentText("nickName: " + nickName.getText() + " \npassword: " + generatedPassword.getText());

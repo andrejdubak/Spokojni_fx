@@ -8,11 +8,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
 
 public class GeneratePasswordController {
-
+    Logger logger = LogManager.getLogger(GeneratePasswordController.class);
     @FXML
     private Button save;
     @FXML
@@ -39,6 +41,7 @@ public class GeneratePasswordController {
     }
 
     private void passwordChangeSuccessful() {
+        logger.info("Password changed successfully");
         successfulAlert.showAndWait();
     }
 
@@ -51,9 +54,11 @@ public class GeneratePasswordController {
         }
         try {
             DB.updatePassword(user.getId(), generated_password.getText());
+            logger.info("Password saved");
             passwordChangeSuccessful();
             dialog.close();
         } catch (SQLException var2) {
+            logger.error("No database connection");
             System.out.println("SQLException: " + var2.getMessage());
             System.out.println("SQLState: " + var2.getSQLState());
             System.out.println("VendorError: " + var2.getErrorCode());

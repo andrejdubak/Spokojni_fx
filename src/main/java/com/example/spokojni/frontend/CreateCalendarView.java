@@ -40,7 +40,7 @@ public class CreateCalendarView {
         } catch (SQLException var2) {
             sqlException(var2);
 
-            logger.error("No database conncetion");
+            logger.error("No database connection");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -232,7 +232,7 @@ public class CreateCalendarView {
         } catch (Exception var2) {
             System.out.println("SQLException: " + var2.getMessage());
             var2.printStackTrace();
-            logger.error("No database conncetion");
+            logger.error("No database connection");
         }
         return new Term(entry_id, subject, new_start, new_end, new_desc);
     }
