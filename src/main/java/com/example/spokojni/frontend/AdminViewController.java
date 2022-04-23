@@ -356,6 +356,8 @@ public class AdminViewController implements Initializable {
 
     private void chosenUser(UserTable user) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("admin-popup.fxml"));
+        ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
+        fxmlLoader.setResources(rb);
         DialogPane dialogPane = fxmlLoader.load();
         AdminPopupController adminPopupController = fxmlLoader.getController();
         Dialog<ButtonType> dialog = new Dialog<>();

@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class AdminPopupController {
 
@@ -53,6 +54,8 @@ public class AdminPopupController {
     @FXML
     private void generateNewPassword() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("generate-password-popup.fxml"));
+        ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
+        fxmlLoader.setResources(rb);
         DialogPane dialogPane = fxmlLoader.load();
         GeneratePasswordController generatePasswordController = fxmlLoader.getController();
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -93,14 +96,14 @@ public class AdminPopupController {
     private void logInUser() throws IOException {
         dialog.close();
         if(Objects.equals(this.user.getRole(), "Student")) {
-            ChangeWindowController controller = new ChangeWindowController("student-view.fxml", new Locale("en", "UK"));
+            ChangeWindowController controller = new ChangeWindowController("student-view.fxml", Locale.getDefault());
             StudentViewController studentViewController = controller.getFxmlLoader().getController();
             Student student = new Student(this.user.getId(),this.user.getName(),this.user.getEmail(),"");
             studentViewController.setCurrentUser(student);
             controller.changeWindow(this.button);
         }
         else{
-            ChangeWindowController controller = new ChangeWindowController("teacher-view.fxml", new Locale("en", "UK"));
+            ChangeWindowController controller = new ChangeWindowController("teacher-view.fxml", Locale.getDefault());
             TeacherViewController teacherViewController = controller.getFxmlLoader().getController();
             Teacher teacher = new Teacher(this.user.getId(),this.user.getName(),this.user.getEmail(),"");
             teacherViewController.setCurrentUser(teacher);
@@ -112,6 +115,8 @@ public class AdminPopupController {
     @FXML
     private void addUser() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("subjects-popup.fxml"));
+        ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
+        fxmlLoader.setResources(rb);
         DialogPane dialogPane = fxmlLoader.load();
         SubjectsController addSubjectController = fxmlLoader.getController();
         Dialog<ButtonType> dialog = new Dialog<>();
