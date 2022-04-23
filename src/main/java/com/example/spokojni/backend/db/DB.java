@@ -292,21 +292,21 @@ public class DB {
     public static boolean checkPassword(int user_id, String password) throws SQLException{
         stmt = con.prepareStatement("SELECT pass FROM users WHERE id=? AND pass=SHA1(?)");
         stmt.setInt(1, user_id);
-        stmt.setString(1, password);
+        stmt.setString(2, password);
         ResultSet rs = stmt.executeQuery();
         return rs.next();
     }
     public static boolean checkPassword(String username, String password) throws SQLException{
         stmt = con.prepareStatement("SELECT pass FROM users WHERE login=? AND pass=SHA1(?)");
         stmt.setString(1, username);
-        stmt.setString(1, password);
+        stmt.setString(2, password);
         ResultSet rs = stmt.executeQuery();
         return rs.next();
     }
     public static boolean checkPassword(User user, String password) throws SQLException{
         stmt = con.prepareStatement("SELECT pass FROM users WHERE id=? AND pass=SHA1(?)");
         stmt.setInt(1, user.getId());
-        stmt.setString(1, password);
+        stmt.setString(2, password);
         ResultSet rs = stmt.executeQuery();
         return rs.next();
     }
@@ -416,7 +416,6 @@ public class DB {
         stmt.executeUpdate();
     }
     public static void delete(Object obj) throws SQLException {
-        stmt = con.prepareStatement("DELETE FROM $tableName WHERE id=?");
         if(obj instanceof User){
             stmt = con.prepareStatement("DELETE FROM users WHERE id=?");
             stmt.setInt(1, ((User) obj).getId());
