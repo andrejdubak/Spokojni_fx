@@ -24,6 +24,6 @@
         </AnchorPane>
     </content>
     <buttonTypes>
-        <ButtonType fx:constant="CANCEL" text="%CANCEL" />
+        <ButtonType fx:constant="CANCEL"/>
     </buttonTypes>
 </DialogPane>
