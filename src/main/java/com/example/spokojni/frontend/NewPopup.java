@@ -98,6 +98,7 @@ public class NewPopup extends GridPane {
         Label endDate = new Label(rb.getString("Exam_to:") + entry.getEndAsLocalDateTime().format(formatter));
         this.add(endDate, 0,3);
         if (!updateNumberOfSignedStudents() && !checkBox.isSelected()) checkBox.setDisable(true); //disabluje moznost pridat predmet do svojich ak uz nieje miesto
+        if (checkIfAlreadyAdded(user.getId())) checkBox.setDisable(true); //disabluje checkbox ak uz je termin z daneho terminu pridany
         this.add(numberOfStudents, 0,4);
 
         entry.calendarProperty().addListener((observable, oldCalendar, newCalendar) -> {
@@ -141,6 +142,20 @@ public class NewPopup extends GridPane {
             updateNumberOfSignedStudents();
             //System.out.println(entry.getCalendar().getName());
         });
+    }
+
+    private boolean checkIfAlreadyAdded(int userId) {
+        try {
+            DB.makeConn();
+            ArrayList<Agreement> agreements = DB.getAgreementsByStudentId(userId);
+            for (Agreement agr : agreements) {
+                if (agr.getTerm().getSubject().getName().equals(entry.getCalendar().getName()))
+                    return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private boolean updateNumberOfSignedStudents() {
