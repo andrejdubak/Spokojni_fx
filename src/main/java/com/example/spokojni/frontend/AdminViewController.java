@@ -313,19 +313,17 @@ public class AdminViewController implements Initializable {
                                 Integer.parseInt(eElement.getElementsByTagName("role").item(0).getTextContent()));
                     }
                 }
-
+                refreshUsers();
             }
             catch (Exception e)
             {
                 logger.warn("log_user_id:" + currentUser.getId() + "Import was unsuccessful");
                 e.printStackTrace();
             }
-            // TODO: mame user array importedUsers, ktory treba hodit do tabulky
         }
         else{
-            // TODO: error, zvoleny subor nie je xml ;)
+            logger.warn("log_user_id:" + currentUser.getId() + "Import was unsuccessful");
         }
-
 
     }
     @Override

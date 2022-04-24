@@ -23,7 +23,7 @@
         <TextField fx:id="search" layoutX="348.0" layoutY="424.0" prefHeight="35.0" prefWidth="149.0" promptText="%Search" />
 
 
-        <Text layoutX="20.0" layoutY="30.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%Welcome" wrappingWidth="92.30078125">
+        <Text layoutX="20.0" layoutY="30.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%Welcome" wrappingWidth="100.0">
             <font>
                 <Font size="17.0" />
             </font>
