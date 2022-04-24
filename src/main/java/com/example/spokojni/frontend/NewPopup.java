@@ -130,9 +130,11 @@ public class NewPopup extends GridPane {
                         entry.setCalendar(cal);
                     try {
                         Agreement agr = DB.getAgreement( user.getId(), terms.get(parseInt(entry.getId())).getId());
-                        DB.makeConn();
-                        DB.delete(agr);//vymaze z databazy agreement
-                        logger.info("Deleted agreement");
+                        if (agr != null) {
+                            DB.makeConn();
+                            DB.delete(agr);//vymaze z databazy agreement
+                            logger.info("Deleted agreement");
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         logger.error("No database connection");

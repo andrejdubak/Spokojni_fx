@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 public class MainApplication extends Application {
 
-     Logger logger = LogManager.getLogger();
+     Logger logger = LogManager.getLogger(MainApplication.class);
     @Override
     public void start(Stage stage) throws IOException {
 
@@ -34,7 +34,8 @@ public class MainApplication extends Application {
         } catch (SQLException e) {
             e.printStackTrace();
         }*/
-        logger.info("App started!");
+        logger.info("App started");
+
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("login-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1500, 1000);
         stage.setTitle("Hello!");

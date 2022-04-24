@@ -66,7 +66,7 @@ public class SubjectsController implements Initializable  {
             });
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("Cannot select user");
+            logger.warn("log_user_id:" + teacher.getId() + "Cannot select user");
         }
     }
 
@@ -83,7 +83,7 @@ public class SubjectsController implements Initializable  {
                 DB.makeConn();
             } catch (Exception var3) {
                 var3.printStackTrace();
-                logger.error("No database connection");
+                logger.error("log_user_id:" + teacher.getId() + "No database connection");
             }
             try {
                 if(!DB.addSubject(subject))
@@ -114,18 +114,18 @@ public class SubjectsController implements Initializable  {
             DB.makeConn();
         } catch (Exception var3) {
             var3.printStackTrace();
-            logger.error("No database connection");
+            logger.error("log_user_id:" + teacher.getId() + "No database connection");
         }
 
         try {
             load_subjects.addAll(DB.getSubjectsByTeacherId(teacher.getId()));
-            logger.info("Subjects loaded");
+            logger.info("log_user_id:" + teacher.getId() + "Subjects loaded");
         } catch (SQLException e) {
             System.out.println("SQLException: " + e.getMessage());
             System.out.println("SQLState: " + e.getSQLState());
             System.out.println("VendorError: " + e.getErrorCode());
             e.printStackTrace();
-            logger.warn("Cannot load subjects");
+            logger.warn("log_user_id:" + teacher.getId() + "Cannot load subjects");
         }
         for (Subject s : load_subjects){
             subjects.add(new Subject(s.getId(),s.getName(), s.getMaster()));
@@ -145,18 +145,18 @@ public class SubjectsController implements Initializable  {
                 DB.makeConn();
             } catch (Exception var3) {
                 var3.printStackTrace();
-                logger.error("No database connection");
+                logger.error("log_user_id:" + teacher.getId() + "No database connection");
             }
             try {
+                logger.info("log_user_id:" + teacher.getId() + "Subject deleted" + subject.getName());
                 DB.delete(subject);
-                logger.info("Subject deleted");
                 loadSubjects();
             } catch (SQLException var2) {
                 System.out.println("SQLException: " + var2.getMessage());
                 System.out.println("SQLState: " + var2.getSQLState());
                 System.out.println("VendorError: " + var2.getErrorCode());
                 var2.printStackTrace();
-                logger.warn("Subject was not deleted");
+                logger.warn("log_user_id:" + teacher.getId() + "Subject was not deleted");
             }
         }
     }

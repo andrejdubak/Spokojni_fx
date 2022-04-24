@@ -85,7 +85,7 @@ public class AdminPopupController {
                 var3.printStackTrace();
             }
             try {
-                logger.info("USer" + user.getName() + "deleted");
+                logger.info("User" + user.getName() + "deleted");
                 DB.delete(user);
                 admin.refreshUsers();
                 dialog.close();

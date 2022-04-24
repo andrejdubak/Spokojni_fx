@@ -105,8 +105,10 @@ public class AdminViewController implements Initializable {
 
     @FXML
     private void logoutClick() throws IOException{
+
+        logger.info("log_user_id:" + currentUser.getId() +  "Admin logged out");
         new ChangeWindowController( "login-view.fxml", Locale.getDefault()).changeWindow(logOut);
-        logger.info("Admin logged out");
+
     }
 
     private void loadTeachers(){
@@ -114,7 +116,7 @@ public class AdminViewController implements Initializable {
             DB.makeConn();
         } catch (Exception var3) {
             var3.printStackTrace();
-            logger.error("No database connection");
+            logger.error("log_user_id:" + currentUser.getId() + "No database connection");
         }
 
         try {
@@ -125,7 +127,7 @@ public class AdminViewController implements Initializable {
             System.out.println("SQLState: " + e.getSQLState());
             System.out.println("VendorError: " + e.getErrorCode());
             e.printStackTrace();
-            logger.warn("No teachers found");
+            logger.warn("log_user_id:" + currentUser.getId() + "No teachers found");
         }
 
         for (User t : teachers){
@@ -137,7 +139,7 @@ public class AdminViewController implements Initializable {
             DB.makeConn();
         } catch (Exception var3) {
             var3.printStackTrace();
-            logger.error("No database connection");
+            logger.error("log_user_id:" + currentUser.getId() + "No database connection");
         }
 
         try {
@@ -147,7 +149,7 @@ public class AdminViewController implements Initializable {
             System.out.println("SQLState: " + e.getSQLState());
             System.out.println("VendorError: " + e.getErrorCode());
             e.printStackTrace();
-            logger.warn("No students found");
+            logger.warn("log_user_id:" + currentUser.getId() + "No students found");
         }
         for (User s : students){
             student.add(new UserTable(s.getName(), s.getEmail(), "Student", s.getId()));
@@ -176,7 +178,7 @@ public class AdminViewController implements Initializable {
 
     @FXML
     private void registerPersonClick() throws IOException{
-        logger.info("New person register");
+        logger.info("log_user_id:" + currentUser.getId() + "New person register");
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("register-person-view.fxml"));
         fxmlLoader.setResources(rb);
         Parent dialogPane = fxmlLoader.load();
@@ -194,7 +196,7 @@ public class AdminViewController implements Initializable {
     @FXML
     private void ProfileClick() throws IOException {
 
-        logger.info("Show profile");
+        logger.info("log_user_id:" + currentUser.getId() + "Show profile");
       //  FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("profile-dialog.fxml"));
 
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("change-password-dialog.fxml"));
@@ -257,9 +259,9 @@ public class AdminViewController implements Initializable {
             DOMSource source = new DOMSource(doc);
             StreamResult result = new StreamResult(output);
             transformer.transform(source, result);
-            logger.info("Users exported");
+            logger.info("log_user_id:" + currentUser.getId() + "Users exported");
         } catch (IOException | TransformerException e) {
-            logger.warn("Export was unsuccessful");
+            logger.warn("log_user_id:" + currentUser.getId() + "Export was unsuccessful");
             e.printStackTrace();
         }
     }
@@ -281,7 +283,7 @@ public class AdminViewController implements Initializable {
                 doc.getDocumentElement().normalize();
                 NodeList nodeList = doc.getElementsByTagName("user");
                 User[] importedUsers = new User[nodeList.getLength()];
-                logger.info("Users imported");
+                logger.info("log_user_id:" + currentUser.getId() + "Users imported");
                 for (int itr = 0; itr < nodeList.getLength(); itr++)
                 {
                     Node node = nodeList.item(itr);
@@ -300,7 +302,7 @@ public class AdminViewController implements Initializable {
             }
             catch (Exception e)
             {
-                logger.warn("Import was unsuccessful");
+                logger.warn("log_user_id:" + currentUser.getId() + "Import was unsuccessful");
                 e.printStackTrace();
             }
             // TODO: mame user array importedUsers, ktory treba hodit do tabulky
@@ -324,7 +326,7 @@ public class AdminViewController implements Initializable {
 
                     try {
                         chosenUser(Table.getSelectionModel().getSelectedItem());
-                        logger.info("User selected");
+                        logger.info("log_user_id:" + currentUser.getId() + "User selected");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -332,7 +334,7 @@ public class AdminViewController implements Initializable {
                 }});
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("Problem with selection");
+            logger.warn("log_user_id:" + currentUser.getId() + "Problem with selection");
         }
 
 
@@ -358,11 +360,11 @@ public class AdminViewController implements Initializable {
 
 
                     if (userFound && userName.getName().toLowerCase().contains(searchedName.replaceFirst("name: ", ""))){
-                        logger.info("Filter by user name");
+                        logger.info("log_user_id:" + currentUser.getId() + "Filter by user name");
                         return true;
                     }
                     if(emailFound && userName.getEmail().toLowerCase().contains(searchedName.replaceFirst("email: ", ""))){
-                        logger.info("Filter by user email");
+                        logger.info("log_user_id:" + currentUser.getId() + "Filter by user email");
                         return true;
                     }
 

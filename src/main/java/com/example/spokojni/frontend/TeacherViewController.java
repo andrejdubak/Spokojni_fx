@@ -36,7 +36,7 @@ public class TeacherViewController {
             DB.makeConn();
         } catch (Exception var3) {
             var3.printStackTrace();
-            logger.error("No database connection");
+            logger.error("log_user_id:" + currentUser.getId() + "No database connection");
         }
 
         System.out.println("save");
@@ -45,7 +45,7 @@ public class TeacherViewController {
             for (Term term : cw.getTerms()) {
                 //System.out.println(term.toString());
                 DB.update(term);
-                logger.info("Term updated, id:" + term.getId());
+                logger.info("log_user_id:" + currentUser.getId() + "Term updated, id:" + term.getId());
             }
 
             for (Term term : cw.getNew_terms()) {
