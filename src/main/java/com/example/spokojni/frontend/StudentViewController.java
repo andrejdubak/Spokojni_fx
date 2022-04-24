@@ -2,6 +2,7 @@ package com.example.spokojni.frontend;
 
 import com.calendarfx.view.CalendarView;
 import com.example.spokojni.backend.User;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 
 public class StudentViewController {
@@ -21,7 +22,8 @@ public class StudentViewController {
 
     @FXML
     private void saveClick() {
-        System.out.println("save");
+        Platform.exit();
+        System.exit(0);
     }
 
     public void setCurrentUser(User user){

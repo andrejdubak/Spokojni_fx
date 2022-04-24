@@ -52,7 +52,7 @@ public class MyCustomAppender extends AbstractAppender {
 
             //System.out.println(log);
             if(log.contains("[DEBUG]")) return;
-            if(log.contains("[ERROR]")) return;
+            if(log.contains("CalendarParserImpl")) return;
 
             try {
                 DB.makeConn();

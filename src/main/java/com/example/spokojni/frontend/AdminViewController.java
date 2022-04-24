@@ -368,11 +368,11 @@ public class AdminViewController implements Initializable {
 
 
                     if (userFound && userName.getName().toLowerCase().contains(searchedName.replaceFirst("name: ", ""))){
-                        logger.info("log_user_id:" + currentUser.getId() + "Filter by user name");
+                        //logger.info("log_user_id:" + currentUser.getId() + "Filter by user name");
                         return true;
                     }
                     if(emailFound && userName.getEmail().toLowerCase().contains(searchedName.replaceFirst("email: ", ""))){
-                        logger.info("log_user_id:" + currentUser.getId() + "Filter by user email");
+                        //logger.info("log_user_id:" + currentUser.getId() + "Filter by user email");
                         return true;
                     }
 
