@@ -50,6 +50,10 @@ public class MyCustomAppender extends AbstractAppender {
             final byte[] bytes = getLayout().toByteArray(logEvent);
             String log = new String(bytes, StandardCharsets.UTF_8);
 
+            //System.out.println(log);
+            if(log.contains("[DEBUG]")) return;
+            if(log.contains("[ERROR]")) return;
+
             try {
                 DB.makeConn();
             } catch (Exception var3) {

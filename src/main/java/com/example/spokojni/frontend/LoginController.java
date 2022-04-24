@@ -51,7 +51,7 @@ public class LoginController implements Initializable {
 
     @FXML
     protected void loginClick() throws IOException {
-        user = new Student(4,"admin"," "," "); //tu zmenit pre login do ineho typu usera
+        user = new Teacher(5,"admin"," "," "); //tu zmenit pre login do ineho typu usera
 
         try {
             DB.makeConn();

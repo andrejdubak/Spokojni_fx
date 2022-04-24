@@ -11,6 +11,7 @@ import javafx.event.EventHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.swing.*;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -73,7 +74,6 @@ public class CreateCalendarView {
                 int counter = 0;
                 boolean flag = true;
                 for(Calendar cal: calendars) {
-                    //System.out.println(cal.getName());
                     for (Agreement agr : agreements) {
                         if (agr.getTerm().getId() == term.getId()) {
                             calendars.get(0).addEntry(entry);
@@ -122,7 +122,6 @@ public class CreateCalendarView {
     }
 
     private Entry entryHelper(Term term) {
-        //logger.info("log_user_id:" + user.getId() + "Added term");
         terms.add(term);
         Interval interval = new Interval(term.getStart_time(), term.getEnd_time());
         Entry<String> entry = new Entry<>(term.getSubject().getName(), interval);
@@ -150,7 +149,6 @@ public class CreateCalendarView {
     }
 
     private void eventListener (CalendarEvent evt) {
-        System.out.println(evt.getEventType() + evt.getEntry().getId());
         Entry entry = evt.getEntry();
         int entry_id = parseInt(entry.getId());
 
@@ -188,7 +186,6 @@ public class CreateCalendarView {
     }
 
     private void updateTerm (Entry entry) {
-        //logger.info("log_user_id:" + user.getId() + "Term updated");
         //vytvori a novy modifikovany term a nahradi ho v array
         int entry_id = parseInt(entry.getId());
         Term term = terms.get(entry_id);
@@ -197,7 +194,11 @@ public class CreateCalendarView {
         LocalDateTime new_start = entry.getStartAsLocalDateTime();
         LocalDateTime new_end = entry.getEndAsLocalDateTime();
         String new_desc = entry.getLocation();
-        Term modified = new Term(id, term.getSubject(), new_start, new_end, new_desc);
+        Term modified;
+        if (term.getCapacity() != 0)
+            modified = new Term(id, term.getSubject(), new_start, new_end, new_desc, term.getCapacity());
+        else
+            modified = new Term(id, term.getSubject(), new_start, new_end, new_desc ,20);
 
         terms.set(entry_id, modified);
     }

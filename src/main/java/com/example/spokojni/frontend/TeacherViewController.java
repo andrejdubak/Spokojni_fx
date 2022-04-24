@@ -2,6 +2,7 @@ package com.example.spokojni.frontend;
 import com.example.spokojni.backend.Term;
 import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import com.calendarfx.view.CalendarView;
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +19,6 @@ public class TeacherViewController {
 
     @FXML
     private void buttonClick() {
-        System.out.println(currentUser.getName());
         cw = new CreateCalendarView(calendarView, currentUser);
         cw.addTeacherHandler();
         cw.disableOtherTeachersCalendars();
@@ -29,26 +29,16 @@ public class TeacherViewController {
     private void saveClick() {
         try {
             DB.makeConn();
-        } catch (Exception var3) {
-            var3.printStackTrace();
-            logger.error("log_user_id:" + currentUser.getId() + "No database connection" + var3);
-        }
-
-        try {
-            DB.makeConn();
             for (Term term : cw.getTerms()) {
                 DB.update(term);
-                logger.info("log_user_id:" + currentUser.getId() + "Term updated, id:" + term.getId());
             }
-
             for (Term term : cw.getNew_terms()) {
                 DB.add(term);
-                logger.info("log_user_id:" + currentUser.getId() + "Term added, id:" + term.getId());
             }
             for (Term term : cw.getTerms_to_del()) {
-                logger.info("log_user_id:" + currentUser.getId() + "Term deleted, id:" + term.getId());
                 DB.delete(term.getId());
             }
+            logger.info("log_user_id:" + currentUser.getId() + "Save and exit");
         } catch (SQLException var2) {
             System.out.println("SQLException: " + var2.getMessage());
             System.out.println("SQLState: " + var2.getSQLState());
@@ -59,6 +49,8 @@ public class TeacherViewController {
             var3.printStackTrace();
             logger.error("Cannot finish operation" + var3);
         }
+        Platform.exit();
+        System.exit(0);
     }
     public void setCurrentUser(User user){
         this.currentUser=user;
