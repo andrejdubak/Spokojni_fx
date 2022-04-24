@@ -120,6 +120,9 @@ public class DB {
         ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE id=" + id);
         return getUser(rs);
     }
+    public static ResultSet getUserResultSet(int id) throws SQLException{
+        return stmt.executeQuery("SELECT * FROM users WHERE id=" + id);
+    }
     public static User getUserByLogin(String username) throws SQLException{
         stmt = con.prepareStatement("SELECT * FROM users WHERE login=?");
         stmt.setString(1, username);
