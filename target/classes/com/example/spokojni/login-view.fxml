@@ -8,9 +8,9 @@
     <center>
         <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="318.0" prefWidth="454.0" BorderPane.alignment="CENTER">
             <children>
-                <TextField fx:id="username" layoutX="128.0" layoutY="165.0" prefHeight="25.0" prefWidth="200.0" promptText="Name" />
-                <PasswordField fx:id="password" layoutX="128.0" layoutY="210.0" prefHeight="25.0" prefWidth="200.0" promptText="Password" />
-                <Label layoutX="166.0" layoutY="40.0" text="LOGIN">
+                <TextField fx:id="username" layoutX="128.0" layoutY="140.0" prefHeight="25.0" prefWidth="200.0" promptText="Name" />
+                <PasswordField fx:id="password" layoutX="128.0" layoutY="185.0" prefHeight="25.0" prefWidth="200.0" promptText="Password" />
+                <Label layoutX="166.0" layoutY="25.0" text="LOGIN">
                     <font>
                         <Font name="System Bold" size="40.0" />
                     </font>
@@ -20,7 +20,7 @@
                         <Font size="20.0" />
                     </font>
                 </Button>
-            <ChoiceBox fx:id="language" layoutX="151.0" layoutY="256.0" prefWidth="150.0" />
+            <ChoiceBox fx:id="language" layoutX="151.0" layoutY="230.0" prefWidth="150.0" />
             </children>
         </AnchorPane>
     </center>

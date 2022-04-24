@@ -37,7 +37,7 @@ public class MainApplication extends Application {
         logger.info("App started");
 
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("login-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1500, 1000);
+        Scene scene = new Scene(fxmlLoader.load(), 1500, 800);
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();

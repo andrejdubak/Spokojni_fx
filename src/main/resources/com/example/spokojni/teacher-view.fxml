@@ -3,11 +3,18 @@
 <?import com.calendarfx.view.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <VBox xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.spokojni.frontend.TeacherViewController">
    <children>
       <CalendarView fx:id="calendarView" prefHeight="760.0" prefWidth="750.0" showAddCalendarButton="false" showPrintButton="false" />
-      <Button mnemonicParsing="false" onAction="#buttonClick" prefHeight="26.0" prefWidth="93.0" text="%Load_calendar" />
-      <Button mnemonicParsing="false" onAction="#saveClick" prefHeight="26.0" prefWidth="93.0" text="%Save_and_exit" />
+      <Button mnemonicParsing="false" onAction="#buttonClick" prefHeight="26.0" prefWidth="160.0" text="%Load_calendar" wrapText="true">
+         <font>
+            <Font size="16.0" />
+         </font></Button>
+      <Button mnemonicParsing="false" onAction="#saveClick" prefHeight="26.0" prefWidth="160.0" text="%Save_and_exit" wrapText="true">
+         <font>
+            <Font size="16.0" />
+         </font></Button>
    </children>
 </VBox>
