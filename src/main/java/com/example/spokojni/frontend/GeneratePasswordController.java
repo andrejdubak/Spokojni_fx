@@ -16,7 +16,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class GeneratePasswordController {
-    Logger logger = LogManager.getLogger(GeneratePasswordController.class);
+    private Logger logger = LogManager.getLogger(GeneratePasswordController.class);
     @FXML
     private Button save;
     @FXML
@@ -54,6 +54,7 @@ public class GeneratePasswordController {
             DB.makeConn();
         } catch (Exception var3) {
             var3.printStackTrace();
+            logger.error("No database connection" + var3);
         }
         try {
             DB.updatePassword(user.getId(), generated_password.getText());
@@ -61,7 +62,7 @@ public class GeneratePasswordController {
             passwordChangeSuccessful();
             dialog.close();
         } catch (SQLException var2) {
-            logger.error("No database connection");
+            logger.warn("Cannot update password " + var2);
             System.out.println("SQLException: " + var2.getMessage());
             System.out.println("SQLState: " + var2.getSQLState());
             System.out.println("VendorError: " + var2.getErrorCode());

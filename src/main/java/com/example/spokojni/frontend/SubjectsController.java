@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class SubjectsController implements Initializable  {
-    Logger logger = LogManager.getLogger(SubjectsController.class);
+    private Logger logger = LogManager.getLogger(SubjectsController.class);
     @FXML
     private TableColumn<Subject,String> table_column;
 
@@ -66,7 +66,7 @@ public class SubjectsController implements Initializable  {
             });
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("log_user_id:" + teacher.getId() + "Cannot select user");
+            logger.warn("log_user_id:" + teacher.getId() + "Cannot select user" + e);
         }
     }
 
@@ -83,7 +83,7 @@ public class SubjectsController implements Initializable  {
                 DB.makeConn();
             } catch (Exception var3) {
                 var3.printStackTrace();
-                logger.error("log_user_id:" + teacher.getId() + "No database connection");
+                logger.error("log_user_id:" + teacher.getId() + "No database connection" + var3);
             }
             try {
                 if(!DB.addSubject(subject))
@@ -114,7 +114,7 @@ public class SubjectsController implements Initializable  {
             DB.makeConn();
         } catch (Exception var3) {
             var3.printStackTrace();
-            logger.error("log_user_id:" + teacher.getId() + "No database connection");
+            logger.error("log_user_id:" + teacher.getId() + "No database connection" + var3);
         }
 
         try {
@@ -125,7 +125,7 @@ public class SubjectsController implements Initializable  {
             System.out.println("SQLState: " + e.getSQLState());
             System.out.println("VendorError: " + e.getErrorCode());
             e.printStackTrace();
-            logger.warn("log_user_id:" + teacher.getId() + "Cannot load subjects");
+            logger.warn("log_user_id:" + teacher.getId() + "Cannot load subjects" + e);
         }
         for (Subject s : load_subjects){
             subjects.add(new Subject(s.getId(),s.getName(), s.getMaster()));
@@ -145,7 +145,7 @@ public class SubjectsController implements Initializable  {
                 DB.makeConn();
             } catch (Exception var3) {
                 var3.printStackTrace();
-                logger.error("log_user_id:" + teacher.getId() + "No database connection");
+                logger.error("log_user_id:" + teacher.getId() + "No database connection" + var3);
             }
             try {
                 logger.info("log_user_id:" + teacher.getId() + "Subject deleted" + subject.getName());
@@ -156,7 +156,7 @@ public class SubjectsController implements Initializable  {
                 System.out.println("SQLState: " + var2.getSQLState());
                 System.out.println("VendorError: " + var2.getErrorCode());
                 var2.printStackTrace();
-                logger.warn("log_user_id:" + teacher.getId() + "Subject was not deleted");
+                logger.warn("log_user_id:" + teacher.getId() + "Cannot delete subject" + var2);
             }
         }
     }

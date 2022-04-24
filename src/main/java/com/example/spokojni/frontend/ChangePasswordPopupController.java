@@ -26,7 +26,7 @@ public class ChangePasswordPopupController {
     private PasswordField newPassword;
     @FXML
     private PasswordField oldPassword;
-    Logger logger = LogManager.getLogger(ChangePasswordPopupController.class);
+    private Logger logger = LogManager.getLogger(ChangePasswordPopupController.class);
     private User currentUser;
     private Alert successfulAlert;
     private Alert errorAlert;
@@ -54,7 +54,7 @@ public class ChangePasswordPopupController {
                     DB.makeConn();
                 } catch (Exception var3) {
                     var3.printStackTrace();
-                    logger.error("log_user_id:" + currentUser.getId() + "No database connection");
+                    logger.error("log_user_id:" + currentUser.getId() + "No database connection " + var3);
                 }
                 try {
 
@@ -76,6 +76,7 @@ public class ChangePasswordPopupController {
                     System.out.println("SQLException: " + var2.getMessage());
                     System.out.println("SQLState: " + var2.getSQLState());
                     System.out.println("VendorError: " + var2.getErrorCode());
+                    logger.warn("Cannot finish operation" + var2);
                     var2.printStackTrace();
                 }
             } else

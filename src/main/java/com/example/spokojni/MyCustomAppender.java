@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+// https://stackoverflow.com/questions/24205093/how-to-create-a-custom-appender-in-log4j2
 @Plugin(name = "MyCustomAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE, printObject = true)
 public class MyCustomAppender extends AbstractAppender {
 
@@ -91,7 +91,7 @@ public class MyCustomAppender extends AbstractAppender {
                     DB.log(log, 4);
                 }
             }
-            System.out.print(log);
+
 
         } catch (Exception ex) {
             if (!ignoreExceptions()) {

@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
 public class ChangeWindowController {
     private FXMLLoader fxmlLoader;
     private Parent pane;
-    Logger logger = LogManager.getLogger(ChangeWindowController.class);
+    private Logger logger = LogManager.getLogger(ChangeWindowController.class);
     public ChangeWindowController(String file, Locale loc) throws IOException {
 
        logger.info("Scene changed to" + file);

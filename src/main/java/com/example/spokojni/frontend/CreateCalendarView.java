@@ -27,7 +27,7 @@ public class CreateCalendarView {
     ArrayList<Subject> subjects = new ArrayList<>();
     CalendarSource schoolCalendarSource;
     User user;
-    Logger logger = LogManager.getLogger(ChangeWindowController.class);
+    private Logger logger = LogManager.getLogger(CreateCalendarView.class);
     public CreateCalendarView(CalendarView calendarView, User user) {
         this.calendarView = calendarView;
         this.user = user;
@@ -40,11 +40,11 @@ public class CreateCalendarView {
         } catch (SQLException var2) {
             sqlException(var2);
 
-            logger.error("log_user_id:" + user.getId() + "No database connection");
+            logger.error("log_user_id:" + user.getId() + "No database connection" + var2);
 
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("log_user_id:" + user.getId() + "No subjects");
+            logger.warn("log_user_id:" + user.getId() + "Cannot get subjects" + e);
         }
 
         int counter1 = 0;
@@ -96,10 +96,11 @@ public class CreateCalendarView {
                 }
             }
         } catch (SQLException var2) {
-            logger.warn("log_user_id:" + user.getId() + "No calendar setted up");
+            logger.warn("log_user_id:" + user.getId() + "Cannot set up calendar" + var2);
             sqlException(var2);
         } catch (Exception e) {
             e.printStackTrace();
+            logger.warn("Cannot finish operation" + e);
         }
     }
 
@@ -121,10 +122,11 @@ public class CreateCalendarView {
                 }
             }
         } catch (SQLException var2) {
-            logger.warn("log_user_id:" + user.getId() + "No calendar setted up");
+            logger.warn("log_user_id:" + user.getId() + "Cannot set up calendar" + var2);
             sqlException(var2);
         } catch (Exception e) {
             e.printStackTrace();
+            logger.warn("Cannot finish operation" + e);
         }
     }
 
@@ -232,7 +234,7 @@ public class CreateCalendarView {
         } catch (Exception var2) {
             System.out.println("SQLException: " + var2.getMessage());
             var2.printStackTrace();
-            logger.error("log_user_id:" + user.getId() + "No database connection");
+            logger.error("log_user_id:" + user.getId() + "No database connection" + var2);
         }
         return new Term(entry_id, subject, new_start, new_end, new_desc);
     }

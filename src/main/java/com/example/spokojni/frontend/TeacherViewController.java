@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.Locale;
 
 public class TeacherViewController {
-    Logger logger = LogManager.getLogger(TeacherViewController.class);
+    private Logger logger = LogManager.getLogger(TeacherViewController.class);
     private User currentUser;
     CreateCalendarView cw;
 
@@ -36,7 +36,7 @@ public class TeacherViewController {
             DB.makeConn();
         } catch (Exception var3) {
             var3.printStackTrace();
-            logger.error("log_user_id:" + currentUser.getId() + "No database connection");
+            logger.error("log_user_id:" + currentUser.getId() + "No database connection" + var3);
         }
 
         System.out.println("save");
@@ -51,18 +51,22 @@ public class TeacherViewController {
             for (Term term : cw.getNew_terms()) {
                 System.out.println(term.toString());
                 DB.add(term);
+                logger.info("log_user_id:" + currentUser.getId() + "Term added, id:" + term.getId());
             }
             for (Term term : cw.getTerms_to_del()) {
                 System.out.println("delete term id: " + term.getId());
+                logger.info("log_user_id:" + currentUser.getId() + "Term deleted, id:" + term.getId());
                 // DB.delete(term.getId()); //TODO spravit funkciu na deletovanie termov
             }
         } catch (SQLException var2) {
             System.out.println("SQLException: " + var2.getMessage());
             System.out.println("SQLState: " + var2.getSQLState());
             System.out.println("VendorError: " + var2.getErrorCode());
+            logger.warn("Cannot save" + var2);
             var2.printStackTrace();
         } catch (Exception var3) {
             var3.printStackTrace();
+            logger.error("Cannot finish operation" + var3);
         }
     }
     public void setCurrentUser(User user){

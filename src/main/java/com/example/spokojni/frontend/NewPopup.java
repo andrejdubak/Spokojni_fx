@@ -31,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 import static java.lang.Integer.parseInt;
 
 public class NewPopup extends GridPane {
-    Logger logger = LogManager.getLogger(NewPopup.class);
+    private Logger logger = LogManager.getLogger(NewPopup.class);
     private final CalendarSelector calendarSelector;
     private Entry<?> entry;
     private ArrayList<Term> terms;
@@ -121,7 +121,7 @@ public class NewPopup extends GridPane {
                     logger.info("Added to calendar");
                 } catch (Exception e) {
                     e.printStackTrace();
-                    logger.error("No database connection");
+                    logger.error("No database connection" + e);
                 }
             }
             else {
@@ -137,7 +137,7 @@ public class NewPopup extends GridPane {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        logger.error("No database connection");
+                        logger.error("No database connection" + e);
                     }
                 }
             }
@@ -156,6 +156,7 @@ public class NewPopup extends GridPane {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            logger.warn("Cannot finish operation" + e);
         }
         return false;
     }
@@ -188,7 +189,7 @@ public class NewPopup extends GridPane {
             //System.out.println(list);
         } catch (Exception var3) {
             var3.printStackTrace();
-            logger.error("No database connection");
+            logger.error("No database connection" + var3);
         }
         return list.size();
     }

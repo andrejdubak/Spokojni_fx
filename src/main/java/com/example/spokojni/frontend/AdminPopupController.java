@@ -21,7 +21,7 @@ import java.util.ResourceBundle;
 
 public class AdminPopupController {
 
-    Logger logger = LogManager.getLogger(AdminPopupController.class);
+    private Logger logger = LogManager.getLogger(AdminPopupController.class);
     private UserTable user;
     private Dialog<ButtonType> dialog;
     private Button button;
@@ -94,7 +94,7 @@ public class AdminPopupController {
                 System.out.println("SQLState: " + var2.getSQLState());
                 System.out.println("VendorError: " + var2.getErrorCode());
                 var2.printStackTrace();
-                logger.error("No database connection");
+                logger.error("No database connection" + var2.getMessage() + var2.getSQLState() + var2.getErrorCode());
             }
         }
     }

@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 
 public class RegisterPersonController  implements Initializable  {
     private ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
-    static Logger logger = LogManager.getLogger(RegisterPersonController.class);
+    private static Logger logger = LogManager.getLogger(RegisterPersonController.class);
 
     public RegisterPersonController() {
         successfulAlert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -113,14 +113,19 @@ public class RegisterPersonController  implements Initializable  {
         else {
             if (checkValues()) {
                 User user;
-                if (Objects.equals(comboBox.getValue(), rb.getString("Teacher")))
+                if (Objects.equals(comboBox.getValue(), rb.getString("Teacher"))) {
                     user = new Teacher(0, userName.getText(), userEmail.getText(), nickName.getText());
-                else
+                    logger.info("Teacher saved " + user.getName());
+                }
+                else {
                     user = new Student(0, userName.getText(), userEmail.getText(), nickName.getText());
+                    logger.info("Student saved " + user.getName());
+                }
                 try {
                     DB.makeConn();
                 } catch (Exception var3) {
                     var3.printStackTrace();
+                    logger.error("No database connection" + var3);
                 }
                 //registrationSuccessful();
                 try {
@@ -133,7 +138,7 @@ public class RegisterPersonController  implements Initializable  {
                     System.out.println("SQLException: " + var2.getMessage());
                     System.out.println("SQLState: " + var2.getSQLState());
                     System.out.println("VendorError: " + var2.getErrorCode());
-                    logger.error("No database connection");
+                    logger.error("No database connection" + var2);
                     var2.printStackTrace();
                 }
             }

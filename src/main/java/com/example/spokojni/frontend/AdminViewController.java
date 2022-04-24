@@ -54,7 +54,7 @@ import java.util.ResourceBundle;
 
 public class AdminViewController implements Initializable {
 
-    Logger logger = LogManager.getLogger(AdminViewController.class);
+    private Logger logger = LogManager.getLogger(AdminViewController.class);
 
     private User currentUser;
     private final ArrayList<Student> students = new ArrayList<>();
@@ -117,7 +117,7 @@ public class AdminViewController implements Initializable {
             DB.makeConn();
         } catch (Exception var3) {
             var3.printStackTrace();
-            logger.error("log_user_id:" + currentUser.getId() + "No database connection");
+            logger.error("log_user_id:" + currentUser.getId() + "No database connection " + var3);
         }
 
         try {
@@ -128,7 +128,7 @@ public class AdminViewController implements Initializable {
             System.out.println("SQLState: " + e.getSQLState());
             System.out.println("VendorError: " + e.getErrorCode());
             e.printStackTrace();
-            logger.warn("log_user_id:" + currentUser.getId() + "No teachers found");
+            logger.warn("log_user_id:" + currentUser.getId() + "Cannot get teachers " + e);
         }
 
         for (User t : teachers){
@@ -140,7 +140,7 @@ public class AdminViewController implements Initializable {
             DB.makeConn();
         } catch (Exception var3) {
             var3.printStackTrace();
-            logger.error("log_user_id:" + currentUser.getId() + "No database connection");
+            logger.error("log_user_id:" + currentUser.getId() + "No database connection " + var3);
         }
 
         try {
@@ -150,7 +150,7 @@ public class AdminViewController implements Initializable {
             System.out.println("SQLState: " + e.getSQLState());
             System.out.println("VendorError: " + e.getErrorCode());
             e.printStackTrace();
-            logger.warn("log_user_id:" + currentUser.getId() + "No students found");
+            logger.warn("log_user_id:" + currentUser.getId() + "Cannot get students " + e);
         }
         for (User s : students){
             student.add(new UserTable(s.getName(), s.getEmail(), "Student", s.getId()));
@@ -263,6 +263,7 @@ public class AdminViewController implements Initializable {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            logger.warn(e);
         }
         try (FileOutputStream output = new FileOutputStream(".\\exported.xml")) {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -273,7 +274,7 @@ public class AdminViewController implements Initializable {
             transformer.transform(source, result);
             logger.info("log_user_id:" + currentUser.getId() + "Users exported");
         } catch (IOException | TransformerException e) {
-            logger.warn("log_user_id:" + currentUser.getId() + "Export was unsuccessful");
+            logger.warn("log_user_id:" + currentUser.getId() + "Export was unsuccessful " +e);
             e.printStackTrace();
         }
     }
@@ -317,7 +318,7 @@ public class AdminViewController implements Initializable {
             }
             catch (Exception e)
             {
-                logger.warn("log_user_id:" + currentUser.getId() + "Import was unsuccessful");
+                logger.warn("log_user_id:" + currentUser.getId() + "Import was unsuccessful " + e);
                 e.printStackTrace();
             }
         }
@@ -342,12 +343,13 @@ public class AdminViewController implements Initializable {
                         logger.info("log_user_id:" + currentUser.getId() + "User selected");
                     } catch (IOException e) {
                         e.printStackTrace();
+                        logger.warn("log_user_id:" + currentUser.getId() +e);
                     }
 
                 }});
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("log_user_id:" + currentUser.getId() + "Problem with selection");
+            logger.warn("log_user_id:" + currentUser.getId() + "Problem with selection " + e);
         }
 
 
