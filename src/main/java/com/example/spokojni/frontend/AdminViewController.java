@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -215,14 +216,9 @@ public class AdminViewController implements Initializable {
 
     @FXML
     private void exportClick() throws ParserConfigurationException {
-        User[] selectedUsers = new User[student.size()];
+        int[] selectedUsers = new int[student.size()];
         for (int i = 0; i < student.size(); i++){
-            selectedUsers[i] = new User(
-                student.get(i).getId(),
-                student.get(i).getName(),
-                student.get(i).getEmail(),
-                student.get(i).getRole()
-            );
+            selectedUsers[i] = student.get(i).getId();
         }
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -234,24 +230,40 @@ public class AdminViewController implements Initializable {
         Element[] names = new Element[selectedUsers.length];
         Element[] emails = new Element[selectedUsers.length];
         Element[] logins = new Element[selectedUsers.length];
-        for (int i = 0; i < selectedUsers.length; i++){
-            users[i] = doc.createElement("user");
-            rootElement.appendChild(users[i]);
-            users[i].setAttribute("id", Integer.toString(selectedUsers[i].getId()));
+        Element[] passwords = new Element[selectedUsers.length];
+        Element[] roles = new Element[selectedUsers.length];
+        try {
+            DB.makeConn();
+            for (int i = 0; i < selectedUsers.length; i++){
+                ResultSet rs = DB.getUserResultSet(selectedUsers[i]);
+                rs.next();
+                users[i] = doc.createElement("user");
+                rootElement.appendChild(users[i]);
+                users[i].setAttribute("id", Integer.toString(selectedUsers[i]));
 
-            names[i] = doc.createElement("name");
-            names[i].setTextContent(selectedUsers[i].getName());
-            users[i].appendChild(names[i]);
+                names[i] = doc.createElement("name");
+                names[i].setTextContent(rs.getString(2));
+                users[i].appendChild(names[i]);
 
-            emails[i] = doc.createElement("email");
-            emails[i].setTextContent(selectedUsers[i].getEmail());
-            users[i].appendChild(emails[i]);
+                emails[i] = doc.createElement("email");
+                emails[i].setTextContent(rs.getString(3));
+                users[i].appendChild(emails[i]);
 
-            logins[i] = doc.createElement("role");
-            logins[i].setTextContent(selectedUsers[i].getLogin());
-            users[i].appendChild(logins[i]);
+                logins[i] = doc.createElement("login");
+                logins[i].setTextContent(rs.getString(4));
+                users[i].appendChild(logins[i]);
+
+                passwords[i] = doc.createElement("pass");
+                passwords[i].setTextContent(rs.getString(5));
+                users[i].appendChild(passwords[i]);
+
+                roles[i] = doc.createElement("role");
+                roles[i].setTextContent(Integer.toString(rs.getInt(6)));
+                users[i].appendChild(roles[i]);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
         try (FileOutputStream output = new FileOutputStream(".\\exported.xml")) {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
@@ -268,7 +280,6 @@ public class AdminViewController implements Initializable {
 
     @FXML
     private void importClick(){
-
         FileDialog dialog = new FileDialog((Frame)null, rb.getString("Select_file_to_open"));
         dialog.setMode(FileDialog.LOAD);
         dialog.setVisible(true);
@@ -284,6 +295,7 @@ public class AdminViewController implements Initializable {
                 NodeList nodeList = doc.getElementsByTagName("user");
                 User[] importedUsers = new User[nodeList.getLength()];
                 logger.info("log_user_id:" + currentUser.getId() + "Users imported");
+                DB.makeConn();
                 for (int itr = 0; itr < nodeList.getLength(); itr++)
                 {
                     Node node = nodeList.item(itr);
@@ -294,8 +306,11 @@ public class AdminViewController implements Initializable {
                                 Integer.parseInt(eElement.getAttribute("id")),
                                 eElement.getElementsByTagName("name").item(0).getTextContent(),
                                 eElement.getElementsByTagName("email").item(0).getTextContent(),
-                                eElement.getElementsByTagName("role").item(0).getTextContent()
+                                eElement.getElementsByTagName("login").item(0).getTextContent()
                         );
+                        DB.addUserImportWithHash(importedUsers[itr],
+                                eElement.getElementsByTagName("pass").item(0).getTextContent(),
+                                Integer.parseInt(eElement.getElementsByTagName("role").item(0).getTextContent()));
                     }
                 }
 

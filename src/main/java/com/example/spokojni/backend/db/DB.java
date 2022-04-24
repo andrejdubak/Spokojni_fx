@@ -372,15 +372,15 @@ public class DB {
         return true;
         //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
     }
-    public static boolean addUserImportWithHash(User user, String password_hash) throws SQLException {
-        if(getUserByLogin(user.getLogin()) == null)
+    public static boolean addUserImportWithHash(User user, String password_hash, int role) throws SQLException {
+        if(getUserByLogin(user.getLogin()) != null)
             return false;
         stmt = con.prepareStatement("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL, ?, ?, ?, ?, ?)");
         stmt.setString(1, password_hash);
         stmt.setString(2, user.getName());
         stmt.setString(3, user.getEmail());
         stmt.setString(4, user.getLogin());
-        stmt.setInt(5, user.getRole());
+        stmt.setInt(5, role);
         stmt.executeUpdate();
         return true;
         //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
