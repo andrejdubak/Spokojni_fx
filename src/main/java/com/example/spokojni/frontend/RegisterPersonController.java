@@ -107,7 +107,7 @@ public class RegisterPersonController  implements Initializable  {
     }
 
     @FXML
-    private void saveUser() throws SQLException, IOException {
+    private void saveUser() {
         if(added)
             registerAnotherUser();
         else {
@@ -127,7 +127,6 @@ public class RegisterPersonController  implements Initializable  {
                     var3.printStackTrace();
                     logger.error("No database connection" + var3);
                 }
-                //registrationSuccessful();
                 try {
                     if (DB.addUser(user, generatedPassword.getText()))
                         registrationSuccessful();
@@ -143,7 +142,6 @@ public class RegisterPersonController  implements Initializable  {
                 }
             }
         }
-        //
     }
 
     private void registrationFailed(){
@@ -187,10 +185,7 @@ public class RegisterPersonController  implements Initializable  {
     }
 
     private boolean isPasswordGenerated(){
-        if(!generatedPassword.getText().isEmpty())
-            return  true;
-        else
-            return false;
+        return !generatedPassword.getText().isEmpty();
     }
 
     private boolean checkValues(){

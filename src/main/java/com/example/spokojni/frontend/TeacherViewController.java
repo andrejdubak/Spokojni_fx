@@ -3,19 +3,15 @@ import com.example.spokojni.backend.Term;
 import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import com.calendarfx.view.CalendarView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Locale;
 
 public class TeacherViewController {
     private Logger logger = LogManager.getLogger(TeacherViewController.class);
     private User currentUser;
-    CreateCalendarView cw;
+    private CreateCalendarView cw;
 
     @FXML
     private CalendarView calendarView;
@@ -31,7 +27,6 @@ public class TeacherViewController {
 
     @FXML
     private void saveClick() {
-
         try {
             DB.makeConn();
         } catch (Exception var3) {
@@ -39,24 +34,20 @@ public class TeacherViewController {
             logger.error("log_user_id:" + currentUser.getId() + "No database connection" + var3);
         }
 
-        System.out.println("save");
         try {
             DB.makeConn();
             for (Term term : cw.getTerms()) {
-                //System.out.println(term.toString());
                 DB.update(term);
                 logger.info("log_user_id:" + currentUser.getId() + "Term updated, id:" + term.getId());
             }
 
             for (Term term : cw.getNew_terms()) {
-                System.out.println(term.toString());
                 DB.add(term);
                 logger.info("log_user_id:" + currentUser.getId() + "Term added, id:" + term.getId());
             }
             for (Term term : cw.getTerms_to_del()) {
-                System.out.println("delete term id: " + term.getId());
                 logger.info("log_user_id:" + currentUser.getId() + "Term deleted, id:" + term.getId());
-                // DB.delete(term.getId()); //TODO spravit funkciu na deletovanie termov
+                DB.delete(term.getId());
             }
         } catch (SQLException var2) {
             System.out.println("SQLException: " + var2.getMessage());

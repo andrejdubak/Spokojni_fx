@@ -34,19 +34,14 @@ public class ChangePasswordPopupController {
 
     @FXML
     private void initialize() {
-
         setupAlerts();
     }
 
     @FXML
     private void saveSettings() {
         if (newPassword.getText().isEmpty()) {
-
             logger.warn("log_user_id:" + currentUser.getId() + "No password");
-
             showError(rb.getString("ERROR_new_password"), rb.getString("New_password_not_empty"));
-
-
         }
         else {
             if (Objects.equals(repeatPassword.getText(), newPassword.getText())) {
@@ -57,7 +52,6 @@ public class ChangePasswordPopupController {
                     logger.error("log_user_id:" + currentUser.getId() + "No database connection " + var3);
                 }
                 try {
-
                     if (DB.checkPassword(currentUser.getId(), oldPassword.getText())) {
                         if(isValidPassword(newPassword.getText())) {
                             DB.updatePassword(currentUser.getId(), newPassword.getText());
@@ -67,7 +61,6 @@ public class ChangePasswordPopupController {
                         else{
                             showError(rb.getString("New_password_not_strong"),rb.getString("Contain_shit"));
                         }
-
                     }
                     else
                         showError(rb.getString("ERROR_old_password"),rb.getString("Old_password_not_match"));

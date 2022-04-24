@@ -10,7 +10,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -72,7 +71,6 @@ public class AdminViewController implements Initializable {
     @FXML
     private Button Profile;
 
-
     @FXML
     private TableView<UserTable> Table;
 
@@ -84,7 +82,6 @@ public class AdminViewController implements Initializable {
 
     @FXML
     private TableColumn<UserTable, String> roleTable;
-
 
     @FXML
     private Button exportPeople;
@@ -191,14 +188,11 @@ public class AdminViewController implements Initializable {
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
-        //new ChangeWindowController(registerPerson, "register-person-view.fxml");
     }
 
     @FXML
     private void ProfileClick() throws IOException {
-
         logger.info("log_user_id:" + currentUser.getId() + "Show profile");
-      //  FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("profile-dialog.fxml"));
 
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("change-password-dialog.fxml"));
         ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
@@ -329,7 +323,6 @@ public class AdminViewController implements Initializable {
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-       // System.out.println(this.currentUser.getName());
         nameTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("name"));
         emailTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("email"));
         roleTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("role"));

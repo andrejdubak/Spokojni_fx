@@ -1,16 +1,13 @@
+//cast kodu prebrata z kniznice CalendarFx classa Popup
 package com.example.spokojni.frontend;
-
 
 import com.calendarfx.model.Calendar;
 import com.calendarfx.model.Entry;
 import com.calendarfx.view.CalendarSelector;
 import com.calendarfx.view.CalendarView;
 import com.calendarfx.view.Messages;
-
-import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
 import com.example.spokojni.backend.Agreement;
 import com.example.spokojni.backend.Term;
 import com.example.spokojni.backend.User;
@@ -27,7 +24,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import static java.lang.Integer.parseInt;
 
 public class NewPopup extends GridPane {
@@ -84,12 +80,11 @@ public class NewPopup extends GridPane {
         Calendar calendar = entry.getCalendar();
         titleField.getStyleClass().add(calendar.getStyle() + "-entry-popover-title");
 
-        //moje zmeny
+        //nase zmeny
         titleField.setEditable(false);
         locationField.setEditable(false);
         CheckBox checkBox = new CheckBox(rb.getString("Add_to_my"));
         if (entry.getCalendar().getName().equals("Moj")) checkBox.setSelected(true);
-        //checkBox.disableProperty().bind(entry.getCalendar().readOnlyProperty());
         this.add(checkBox,0,5);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
@@ -142,7 +137,6 @@ public class NewPopup extends GridPane {
                 }
             }
             updateNumberOfSignedStudents();
-            //System.out.println(entry.getCalendar().getName());
         });
     }
 
@@ -163,12 +157,10 @@ public class NewPopup extends GridPane {
 
     private boolean updateNumberOfSignedStudents() {
         logger.info("Number of students updated");
-        //for (Term tr : terms) System.out.println(tr);
         int term_id = terms.get(parseInt(entry.getId())).getId();
         int actualNum = getNumberOfAssignedStudents(term_id); //spocita prihlasenych studenotov pre dany termin
         int maxNum = terms.get(parseInt(entry.getId())).getCapacity();
         numberOfStudents.setText(rb.getString("Number_of_assigned_students:") + actualNum + "/" + maxNum);
-        System.out.println(actualNum < maxNum);
         return actualNum < maxNum;
     }
 
@@ -186,7 +178,6 @@ public class NewPopup extends GridPane {
             DB.makeConn();
             list = DB.getAgreementsByTermId(term_id);
             logger.info("Get mumber of assigned Students");
-            //System.out.println(list);
         } catch (Exception var3) {
             var3.printStackTrace();
             logger.error("No database connection" + var3);

@@ -2,7 +2,6 @@ package com.example.spokojni.frontend;
 
 import com.calendarfx.model.*;
 import com.calendarfx.view.CalendarView;
-import com.calendarfx.view.DateControl;
 import com.example.spokojni.backend.Agreement;
 import com.example.spokojni.backend.Subject;
 import com.example.spokojni.backend.Term;
@@ -23,15 +22,15 @@ public class CreateCalendarView {
     private ArrayList<Term> terms = new ArrayList<>();
     private ArrayList<Term> new_terms = new ArrayList<>();
     private ArrayList<Term> terms_to_del = new ArrayList<>();
-    ArrayList<Calendar> calendars = new ArrayList<>();
-    ArrayList<Subject> subjects = new ArrayList<>();
-    CalendarSource schoolCalendarSource;
-    User user;
+    private ArrayList<Calendar> calendars = new ArrayList<>();
+    private ArrayList<Subject> subjects = new ArrayList<>();
+    private CalendarSource schoolCalendarSource;
+    private User user;
     private Logger logger = LogManager.getLogger(CreateCalendarView.class);
+
     public CreateCalendarView(CalendarView calendarView, User user) {
         this.calendarView = calendarView;
         this.user = user;
-
 
         try {
             DB.makeConn();
@@ -51,10 +50,6 @@ public class CreateCalendarView {
         for (Subject sub: subjects) {
             calendars.add(new Calendar(sub.getName()));
             calendars.get(counter1).setStyle(Calendar.Style.getStyle(counter1));
-            //System.out.println(sub.getMaster().getId());
-/*            if(sub.getMaster().getId() != user.getId()) //sidabluje kalendare, ktorych dany ucitel nie je garant, teda nema prava ich menit
-                calendars.get(counter1).setReadOnly(true);*/
-            //System.out.println(sub.getName());
             counter1++;
         }
 
@@ -69,9 +64,7 @@ public class CreateCalendarView {
 
     public void setStudentCalendars() {
         try {
-
             logger.info("log_user_id:" + user.getId() + "Student calendar setted up");
-
             DB.makeConn();
 
             ArrayList<Agreement> agreements = DB.getAgreementsByStudentId(user.getId());
@@ -106,9 +99,7 @@ public class CreateCalendarView {
 
     public void setTeacherCalendars() {
         try {
-
             logger.info("log_user_id:" + user.getId() + "Teacher calendar setted up");
-
             DB.makeConn();
 
             for (Term term : DB.getTerms()) {
@@ -133,7 +124,6 @@ public class CreateCalendarView {
     private Entry entryHelper(Term term) {
         logger.info("log_user_id:" + user.getId() + "Added term");
         terms.add(term);
-        //System.out.println(term.getId() + " " + term.getStart_time() + " " + term.getEnd_time());
         Interval interval = new Interval(term.getStart_time(), term.getEnd_time());
         Entry<String> entry = new Entry<>(term.getSubject().getName(), interval);
         entry.setLocation(term.getDescription());
@@ -165,8 +155,6 @@ public class CreateCalendarView {
         int entry_id = parseInt(entry.getId());
 
         if (evt.isEntryRemoved()) { //ak sa jedna o vymazanie
-            System.out.println("removed");
-            //initial terms
             if (entry_id < terms.size()) {
                 terms_to_del.add(terms.get(entry_id));
             }
@@ -182,26 +170,19 @@ public class CreateCalendarView {
 
         //ak iba modifikujeme
         if (entry_id < terms.size()) { //ak sa jedna o existujuci prvok
-            //System.out.println("existujuci " + entry_id);
-            //System.out.println(terms.get(parseInt(entry.getId())).getStart_time() + " " + entry.getStartAsLocalDateTime());
             updateTerm(entry);
-
         }
         else {
-            System.out.println("z novych");
             int counter = 0;
             for (Term term : new_terms) {
                 if (entry_id == term.getId()){
-                    //System.out.println("naslo" + " " + new_terms.get(counter).getStart_time());
                     new_terms.set(counter, createTerm(entry));
-                    //System.out.println("naslo" + " " + new_terms.get(counter).getStart_time());
                     return;
                 }
                 counter++;
             }
             new_terms.add(createTerm(entry));
             entry.setTitle(entry.getCalendar().getName()); //automaticke nastavenie mena podla kalendaru
-            System.out.println("pridany");
         }
 
     }
@@ -244,13 +225,12 @@ public class CreateCalendarView {
         calendars.get(0).setStyle(Calendar.Style.getStyle(6));
         schoolCalendarSource.getCalendars().add(calendars.get(0));
         calendarView.getCalendarSources().setAll(schoolCalendarSource);
-        //handler
     }
 
     public void disableOtherTeachersCalendars() {
         int counter1 = 0;
         for (Subject sub: subjects) {
-            if(sub.getMaster().getId() != user.getId()) //sidabluje kalendare, ktorych dany ucitel nie je garant, teda nema prava ich menit
+            if(sub.getMaster().getId() != user.getId()) //disabluje kalendare, ktorych dany ucitel nie je garant, teda nema prava ich menit
                 calendars.get(counter1).setReadOnly(true);
             counter1++;
         }

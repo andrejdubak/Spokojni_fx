@@ -42,26 +42,18 @@ public class SubjectsController implements Initializable  {
     public SubjectsController(){
         errorAlert = new Alert(Alert.AlertType.ERROR);
         errorAlert.setHeaderText(rb.getString("ERROR_new_subject"));
-        errorAlert.setContentText(rb.getString("Subject_already_exists"));
-        //loadSubjects();
+        errorAlert.setContentText(rb.getString("Subject_already_exists"));;
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
-        // System.out.println(this.currentUser.getName());
         table_column.setCellValueFactory(new PropertyValueFactory<>("name"));
         table.setItems(subjects);
 
         try {
             table.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 1 && !table.getSelectionModel().isEmpty()) {
-                   // try {
-                        //System.out.println(table.getSelectionModel().getSelectedItem().getName());
-                        deleteSubject(table.getSelectionModel().getSelectedItem());
-                   /* } catch (IOException e) {
-                        e.printStackTrace();
-                    }*/
+                    deleteSubject(table.getSelectionModel().getSelectedItem());
                 }
             });
         } catch (Exception e) {
@@ -138,8 +130,6 @@ public class SubjectsController implements Initializable  {
         alert.setHeaderText(rb.getString("Deleting_subject"));
         alert.setContentText(rb.getString("Sure_delete2")+subject.getName()+rb.getString("End2"));
         Optional<ButtonType> result = alert.showAndWait();
-        System.out.println(subject.getId());
-        System.out.println(subject.getMaster().getId());
         if (result.get() == ButtonType.OK){
             try {
                 DB.makeConn();
