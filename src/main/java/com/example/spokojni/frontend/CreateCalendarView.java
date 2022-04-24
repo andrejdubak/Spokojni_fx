@@ -122,7 +122,7 @@ public class CreateCalendarView {
     }
 
     private Entry entryHelper(Term term) {
-        logger.info("log_user_id:" + user.getId() + "Added term");
+        //logger.info("log_user_id:" + user.getId() + "Added term");
         terms.add(term);
         Interval interval = new Interval(term.getStart_time(), term.getEnd_time());
         Entry<String> entry = new Entry<>(term.getSubject().getName(), interval);
@@ -188,7 +188,7 @@ public class CreateCalendarView {
     }
 
     private void updateTerm (Entry entry) {
-        logger.info("log_user_id:" + user.getId() + "Term updated");
+        //logger.info("log_user_id:" + user.getId() + "Term updated");
         //vytvori a novy modifikovany term a nahradi ho v array
         int entry_id = parseInt(entry.getId());
         Term term = terms.get(entry_id);

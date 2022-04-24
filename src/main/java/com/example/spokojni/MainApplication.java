@@ -21,7 +21,6 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-
         try {
             DB.makeConn();
         } catch (Exception var3) {

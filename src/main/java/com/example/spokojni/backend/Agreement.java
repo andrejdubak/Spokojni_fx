@@ -15,6 +15,11 @@ public class Agreement{
     }
 
     @Override
+    public String toString() {
+        return "ID: " + this.id + " Student_id: " + this.getStudent().getId() + " Term_id: " + this.getTerm().getId();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         return obj instanceof Agreement && ((Agreement) obj).getId() == this.id;
     }

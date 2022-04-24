@@ -121,18 +121,19 @@ public class NewPopup extends GridPane {
             }
             else {
                 for (Calendar cal : calendars) { //vtari do povodneho calendaru
-                    if (cal.getName().equals(entry.getTitle()))
+                    if (cal.getName().equals(entry.getTitle())) {
                         entry.setCalendar(cal);
-                    try {
-                        Agreement agr = DB.getAgreement( user.getId(), terms.get(parseInt(entry.getId())).getId());
-                        if (agr != null) {
+                        try {
                             DB.makeConn();
-                            DB.delete(agr);//vymaze z databazy agreement
-                            logger.info("Deleted agreement");
+                            Agreement agr = DB.getAgreement( user.getId(), terms.get(parseInt(entry.getId())).getId());
+                            if (agr != null) {
+                                DB.delete(agr);//vymaze z databazy agreement
+                                logger.info("Deleted agreement");
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            logger.error("No database connection" + e);
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        logger.error("No database connection" + e);
                     }
                 }
             }
