@@ -199,21 +199,8 @@ public class AdminViewController implements Initializable {
     }
 
     @FXML
-    private void ProfileClick() throws IOException { // Zobrazenie okna na zmenu hesla
-        logger.info("log_user_id:" + currentUser.getId() + "Show profile");
-
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("change-password-dialog.fxml"));
-        ResourceBundle rb = (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
-        fxmlLoader.setResources(rb);
-        DialogPane dialogPane = fxmlLoader.load();
-        ChangePasswordPopupController profilePopupController = fxmlLoader.getController();
-        profilePopupController.setCurrentUser(currentUser);
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setDialogPane(dialogPane);
-        dialog.setTitle(rb.getString("Profile"));
-
-        Optional<ButtonType> clickedButton = dialog.showAndWait();
-
+    private void changePasswordClick() throws IOException { // Zobrazenie okna na zmenu hesla
+        new ChangePassword(currentUser);
     }
 
     @FXML

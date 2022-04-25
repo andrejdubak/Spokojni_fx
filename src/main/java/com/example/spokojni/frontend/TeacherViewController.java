@@ -3,10 +3,14 @@ import com.example.spokojni.backend.Term;
 import com.example.spokojni.backend.User;
 import com.example.spokojni.backend.db.DB;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import com.calendarfx.view.CalendarView;
+import javafx.scene.control.Button;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class TeacherViewController {
@@ -18,12 +22,16 @@ public class TeacherViewController {
     private CalendarView calendarView;
 
     @FXML
+    private Button loadButton;
+
+    @FXML
     //funkcia vytvori instanciu kalendara a prida jej potrebne veci pre fungovanie teacher obrazovky
     private void buttonClick() {
         cw = new CreateCalendarView(calendarView, currentUser);
         cw.addTeacherHandler();
         cw.disableOtherTeachersCalendars();
         cw.setTeacherCalendars();
+        loadButton.setDisable(true);
     }
 
     @FXML
@@ -63,9 +71,16 @@ public class TeacherViewController {
         Platform.exit();
         System.exit(0);
     }
+
+    @FXML
+    private void changePassword(ActionEvent actionEvent) throws IOException {
+        new ChangePassword(currentUser);
+    }
+
     public void setCurrentUser(User user){
         this.currentUser=user;
     }
+
 }
 
 

@@ -32,8 +32,8 @@ public class MainApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("login-view.fxml"));
         ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
         fxmlLoader.setResources(rb);
-        Scene scene = new Scene(fxmlLoader.load(), 1500, 800);
-        stage.setTitle("Hello!");
+        Scene scene = new Scene(fxmlLoader.load());
+        stage.setTitle("Spokojní !");
         stage.setScene(scene);
         stage.show();
     }

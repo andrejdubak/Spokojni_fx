@@ -5,14 +5,13 @@ import com.example.spokojni.backend.db.DB;
 import com.example.spokojni.backend.users.Admin;
 import com.example.spokojni.backend.users.Student;
 import com.example.spokojni.backend.users.Teacher;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -24,13 +23,18 @@ import java.util.ResourceBundle;
 public class LoginController implements Initializable {
     private Logger logger = LogManager.getLogger(LoginController.class);
     private User user;
+    private Alert errorAlert;
+    private ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
 
     public User getUser() {
         return user;
     }
 
     @FXML
-    private Button LoginClick;
+    private Label loginLabel;
+
+    @FXML
+    private Button loginButton;
 
     @FXML
     private TextField username;
@@ -39,19 +43,22 @@ public class LoginController implements Initializable {
     private PasswordField password;
 
     @FXML
-    private ChoiceBox<String> language;
+    private ComboBox<String> language;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         language.getItems().add("Slovenčina");
         language.getItems().add("English");
         language.getItems().add("Deutsch");
-        language.setValue("Slovenčina");
+        language.setValue("English");
+
+        errorAlert = new Alert(Alert.AlertType.ERROR);
+        setErrorPopupText();
     }
 
     @FXML
     protected void loginClick() throws IOException {
-        user = new Teacher(5,"admin"," "," "); //tu zmenit pre login do ineho typu usera
+        //user = new Teacher(5,"admin"," "," "); //tu zmenit pre login do ineho typu usera
 
         try {
             DB.makeConn();
@@ -69,12 +76,9 @@ public class LoginController implements Initializable {
             e.printStackTrace();
             logger.error("No database connection " + e);
         }
-        if (Objects.equals(language.getSelectionModel().getSelectedItem(), "Slovenčina"))
-            Locale.setDefault(new Locale("sk", "SK"));
-        else if (Objects.equals(language.getSelectionModel().getSelectedItem(), "English"))
-            Locale.setDefault(new Locale("en", "UK"));
-        else if (Objects.equals(language.getSelectionModel().getSelectedItem(), "Deutsch"))
-            Locale.setDefault(new Locale("de", "DE"));
+
+        setLanguage();
+
         if (user instanceof Student) {
 
             logger.info("Student " + user.getName() + " logged in");
@@ -82,7 +86,7 @@ public class LoginController implements Initializable {
 
             StudentViewController studentViewController = controller.getFxmlLoader().getController();
             studentViewController.setCurrentUser(user);
-            controller.changeWindow(LoginClick);
+            controller.changeWindow(loginButton);
         }
         else if (user instanceof Teacher) {
 
@@ -91,7 +95,7 @@ public class LoginController implements Initializable {
 
             TeacherViewController teacherViewController = controller.getFxmlLoader().getController();
             teacherViewController.setCurrentUser(user);
-            controller.changeWindow(LoginClick);
+            controller.changeWindow(loginButton);
         }
         else if (user instanceof Admin) {
 
@@ -100,11 +104,38 @@ public class LoginController implements Initializable {
 
             AdminViewController adminViewController = controller.getFxmlLoader().getController();
             adminViewController.setCurrentUser(user);
-            controller.changeWindow(LoginClick);
+            controller.changeWindow(loginButton);
         }
         else{
             System.out.println("Login Error!!");
             logger.warn("Login failed");
+            errorAlert.showAndWait();
         }
+    }
+
+    private void setLanguage() {
+        if (Objects.equals(language.getSelectionModel().getSelectedItem(), "Slovenčina"))
+            Locale.setDefault(new Locale("sk", "SK"));
+        else if (Objects.equals(language.getSelectionModel().getSelectedItem(), "English"))
+            Locale.setDefault(new Locale("en", "UK"));
+        else if (Objects.equals(language.getSelectionModel().getSelectedItem(), "Deutsch"))
+            Locale.setDefault(new Locale("de", "DE"));
+    }
+
+    @FXML
+    private void languageSelected(ActionEvent actionEvent) {
+        setLanguage();
+        rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
+        loginButton.setText(rb.getString("Continue"));
+        username.setPromptText(rb.getString("Name"));
+        password.setPromptText(rb.getString("Password"));
+        loginLabel.setText(rb.getString("LOGIN"));
+        setErrorPopupText();
+
+    }
+
+    private void setErrorPopupText() {
+        errorAlert.setHeaderText(rb.getString("Error"));
+        errorAlert.setContentText(rb.getString("Login_error"));
     }
 }
