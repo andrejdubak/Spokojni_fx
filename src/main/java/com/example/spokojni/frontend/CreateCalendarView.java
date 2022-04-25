@@ -10,8 +10,6 @@ import com.example.spokojni.backend.db.DB;
 import javafx.event.EventHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javax.swing.*;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,13 +27,14 @@ public class CreateCalendarView {
     private User user;
     private Logger logger = LogManager.getLogger(CreateCalendarView.class);
 
+    //vytvorenie a pridanie samotnych kalendarov
     public CreateCalendarView(CalendarView calendarView, User user) {
         this.calendarView = calendarView;
         this.user = user;
 
         try {
             DB.makeConn();
-            subjects.addAll(DB.getSubjects());
+            subjects.addAll(DB.getSubjects()); //vratime vsetky predmety
             logger.info("log_user_id:" + user.getId() + " Get subjects from database");
         } catch (SQLException var2) {
             sqlException(var2);
@@ -48,6 +47,7 @@ public class CreateCalendarView {
         }
 
         int counter1 = 0;
+        //vytvorime kategorie predmetov podla vratenych predmetov
         for (Subject sub: subjects) {
             calendars.add(new Calendar(sub.getName()));
             calendars.get(counter1).setStyle(Calendar.Style.getStyle(counter1));
@@ -56,6 +56,7 @@ public class CreateCalendarView {
 
         schoolCalendarSource = new CalendarSource("School");
 
+        //pridame jednotlive kelendare do sourcu school
         for (Calendar cal: calendars) {
             schoolCalendarSource.getCalendars().add(cal);
         }
@@ -63,6 +64,7 @@ public class CreateCalendarView {
         calendarView.getCalendarSources().setAll(schoolCalendarSource);
     }
 
+    //nastavenie kalendarov pre typ pouzivatela student
     public void setStudentCalendars() {
         try {
             logger.info("log_user_id:" + user.getId() + "Student calendar setted up");
@@ -97,6 +99,7 @@ public class CreateCalendarView {
         }
     }
 
+    //nastavenie kalendarov pre typ pouzivatela teacher
     public void setTeacherCalendars() {
         try {
             logger.info("log_user_id:" + user.getId() + "Teacher calendar setted up");
@@ -121,6 +124,7 @@ public class CreateCalendarView {
         }
     }
 
+    //vytvorenie noveho zaznamu v kalendari
     private Entry entryHelper(Term term) {
         terms.add(term);
         Interval interval = new Interval(term.getStart_time(), term.getEnd_time());
@@ -129,10 +133,12 @@ public class CreateCalendarView {
         return entry;
     }
 
+    //nastevenie na novy studentsky popup
     public void setStudentPopup() {
         calendarView.setEntryDetailsPopOverContentCallback(param -> new NewPopup(param.getEntry(),param.getDateControl().getCalendars(), terms, user));
     }
 
+    //pridanie handlerov pre teachera
     public void addTeacherHandler() {
         EventHandler<CalendarEvent> handler = evt -> eventListener(evt);
 
@@ -141,6 +147,7 @@ public class CreateCalendarView {
         }
     }
 
+    //format vypisu pre nase exceptiony
     private void sqlException(SQLException var2) {
         System.out.println("SQLException: " + var2.getMessage());
         System.out.println("SQLState: " + var2.getSQLState());
@@ -148,6 +155,7 @@ public class CreateCalendarView {
         var2.printStackTrace();
     }
 
+    //listener pri modifikazii zaznamov v kalendari
     private void eventListener (CalendarEvent evt) {
         Entry entry = evt.getEntry();
         int entry_id = parseInt(entry.getId());
@@ -185,6 +193,7 @@ public class CreateCalendarView {
 
     }
 
+    //aktualizacia zaznamu skusky
     private void updateTerm (Entry entry) {
         //vytvori a novy modifikovany term a nahradi ho v array
         int entry_id = parseInt(entry.getId());
@@ -203,6 +212,7 @@ public class CreateCalendarView {
         terms.set(entry_id, modified);
     }
 
+    //vytvorenie noveho terminu
     private Term createTerm (Entry entry) {
         logger.info("log_user_id:" + user.getId() + "Term created");
         int entry_id = parseInt(entry.getId());
@@ -221,6 +231,7 @@ public class CreateCalendarView {
         return new Term(entry_id, subject, new_start, new_end, new_desc);
     }
 
+    //pridanie studentskeho kalendara
     public void addStudentCalendar () {
         calendars.add(0, new Calendar("Moj"));
         calendars.get(0).setStyle(Calendar.Style.getStyle(6));
@@ -228,6 +239,8 @@ public class CreateCalendarView {
         calendarView.getCalendarSources().setAll(schoolCalendarSource);
     }
 
+
+    //zakazanie editacie kalendarov ostatnych teacherov
     public void disableOtherTeachersCalendars() {
         int counter1 = 0;
         for (Subject sub: subjects) {
@@ -237,6 +250,7 @@ public class CreateCalendarView {
         }
     }
 
+    //zrusenie studentskych opravneni na modifikaciu zaznamov
     public void disableActionForStudent() {
         calendarView.setEntryFactory(param -> null);
         calendarView.setEntryEditPolicy(param -> false);

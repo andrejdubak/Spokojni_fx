@@ -18,6 +18,7 @@ public class TeacherViewController {
     private CalendarView calendarView;
 
     @FXML
+    //funkcia vytvori instanciu kalendara a prida jej potrebne veci pre fungovanie teacher obrazovky
     private void buttonClick() {
         cw = new CreateCalendarView(calendarView, currentUser);
         cw.addTeacherHandler();
@@ -26,15 +27,19 @@ public class TeacherViewController {
     }
 
     @FXML
+    //ulozi modifikovane zaznamy do databazy
     private void saveClick() {
         try {
             DB.makeConn();
+            //aktualizuje existujuce
             for (Term term : cw.getTerms()) {
                 DB.update(term);
             }
+            //prida novo vytvorene
             for (Term term : cw.getNew_terms()) {
                 DB.add(term);
             }
+            //vymaze z existujucich
             for (Term term : cw.getTerms_to_del()) {
                 DB.delete(term.getId());
             }

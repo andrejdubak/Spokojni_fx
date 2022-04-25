@@ -28,7 +28,6 @@ import static java.lang.Integer.parseInt;
 
 public class NewPopup extends GridPane {
     private Logger logger = LogManager.getLogger(NewPopup.class);
-    private final CalendarSelector calendarSelector;
     private Entry<?> entry;
     private ArrayList<Term> terms;
     private ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
@@ -50,14 +49,8 @@ public class NewPopup extends GridPane {
         locationField.setMinWidth(400.0D);
         locationField.setMaxWidth(500.0D);
         locationField.disableProperty().bind(entry.getCalendar().readOnlyProperty());
-        this.calendarSelector = new CalendarSelector();
-        this.calendarSelector.disableProperty().bind(entry.getCalendar().readOnlyProperty());
-        this.calendarSelector.getCalendars().setAll(calendars);
-        this.calendarSelector.setCalendar(entry.getCalendar());
-        Bindings.bindBidirectional(this.calendarSelector.calendarProperty(), entry.calendarProperty());
         titleField.getStyleClass().add("default-style-entry-popover-title");
         this.add(titleField, 0, 0);
-        //this.add(this.calendarSelector, 1, 0, 1, 2);
         this.add(locationField, 0, 1);
         RowConstraints row1 = new RowConstraints();
         row1.setValignment(VPos.TOP);
@@ -107,6 +100,7 @@ public class NewPopup extends GridPane {
 
         });
 
+        //checkbox riadiaci prihlasenie/odhlasenie na termin skusky
         checkBox.setOnAction((evt) -> {
             if (checkBox.isSelected()) { //prida do vlastneho calendaru
                 entry.setCalendar(calendars.get(calendars.size() - 1));
@@ -141,6 +135,7 @@ public class NewPopup extends GridPane {
         });
     }
 
+    //ak uz ma pridany student termin z daneho predmetu
     private boolean checkIfAlreadyAdded(int userId) {
         try {
             DB.makeConn();
@@ -156,6 +151,7 @@ public class NewPopup extends GridPane {
         return false;
     }
 
+    //aktualizuje pocet studentov prihlasenych na konkretny termin
     private boolean updateNumberOfSignedStudents() {
         logger.info("Number of students updated");
         int term_id = terms.get(parseInt(entry.getId())).getId();
@@ -165,14 +161,7 @@ public class NewPopup extends GridPane {
         return actualNum < maxNum;
     }
 
-    public final Calendar getCalendar() {
-        Calendar calendar = this.calendarSelector.getCalendar();
-        if (calendar == null) {
-            calendar = this.entry.getCalendar();
-        }
-
-        return calendar;
-    }
+    //vrati pocet studentov prihlasenych na termin
     private int getNumberOfAssignedStudents(int term_id) {
         ArrayList<Agreement> list = new ArrayList<>();
         try {

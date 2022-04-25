@@ -16,8 +16,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class MainApplication extends Application {
+    Logger logger = LogManager.getLogger(MainApplication.class);
 
-     Logger logger = LogManager.getLogger(MainApplication.class);
     @Override
     public void start(Stage stage) throws IOException {
 
@@ -26,13 +26,7 @@ public class MainApplication extends Application {
         } catch (Exception var3) {
             var3.printStackTrace();
         }
-        /*try {
-            Term term = DB.getTermById(1);
-            term.setDescription("Toto je prvý termín.......");
-            DB.add(term);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }*/
+
         logger.info("App started");
 
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("login-view.fxml"));
@@ -40,8 +34,6 @@ public class MainApplication extends Application {
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
-
-
     }
 
     public static void main(String[] args) {

@@ -12,6 +12,7 @@ public class StudentViewController {
     private CalendarView calendarView;
 
     @FXML
+    //vytvori a modifikuje kalendar pre potreby studenta
     private void buttonClick() {
         CreateCalendarView cw = new CreateCalendarView(calendarView, currentUser);
         cw.addStudentCalendar();
