@@ -12,17 +12,16 @@ import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 // https://stackoverflow.com/questions/24205093/how-to-create-a-custom-appender-in-log4j2
+//Prevzaty adapter
 @Plugin(name = "MyCustomAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE, printObject = true)
 public class MyCustomAppender extends AbstractAppender {
 
     protected MyCustomAppender(String name, Filter filter,
-                                   Layout<? extends Serializable> layout, final boolean ignoreExceptions) {
+                               Layout<? extends Serializable> layout, final boolean ignoreExceptions) {
         super(name, filter, layout, ignoreExceptions);
     }
 
@@ -42,7 +41,6 @@ public class MyCustomAppender extends AbstractAppender {
         return new MyCustomAppender(name, filter, layout, true);
     }
 
-
     @Override
     public void append(LogEvent logEvent) {
 
@@ -50,22 +48,23 @@ public class MyCustomAppender extends AbstractAppender {
             final byte[] bytes = getLayout().toByteArray(logEvent);
             String log = new String(bytes, StandardCharsets.UTF_8);
 
-            //System.out.println(log);
-            if(log.contains("[DEBUG]")) return;
-            if(log.contains("CalendarParserImpl")) return;
-
+            //Osetrenie aby sa do databazy nezapisovali logy vytvorene kniznicou kalendara
+            if (log.contains("[DEBUG]")) return;
+            if (log.contains("CalendarParserImpl")) return;
+            // Nadviazanie spojenia s databazou
             try {
                 DB.makeConn();
             } catch (Exception var3) {
                 var3.printStackTrace();
             }
-
-            if(log.toLowerCase().contains("log_user_id:")){
-
+            // Ak sa pri logoch nachadza id pouzivatela
+            if (log.toLowerCase().contains("log_user_id:")) {
+                //Kontrola ci je zapisane id pouzivatela v logu
                 Matcher matcher = Pattern.compile("\\d+").matcher(log);
                 boolean match = matcher.find();
-                if(match){
-                    int userId = Integer.parseInt(matcher.group());
+                if (match) {
+                    int userId = Integer.parseInt(matcher.group()); // Ziskanie id pouzivatela z logu
+                    // Zavolanie funkcie na vlozenie logu do databazy a roztriedenie logov podla typu
                     if (log.toLowerCase().contains("[info]")) {
 
                         DB.log(log.replaceFirst("log_user_id:\\d+", ""), 6, userId);
@@ -80,8 +79,8 @@ public class MyCustomAppender extends AbstractAppender {
                     }
 
                 }
-            }
-            else {
+                // Ak pri logoch neexsistuje id pouzivatela
+            } else {
 
                 if (log.toLowerCase().contains("[info]")) {
                     DB.log(log, 6);

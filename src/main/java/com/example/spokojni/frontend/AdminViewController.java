@@ -28,6 +28,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -55,11 +56,11 @@ public class AdminViewController implements Initializable {
 
     private Logger logger = LogManager.getLogger(AdminViewController.class);
 
-    private User currentUser;
+    private User currentUser; // Momentalne prihlaseny pouzivatel (Admin)
     private final ArrayList<Student> students = new ArrayList<>();
     private final ArrayList<Teacher> teachers = new ArrayList<>();
     private final ArrayList<UserTable> users = new ArrayList<>();
-    private final ObservableList<UserTable> student = FXCollections.observableArrayList(users);
+    private final ObservableList<UserTable> user = FXCollections.observableArrayList(users);
     private ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
 
     @FXML
@@ -101,82 +102,89 @@ public class AdminViewController implements Initializable {
     @FXML
     private TextField search;
 
+    //Scena sa prepne na uvodnu obrazovku a Admin je odlhaseny zo systemu.
     @FXML
-    private void logoutClick() throws IOException{
-
-        logger.info("log_user_id:" + currentUser.getId() +  "Admin logged out");
-        new ChangeWindowController( "login-view.fxml", Locale.getDefault()).changeWindow(logOut);
+    private void logoutClick() throws IOException {
+        // Vytvorenie logu pri odhlaseni Admina
+        logger.info("log_user_id:" + currentUser.getId() + "Admin logged out");
+        new ChangeWindowController("login-view.fxml", Locale.getDefault()).changeWindow(logOut);
 
     }
-
-    private void loadTeachers(){
+    // Nacitanie vsetkych ucitelov z databazy
+    private void loadTeachers() {
         try {
-            DB.makeConn();
+            DB.makeConn();  // Nadviazanie spojenia s databazou
         } catch (Exception var3) {
             var3.printStackTrace();
+            // Vytvorenie logu v pripade neuspesneho pripojenia
             logger.error("log_user_id:" + currentUser.getId() + "No database connection " + var3);
         }
 
         try {
-            teachers.addAll(DB.getTeachers());
+            teachers.addAll(DB.getTeachers()); // Pridanie vsetkych ucitelov do ArrayList teachers
 
         } catch (SQLException e) {
             System.out.println("SQLException: " + e.getMessage());
             System.out.println("SQLState: " + e.getSQLState());
             System.out.println("VendorError: " + e.getErrorCode());
             e.printStackTrace();
+            // Vytvorenie logu v pripade chyby
             logger.warn("log_user_id:" + currentUser.getId() + "Cannot get teachers " + e);
         }
 
-        for (User t : teachers){
-            student.add(new UserTable(t.getName(), t.getEmail(), "Teacher", t.getId()));
+        for (User t : teachers) { // Pridanie ucitelov do listu ktory sa zobrazi v tabulke
+            user.add(new UserTable(t.getName(), t.getEmail(), "Teacher", t.getId()));
         }
     }
-    private void loadStudents(){
+    // Nacitanie studentov z databazy
+    private void loadStudents() {
         try {
-            DB.makeConn();
+            DB.makeConn(); // Nadviazanie spojenia s databazou
         } catch (Exception var3) {
-            var3.printStackTrace();
+            var3.printStackTrace(); // Vytvorenie logu v pripade neuspesneho pripojenia
             logger.error("log_user_id:" + currentUser.getId() + "No database connection " + var3);
         }
 
         try {
-            students.addAll(DB.getStudents());
+            students.addAll(DB.getStudents()); // Pridanie vsetkych studentov do ArrayList students
         } catch (SQLException e) {
             System.out.println("SQLException: " + e.getMessage());
             System.out.println("SQLState: " + e.getSQLState());
             System.out.println("VendorError: " + e.getErrorCode());
             e.printStackTrace();
+            // Vytvorenie logu v pripade chyby
             logger.warn("log_user_id:" + currentUser.getId() + "Cannot get students " + e);
         }
-        for (User s : students){
-            student.add(new UserTable(s.getName(), s.getEmail(), "Student", s.getId()));
+        for (User s : students) {
+            user.add(new UserTable(s.getName(), s.getEmail(), "Student", s.getId()));  // Pridanie studentov do listu ktory sa zobrazi v tabulke
         }
 
     }
-    private void showUsers()  {
-        student.clear();
+
+    private void showUsers() { // Zobrazenie vsetkych pouzivatelov v tabulke
+        user.clear();
         teachers.clear();
         students.clear();
 
         loadStudents();
         loadTeachers();
     }
-    private void showStudents() {
-        student.clear();
+
+    private void showStudents() { // Zobrazenie iba studentov v tabulke
+        user.clear();
         students.clear();
         loadStudents();
     }
 
-    private void showTeachers() {
-         student.clear();
-         teachers.clear();
-         loadTeachers();
+    private void showTeachers() { // Zobrazenie iba ucitelov v tabulke
+        user.clear();
+        teachers.clear();
+        loadTeachers();
     }
 
     @FXML
-    private void registerPersonClick() throws IOException{
-        logger.info("log_user_id:" + currentUser.getId() + "New person register");
+    private void registerPersonClick() throws IOException { // Registracia novej osoby
+        logger.info("log_user_id:" + currentUser.getId() + "New person register"); // Vytvorenie logu z registracie
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("register-person-view.fxml"));
         fxmlLoader.setResources(rb);
         Parent dialogPane = fxmlLoader.load();
@@ -191,11 +199,11 @@ public class AdminViewController implements Initializable {
     }
 
     @FXML
-    private void ProfileClick() throws IOException {
+    private void ProfileClick() throws IOException { // Zobrazenie okna na zmenu hesla
         logger.info("log_user_id:" + currentUser.getId() + "Show profile");
 
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("change-password-dialog.fxml"));
-        ResourceBundle rb =  (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
+        ResourceBundle rb = (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));
         fxmlLoader.setResources(rb);
         DialogPane dialogPane = fxmlLoader.load();
         ChangePasswordPopupController profilePopupController = fxmlLoader.getController();
@@ -209,10 +217,10 @@ public class AdminViewController implements Initializable {
     }
 
     @FXML
-    private void exportClick() throws ParserConfigurationException {
-        int[] selectedUsers = new int[student.size()];
-        for (int i = 0; i < student.size(); i++){
-            selectedUsers[i] = student.get(i).getId();
+    private void exportClick() throws ParserConfigurationException { // Exportovanie pouzivatelov do xml suboru
+        int[] selectedUsers = new int[user.size()];
+        for (int i = 0; i < user.size(); i++) {
+            selectedUsers[i] = user.get(i).getId();
         }
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -228,7 +236,7 @@ public class AdminViewController implements Initializable {
         Element[] roles = new Element[selectedUsers.length];
         try {
             DB.makeConn();
-            for (int i = 0; i < selectedUsers.length; i++){
+            for (int i = 0; i < selectedUsers.length; i++) {
                 ResultSet rs = DB.getUserResultSet(selectedUsers[i]);
                 rs.next();
                 users[i] = doc.createElement("user");
@@ -268,20 +276,19 @@ public class AdminViewController implements Initializable {
             transformer.transform(source, result);
             logger.info("log_user_id:" + currentUser.getId() + "Users exported");
         } catch (IOException | TransformerException e) {
-            logger.warn("log_user_id:" + currentUser.getId() + "Export was unsuccessful " +e);
+            logger.warn("log_user_id:" + currentUser.getId() + "Export was unsuccessful " + e);
             e.printStackTrace();
         }
     }
 
     @FXML
-    private void importClick(){
-        FileDialog dialog = new FileDialog((Frame)null, rb.getString("Select_file_to_open"));
+    private void importClick() { // Importovanie pouzivatelov z xml suboru
+        FileDialog dialog = new FileDialog((Frame) null, rb.getString("Select_file_to_open"));
         dialog.setMode(FileDialog.LOAD);
         dialog.setVisible(true);
         String path = dialog.getDirectory() + dialog.getFile();
         if (path.endsWith(".xml")) {
-            try
-            {
+            try {
                 File file = new File(path);
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 DocumentBuilder db = dbf.newDocumentBuilder();
@@ -291,11 +298,9 @@ public class AdminViewController implements Initializable {
                 User[] importedUsers = new User[nodeList.getLength()];
                 logger.info("log_user_id:" + currentUser.getId() + "Users imported");
                 DB.makeConn();
-                for (int itr = 0; itr < nodeList.getLength(); itr++)
-                {
+                for (int itr = 0; itr < nodeList.getLength(); itr++) {
                     Node node = nodeList.item(itr);
-                    if (node.getNodeType() == Node.ELEMENT_NODE)
-                    {
+                    if (node.getNodeType() == Node.ELEMENT_NODE) {
                         Element eElement = (Element) node;
                         importedUsers[itr] = new User(
                                 Integer.parseInt(eElement.getAttribute("id")),
@@ -309,82 +314,81 @@ public class AdminViewController implements Initializable {
                     }
                 }
                 refreshUsers();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 logger.warn("log_user_id:" + currentUser.getId() + "Import was unsuccessful " + e);
                 e.printStackTrace();
             }
-        }
-        else{
+        } else {
             logger.warn("log_user_id:" + currentUser.getId() + "Import was unsuccessful");
         }
 
     }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        nameTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("name"));
+        nameTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("name")); // Inicializovanie jednotlivych stlpcov v tabulke
         emailTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("email"));
         roleTable.setCellValueFactory(new PropertyValueFactory<UserTable, String>("role"));
-        Table.setItems(student);
-        try{
-            Table.setOnMouseClicked( event -> {
-                if( event.getClickCount() == 1  && !Table.getSelectionModel().isEmpty()) {
+        Table.setItems(user);
+        try {
+            Table.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 1 && !Table.getSelectionModel().isEmpty()) { // Vyber pouzivatela v tabulke na jeden klik
 
                     try {
                         chosenUser(Table.getSelectionModel().getSelectedItem());
-                        logger.info("log_user_id:" + currentUser.getId() + "User selected");
+                        logger.info("log_user_id:" + currentUser.getId() + "User selected"); // Vytvorenie logu pri vybrani pouzivatela
                     } catch (IOException e) {
                         e.printStackTrace();
-                        logger.warn("log_user_id:" + currentUser.getId() +e);
+                        logger.warn("log_user_id:" + currentUser.getId() + e); // Log v pripade chyby
                     }
 
-                }});
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("log_user_id:" + currentUser.getId() + "Problem with selection " + e);
+            logger.warn("log_user_id:" + currentUser.getId() + "Problem with selection " + e); // Log v pripade chyby
         }
 
 
-        FilteredList<UserTable> filterUsers = new FilteredList<>(student, b -> true);
+        FilteredList<UserTable> filterUsers = new FilteredList<>(user, b -> true);
 
 
-            search.textProperty().addListener((observable, oldValue, newValue) ->{
-                filterUsers.setPredicate(userName ->{
+        search.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterUsers.setPredicate(userName -> {
 
-                    if(newValue.isEmpty() || newValue.isBlank() || newValue == null){
-                        return true;
-                    }
-                    Pattern patternName = Pattern.compile("name:", Pattern.CASE_INSENSITIVE);
-                    Pattern patternEmail = Pattern.compile("email:", Pattern.CASE_INSENSITIVE);
+                if (newValue.isEmpty() || newValue.isBlank() || newValue == null) {
+                    return true;
+                }
+                Pattern patternName = Pattern.compile("name:", Pattern.CASE_INSENSITIVE); // Vzor regexu na vyhladavanie podla mena
+                Pattern patternEmail = Pattern.compile("email:", Pattern.CASE_INSENSITIVE); // Vzor regexu na vyhladanie podla emailu
 
-                    String searchedName = newValue.toLowerCase();
+                String searchedValue = newValue.toLowerCase(); // Vstup od pouzivatela aplikacie
 
-                    Matcher matcherName = patternName.matcher(searchedName.toLowerCase());
-                    Matcher matcherEmail = patternEmail.matcher(searchedName.toLowerCase());
+                Matcher matcherName = patternName.matcher(searchedValue.toLowerCase());
+                Matcher matcherEmail = patternEmail.matcher(searchedValue.toLowerCase());
 
-                    boolean userFound = matcherName.find();
-                    boolean emailFound = matcherEmail.find();
+                boolean userFound = matcherName.find();
+                boolean emailFound = matcherEmail.find();
 
 
-                    if (userFound && userName.getName().toLowerCase().contains(searchedName.replaceFirst("name: ", ""))){
-                        //logger.info("log_user_id:" + currentUser.getId() + "Filter by user name");
-                        return true;
-                    }
-                    if(emailFound && userName.getEmail().toLowerCase().contains(searchedName.replaceFirst("email: ", ""))){
-                        //logger.info("log_user_id:" + currentUser.getId() + "Filter by user email");
-                        return true;
-                    }
+                if (userFound && userName.getName().toLowerCase().contains(searchedValue.replaceFirst("name: ", ""))) {
+                    //Vrati vsetky zaznamy ktore obsahuju napisane meno
+                    return true;
+                }
+                if (emailFound && userName.getEmail().toLowerCase().contains(searchedValue.replaceFirst("email: ", ""))) {
+                    //Vrati vsetky zaznamy ktore obsahuju napisany email
+                    return true;
+                }
 
-                    return  false;
-                });
-
+                return false;
             });
-            SortedList<UserTable> sortedUser = new SortedList<>(filterUsers);
 
-            sortedUser.comparatorProperty().bind(Table.comparatorProperty());
+        });
+        SortedList<UserTable> sortedUser = new SortedList<>(filterUsers);
 
-            Table.setItems(sortedUser);
+        sortedUser.comparatorProperty().bind(Table.comparatorProperty());
+
+        Table.setItems(sortedUser); // Zobrazenie vysledkov do tabulky
 
     }
 
@@ -396,31 +400,31 @@ public class AdminViewController implements Initializable {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setDialogPane(dialogPane);
         dialog.setTitle(rb.getString("Selected_user"));
-        adminPopupController.setCurrentUser(user,dialog,exportPeople,this);
+        adminPopupController.setCurrentUser(user, dialog, exportPeople, this);
 
         dialog.showAndWait();
     }
-    public void setCurrentUser(User user){
-        this.currentUser=user;
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
     }
 
-    public void refreshUsers(){
+    public void refreshUsers() {
         loadUsers();
     }
 
     @FXML
-    private void loadUsers() {
-        if (showS.isSelected() && showT.isSelected()){
+    private void loadUsers() { // Zobrazenie pouzivatelov podla check box-u
+        if (showS.isSelected() && showT.isSelected()) {
             showUsers();
-        }
-        else{
-            if(showS.isSelected())
+        } else {
+            if (showS.isSelected())
                 showStudents();
-            if(showT.isSelected())
+            if (showT.isSelected())
                 showTeachers();
         }
-        if (!showS.isSelected() && !showT.isSelected()){
-            student.clear();
+        if (!showS.isSelected() && !showT.isSelected()) {
+            user.clear();
         }
     }
 }

@@ -83,6 +83,7 @@ public class AdminPopupController {
                 DB.makeConn();
             } catch (Exception var3) {
                 var3.printStackTrace();
+                logger.error("No database connection" + var3);
             }
             try {
                 logger.info("User" + user.getName() + "deleted");
@@ -94,7 +95,7 @@ public class AdminPopupController {
                 System.out.println("SQLState: " + var2.getSQLState());
                 System.out.println("VendorError: " + var2.getErrorCode());
                 var2.printStackTrace();
-                logger.error("No database connection" + var2.getMessage() + var2.getSQLState() + var2.getErrorCode());
+                logger.warn("Cannot delete user" + var2);
             }
         }
     }

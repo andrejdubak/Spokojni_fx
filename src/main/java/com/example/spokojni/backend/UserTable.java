@@ -1,13 +1,10 @@
 package com.example.spokojni.backend;
 
 public class UserTable {
-
-
+    // Atributy pouzivatela ulozeneho v tabulke
     private String name;
     private String email;
     private String role;
-
-
     private Integer id;
 
     public UserTable(String name, String email, String role, Integer id) {
@@ -32,6 +29,4 @@ public class UserTable {
     public Integer getId() {
         return id;
     }
-
-
 }
