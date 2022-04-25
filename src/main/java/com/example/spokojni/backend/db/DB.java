@@ -13,6 +13,7 @@ import java.util.Properties;
 public class DB {
     private static Connection con=null;
     private static PreparedStatement stmt=null;
+    //funkcie vracajú usera z lokálnych arraylistov
     private static ArrayList<Teacher> Teachers;
     private static Teacher getTeacher(int id){
         for(Teacher teacher : Teachers){
@@ -65,9 +66,10 @@ public class DB {
     public DB() throws Exception {
         makeConn();
     }
-
+    //funkcia vytvára connection s DB.
     public static void makeConn() throws Exception {
         Properties p = new Properties();
+        //Udaje na pripojenie k databaze dostupne v tomto subore
         p.load(DB.class.getClassLoader().getResourceAsStream("DB_connection.properties"));
         String db_name = (String) p.get("DB_name");
         String url = (String) p.get("URL");
@@ -120,6 +122,7 @@ public class DB {
         ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE id=" + id);
         return getUser(rs);
     }
+    //pre obmedzenie duplicity kodu
     public static ResultSet getUserResultSet(int id) throws SQLException{
         return stmt.executeQuery("SELECT * FROM users WHERE id=" + id);
     }
@@ -313,6 +316,7 @@ public class DB {
         ResultSet rs = stmt.executeQuery();
         return rs.next();
     }
+    //funkcia na update v databaze. Dokzae spracovat instancie tried User, Subject, Term, Agreement
     public static void update(Object obj) throws SQLException{
         if(obj instanceof User){
             stmt = con.prepareStatement("UPDATE users SET name=?, email=?, login=?, role=? WHERE id=?");
@@ -349,6 +353,7 @@ public class DB {
         }
         stmt.executeUpdate();
     }
+    //funkcia na pridanie Usera do DB, pre pripad pridavania rovno aj s heslom.
     public static boolean addUser(User user, String password) throws SQLException {
         if(getUserByLogin(user.getLogin()) != null)
             return false;
@@ -372,6 +377,7 @@ public class DB {
         return true;
         //stmt.executeUpdate("INSERT INTO users (id, pass, name, email, login, role) VALUES (NULL,NULL, '" + ((User) obj).getName() + "', '" + ((User) obj).getEmail() + "', '" + ((User) obj).getLogin() + "', " + ((User) obj).getRole() + ")");
     }
+    //pre potreby importu
     public static boolean addUserImportWithHash(User user, String password_hash, int role) throws SQLException {
         if(getUserByLogin(user.getLogin()) != null)
             return false;
