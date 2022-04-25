@@ -60,8 +60,9 @@ public class AdminViewController implements Initializable {
     private final ArrayList<Student> students = new ArrayList<>();
     private final ArrayList<Teacher> teachers = new ArrayList<>();
     private final ArrayList<UserTable> users = new ArrayList<>();
-    private final ObservableList<UserTable> user = FXCollections.observableArrayList(users);
+    private ObservableList<UserTable> user = FXCollections.observableArrayList(users);
     private ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
+    private SortedList<UserTable> sortedUser;
 
     @FXML
     private CheckBox showS;
@@ -205,9 +206,10 @@ public class AdminViewController implements Initializable {
 
     @FXML
     private void exportClick() throws ParserConfigurationException { // Exportovanie pouzivatelov do xml suboru
-        int[] selectedUsers = new int[user.size()];
-        for (int i = 0; i < user.size(); i++) {
-            selectedUsers[i] = user.get(i).getId();
+
+        int[] selectedUsers = new int[sortedUser.size()];
+        for (int i = 0; i < sortedUser.size(); i++) {
+            selectedUsers[i] = sortedUser.get(i).getId();
         }
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -343,7 +345,7 @@ public class AdminViewController implements Initializable {
         search.textProperty().addListener((observable, oldValue, newValue) -> {
             filterUsers.setPredicate(userName -> {
 
-                if (newValue.isEmpty() || newValue.isBlank() || newValue == null) {
+                if (newValue.isEmpty() || newValue.isBlank()) {
                     return true;
                 }
                 Pattern patternName = Pattern.compile("name:", Pattern.CASE_INSENSITIVE); // Vzor regexu na vyhladavanie podla mena
@@ -356,7 +358,6 @@ public class AdminViewController implements Initializable {
 
                 boolean userFound = matcherName.find();
                 boolean emailFound = matcherEmail.find();
-
 
                 if (userFound && userName.getName().toLowerCase().contains(searchedValue.replaceFirst("name: ", ""))) {
                     //Vrati vsetky zaznamy ktore obsahuju napisane meno
@@ -371,7 +372,7 @@ public class AdminViewController implements Initializable {
             });
 
         });
-        SortedList<UserTable> sortedUser = new SortedList<>(filterUsers);
+        sortedUser = new SortedList<>(filterUsers);
 
         sortedUser.comparatorProperty().bind(Table.comparatorProperty());
 

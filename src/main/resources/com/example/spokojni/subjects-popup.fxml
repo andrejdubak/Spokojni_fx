@@ -18,7 +18,7 @@
                 <TableColumn fx:id="table_column" prefWidth="436.6666660308838" text="C1" />
               </columns>
             </TableView>
-            <Button fx:id="load_subject" layoutX="335.0" layoutY="295.0" mnemonicParsing="false" onAction="#loadSubjects" prefHeight="25.0" prefWidth="120.0" text="%Load_subjects" wrapText="true" />
+            <Button layoutX="335.0" layoutY="295.0" mnemonicParsing="false" onAction="#loadSubjects" prefHeight="25.0" prefWidth="120.0" text="%Load_subjects" wrapText="true" />
          </children>
       </AnchorPane>
    </content>
