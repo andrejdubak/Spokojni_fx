@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="470.0" prefWidth="670.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.spokojni.frontend.AdminViewController">
+<AnchorPane prefHeight="470.0" prefWidth="690.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.spokojni.frontend.AdminViewController">
 
 
     <children>
@@ -20,23 +20,23 @@
                 <TableColumn fx:id="roleTable" prefWidth="119.0" text="%Role" />
             </columns>
         </TableView>
-        <Button fx:id="Profile" layoutX="509.0" layoutY="86.0" mnemonicParsing="false" onAction="#changePasswordClick" prefHeight="35.0" prefWidth="150.0" text="%Profile" textAlignment="CENTER">
+        <Button fx:id="Profile" layoutX="509.0" layoutY="86.0" mnemonicParsing="false" onAction="#changePasswordClick" prefHeight="35.0" prefWidth="169.0" text="%Profile" textAlignment="CENTER">
          <font>
             <Font size="14.0" />
          </font></Button>
-        <Button fx:id="exportPeople" layoutX="509.0" layoutY="265.0" mnemonicParsing="false" onAction="#exportClick" prefHeight="35.0" prefWidth="150.0" text="%Export_people" textAlignment="CENTER" wrapText="true">
+        <Button fx:id="exportPeople" layoutX="509.0" layoutY="265.0" mnemonicParsing="false" onAction="#exportClick" prefHeight="35.0" prefWidth="170.0" text="%Export_people" textAlignment="CENTER" wrapText="true">
          <font>
             <Font size="14.0" />
          </font></Button>
-        <Button fx:id="importPeople" layoutX="509.0" layoutY="205.0" mnemonicParsing="false" onAction="#importClick" prefHeight="35.0" prefWidth="150.0" text="%Import_people" textAlignment="CENTER" wrapText="true">
+        <Button fx:id="importPeople" layoutX="509.0" layoutY="205.0" mnemonicParsing="false" onAction="#importClick" prefHeight="35.0" prefWidth="170.0" text="%Import_people" textAlignment="CENTER" wrapText="true">
          <font>
             <Font size="14.0" />
          </font></Button>
-        <Button fx:id="registerPerson" layoutX="509.0" layoutY="146.0" mnemonicParsing="false" onAction="#registerPersonClick" prefHeight="35.0" prefWidth="150.0" text="%Register_person" textAlignment="CENTER" wrapText="true">
+        <Button fx:id="registerPerson" layoutX="509.0" layoutY="146.0" mnemonicParsing="false" onAction="#registerPersonClick" prefHeight="35.0" prefWidth="170.0" text="%Register_person" textAlignment="CENTER" wrapText="true">
          <font>
             <Font size="14.0" />
          </font></Button>
-        <Button fx:id="logOut" layoutX="509.0" layoutY="324.0" mnemonicParsing="false" onAction="#logoutClick" prefHeight="35.0" prefWidth="150.0" text="%Log_out" textAlignment="CENTER">
+        <Button fx:id="logOut" layoutX="509.0" layoutY="324.0" mnemonicParsing="false" onAction="#logoutClick" prefHeight="35.0" prefWidth="170.0" text="%Log_out" textAlignment="CENTER">
          <font>
             <Font size="14.0" />
          </font></Button>
@@ -48,7 +48,7 @@
                 <Font size="17.0" />
             </font>
         </Text>
-        <Text fx:id="name" layoutX="110.0" layoutY="30.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Admin" wrappingWidth="92.30078125">
+        <Text fx:id="name" layoutX="132.0" layoutY="30.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Admin" wrappingWidth="92.30078125">
             <font>
                 <Font size="16.0" />
             </font>
