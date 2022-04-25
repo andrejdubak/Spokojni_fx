@@ -35,6 +35,7 @@ public class ChangeWindowController {
     public void changeWindow(Button button) throws IOException {
         Stage stage = (Stage) button.getScene().getWindow();
         stage.setScene(scene);
+        stage.setResizable(false);
     }
 }
 
