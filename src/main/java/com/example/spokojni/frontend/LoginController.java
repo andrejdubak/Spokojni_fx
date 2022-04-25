@@ -51,7 +51,7 @@ public class LoginController implements Initializable {
 
     @FXML
     protected void loginClick() throws IOException {
-        user = new Student(4,"admin"," "," "); //tu zmenit pre login do ineho typu usera
+        user = new Teacher(5,"admin"," "," "); //tu zmenit pre login do ineho typu usera
 
         try {
             DB.makeConn();
@@ -63,11 +63,11 @@ public class LoginController implements Initializable {
             System.out.println("SQLException: " + var2.getMessage());
             System.out.println("SQLState: " + var2.getSQLState());
             System.out.println("VendorError: " + var2.getErrorCode());
-            logger.warn("Cannot login user" + var2);
+            logger.warn("Cannot login user " + var2);
             var2.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("No database connection" + e);
+            logger.error("No database connection " + e);
         }
         if (Objects.equals(language.getSelectionModel().getSelectedItem(), "Slovenčina"))
             Locale.setDefault(new Locale("sk", "SK"));
@@ -77,7 +77,7 @@ public class LoginController implements Initializable {
             Locale.setDefault(new Locale("de", "DE"));
         if (user instanceof Student) {
 
-            logger.info("Student" + user.getName() + "logged in");
+            logger.info("Student " + user.getName() + " logged in");
             ChangeWindowController controller = new ChangeWindowController("student-view.fxml", Locale.getDefault());
 
             StudentViewController studentViewController = controller.getFxmlLoader().getController();
@@ -86,7 +86,7 @@ public class LoginController implements Initializable {
         }
         else if (user instanceof Teacher) {
 
-            logger.info("Teacher" + user.getName() + "logged in");
+            logger.info("Teacher " + user.getName() + " logged in");
             ChangeWindowController controller = new ChangeWindowController("teacher-view.fxml", Locale.getDefault());
 
             TeacherViewController teacherViewController = controller.getFxmlLoader().getController();

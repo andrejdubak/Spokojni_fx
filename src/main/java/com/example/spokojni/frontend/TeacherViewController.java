@@ -57,6 +57,12 @@ public class TeacherViewController {
         Platform.exit();
         System.exit(0);
     }
+
+    @FXML
+    private void exitClick() {
+        Platform.exit();
+        System.exit(0);
+    }
     public void setCurrentUser(User user){
         this.currentUser=user;
     }
