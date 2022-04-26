@@ -20,13 +20,10 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class SubjectsController implements Initializable  {
-    private Logger logger = LogManager.getLogger(SubjectsController.class);
+public class SubjectsController implements Initializable  {     // kontroler, ktorym mozme upravovat predmety ucitela
+    private final Logger logger = LogManager.getLogger(SubjectsController.class);
     @FXML
     private TableColumn<Subject,String> table_column;
-
-    @FXML
-    private Button add_subject;
 
     @FXML
     private TableView<Subject> table;
@@ -37,7 +34,7 @@ public class SubjectsController implements Initializable  {
     private final ArrayList<Subject> load_subjects = new ArrayList<>();
     private final ObservableList<Subject> subjects = FXCollections.observableArrayList(load_subjects);
     private final Alert errorAlert;
-    private ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
+    private final ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
 
     public SubjectsController(){
         errorAlert = new Alert(Alert.AlertType.ERROR);
@@ -67,7 +64,7 @@ public class SubjectsController implements Initializable  {
     }
 
     @FXML
-    public void addSubject() throws SQLException {
+    public void addSubject() {      //  pridavame novy predmet pre pozuvatela
         if(!subject_name.getText().isEmpty()){
             Subject subject = new Subject(0,subject_name.getText(),teacher);
 
@@ -96,10 +93,10 @@ public class SubjectsController implements Initializable  {
 
     private void objectAlreadyExist() {
         errorAlert.showAndWait();
-    }
+    }       // ak uz existuje predmet s rovnakym menom
 
     @FXML
-    private void loadSubjects(){
+    private void loadSubjects(){        // citame vsetky predmety, ktore patria zvolenemu pozuvatelovi
         load_subjects.clear();
         subjects.clear();
         try {
@@ -124,13 +121,13 @@ public class SubjectsController implements Initializable  {
         }
     }
 
-    private void deleteSubject(Subject subject) {
+    private void deleteSubject(Subject subject) {       //mazeme zvoleny predmet
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(rb.getString("Confirmation_dialog"));
         alert.setHeaderText(rb.getString("Deleting_subject"));
         alert.setContentText(rb.getString("Sure_delete2")+subject.getName()+rb.getString("End2"));
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
+        if (result.get() == ButtonType.OK){     // najprv vsak kontroluje ci tak chce admin naozaj vykonat
             try {
                 DB.makeConn();
             } catch (Exception var3) {

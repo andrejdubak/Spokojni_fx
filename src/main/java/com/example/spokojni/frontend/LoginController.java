@@ -58,7 +58,6 @@ public class LoginController implements Initializable {
 
     @FXML
     protected void loginClick() throws IOException {
-        //user = new Teacher(5,"admin"," "," "); //tu zmenit pre login do ineho typu usera
 
         try {
             DB.makeConn();
@@ -79,7 +78,7 @@ public class LoginController implements Initializable {
 
         setLanguage();
 
-        if (user instanceof Student) {
+        if (user instanceof Student) {      //ak sa prihlasil student
 
             logger.info("Student " + user.getName() + " logged in");
             ChangeWindowController controller = new ChangeWindowController("student-view.fxml", Locale.getDefault());
@@ -88,7 +87,7 @@ public class LoginController implements Initializable {
             studentViewController.setCurrentUser(user);
             controller.changeWindow(loginButton);
         }
-        else if (user instanceof Teacher) {
+        else if (user instanceof Teacher) {     //ak sa prihlasil ucitel
 
             logger.info("Teacher " + user.getName() + " logged in");
             ChangeWindowController controller = new ChangeWindowController("teacher-view.fxml", Locale.getDefault());
@@ -97,7 +96,7 @@ public class LoginController implements Initializable {
             teacherViewController.setCurrentUser(user);
             controller.changeWindow(loginButton);
         }
-        else if (user instanceof Admin) {
+        else if (user instanceof Admin) {           //ak sa prihlasil admin
 
             logger.info("Admin logged in");
             ChangeWindowController controller = new ChangeWindowController("admin-view.fxml", Locale.getDefault());
@@ -106,14 +105,14 @@ public class LoginController implements Initializable {
             adminViewController.setCurrentUser(user);
             controller.changeWindow(loginButton);
         }
-        else{
+        else{       //ked su pihlasovacie udaje zle zadane
             System.out.println("Login Error!!");
             logger.warn("Login failed");
             errorAlert.showAndWait();
         }
     }
 
-    private void setLanguage() {
+    private void setLanguage() {        // zmena jazyka
         if (Objects.equals(language.getSelectionModel().getSelectedItem(), "Slovenčina"))
             Locale.setDefault(new Locale("sk", "SK"));
         else if (Objects.equals(language.getSelectionModel().getSelectedItem(), "English"))
@@ -123,7 +122,7 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    private void languageSelected(ActionEvent actionEvent) {
+    private void languageSelected() {  // on action listener, ktory dynamicky preklada prihlasovacie okno
         setLanguage();
         rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
         loginButton.setText(rb.getString("Continue"));

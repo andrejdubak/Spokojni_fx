@@ -4,10 +4,7 @@ import com.example.spokojni.backend.UserTable;
 import com.example.spokojni.backend.db.DB;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,7 +12,7 @@ import java.sql.SQLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class GeneratePasswordController {
+public class GeneratePasswordController {   // sluzi na resetovanie hesla pre pouzivatela od admina
     private Logger logger = LogManager.getLogger(GeneratePasswordController.class);
     @FXML
     private Button save;
@@ -23,7 +20,7 @@ public class GeneratePasswordController {
     private TextField generated_password;
     private UserTable user;
     private final Alert successfulAlert;
-    private Dialog dialog;
+    private Dialog<ButtonType> dialog;
     private ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
 
     public GeneratePasswordController(){
@@ -32,13 +29,13 @@ public class GeneratePasswordController {
         successfulAlert.setContentText(rb.getString("Password_was_successfully_changed"));
     }
 
-    public void setCurrentUser(UserTable user, Dialog dialog) {
+    public void setCurrentUser(UserTable user, Dialog<ButtonType> dialog) {
         this.user = user;
         this.dialog = dialog;
     }
 
     @FXML
-    private void generatePassword() {
+    private void generatePassword() {       // volame funkcie v RegisterPersonController,  ktora nam vygeneruje nove heslo
         generated_password.setText(RegisterPersonController.generateNewPass());
         save.setVisible(true);
     }
@@ -49,7 +46,7 @@ public class GeneratePasswordController {
     }
 
     @FXML
-    private void savePassword(ActionEvent actionEvent) {
+    private void savePassword() { //ukladanie noveho hesla
         try {
             DB.makeConn();
         } catch (Exception var3) {

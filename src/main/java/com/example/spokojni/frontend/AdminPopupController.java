@@ -8,7 +8,6 @@ import com.example.spokojni.backend.users.Teacher;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,7 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class AdminPopupController {
+public class AdminPopupController {     // kontroler, ktory sa vola pri kliknutí na používateľa v tabulke na admin obrazovke
 
     private Logger logger = LogManager.getLogger(AdminPopupController.class);
     private UserTable user;
@@ -34,31 +33,19 @@ public class AdminPopupController {
     @FXML
     private Label nameOfUser;
 
-    @FXML
-    private Button Login;
-
-    @FXML
-    private Button deleteUser;
-
-    @FXML
-    private Text name;
-
-    @FXML
-    private Button newPassword;
-
     public void setCurrentUser(UserTable user, Dialog<ButtonType> dialog, Button button, AdminViewController admin ){
         this.user=user;
         this.button=button;
         this.admin=admin;
         nameOfUser.setText(user.getName());
-        if (Objects.equals(user.getRole(), "Student")) {
-            addSubject.setVisible(false);
+        if (Objects.equals(user.getRole(), "Student")) {        //zistujeme ci ide o studenta
+            addSubject.setVisible(false);       // a nastavujeme button pre pracu s predmetami na neviditelny
         }
-        this.dialog=dialog;
+        this.dialog=dialog;     // dostavame samotny dialog, aby sme boli schopny vypnut tento pop up na click
     }
 
     @FXML
-    private void generateNewPassword() throws IOException {
+    private void generateNewPassword() throws IOException {     // funkcia ktora presunie admina do noveho pop upu, kde moze resetovat heslo pouzivatelovi
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("generate-password-popup.fxml"));
         fxmlLoader.setResources(rb);
         DialogPane dialogPane = fxmlLoader.load();
@@ -72,12 +59,12 @@ public class AdminPopupController {
     }
 
     @FXML
-    private void deleteUser() {
+    private void deleteUser() {     // volame ak sa admin rozhodne zmazat pouzivatela
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(rb.getString("Confirmation_dialog"));
         alert.setHeaderText(rb.getString("Deleting_user"));
         alert.setContentText(rb.getString("Sure_delete"));
-        Optional<ButtonType> result = alert.showAndWait();
+        Optional<ButtonType> result = alert.showAndWait();      // najprv sa vsak pytame kontrolnu otazku, ci naozaj chce vykonat tuto akciu
         if (result.get() == ButtonType.OK){
             try {
                 DB.makeConn();
@@ -87,8 +74,8 @@ public class AdminPopupController {
             }
             try {
                 logger.info("User" + user.getName() + "deleted");
-                DB.delete(user);
-                admin.refreshUsers();
+                DB.delete(user);        //zmazeme pouzivatela
+                admin.refreshUsers();   // nasledne refreshneme zoznam pouzivatelov
                 dialog.close();
             } catch (SQLException var2) {
                 System.out.println("SQLException: " + var2.getMessage());
@@ -101,9 +88,9 @@ public class AdminPopupController {
     }
 
     @FXML
-    private void logInUser() throws IOException {
+    private void logInUser() throws IOException {       // admin sa ide prihllasit do pouzivatelskeho uctu
         dialog.close();
-        if(Objects.equals(this.user.getRole(), "Student")) {
+        if(Objects.equals(this.user.getRole(), "Student")) {        // ak sa prihlasujeme do studenta
             logger.info("Admin logged as" + user.getName());
             ChangeWindowController controller = new ChangeWindowController("student-view.fxml", Locale.getDefault());
             StudentViewController studentViewController = controller.getFxmlLoader().getController();
@@ -111,7 +98,7 @@ public class AdminPopupController {
             studentViewController.setCurrentUser(student);
             controller.changeWindow(this.button);
         }
-        else{
+        else{       // ak sa prihlasujemme do ucitela
             logger.info("Admin logged as" + user.getName());
             ChangeWindowController controller = new ChangeWindowController("teacher-view.fxml", Locale.getDefault());
             TeacherViewController teacherViewController = controller.getFxmlLoader().getController();
@@ -123,7 +110,7 @@ public class AdminPopupController {
     }
 
     @FXML
-    private void addUser() throws IOException {
+    private void addSubject() throws IOException {  //toto vidi iba ucitel, sluzi na pracu s predmetmi pre daneho pouzivatela.
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("subjects-popup.fxml"));
         fxmlLoader.setResources(rb);
         DialogPane dialogPane = fxmlLoader.load();

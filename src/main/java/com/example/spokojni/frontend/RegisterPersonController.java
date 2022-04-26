@@ -66,7 +66,7 @@ public class RegisterPersonController  implements Initializable  {
     private TextField nickName;
 
     @FXML
-    private void onMailChanged() {
+    private void onMailChanged() {      //pri zmene email adresy automaticky upravujeme aj nickname
         String email = userEmail.getText();
         int endpoint = email.length();
         for (int i = 0; i < email.length(); i++) {
@@ -79,9 +79,9 @@ public class RegisterPersonController  implements Initializable  {
         nickName.setText(nick);
     }
 
-    public static String generateNewPass() {
+    public static String generateNewPass() {        // funkcia ktora nam generuje nove heslo
         int length = 20;
-        String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";       // kde sa nachadzaju tieto vsetky znaky
         String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
         String specialCharacters = "!@#$";
         String numbers = "1234567890";
@@ -89,12 +89,12 @@ public class RegisterPersonController  implements Initializable  {
         Random random = new Random();
         char[] password = new char[length];
 
-        password[0] = lowerCaseLetters.charAt(random.nextInt(lowerCaseLetters.length()));
-        password[1] = capitalCaseLetters.charAt(random.nextInt(capitalCaseLetters.length()));
-        password[2] = specialCharacters.charAt(random.nextInt(specialCharacters.length()));
-        password[3] = numbers.charAt(random.nextInt(numbers.length()));
+        password[0] = lowerCaseLetters.charAt(random.nextInt(lowerCaseLetters.length()));       //prve pismeno je male
+        password[1] = capitalCaseLetters.charAt(random.nextInt(capitalCaseLetters.length()));   //druhe pismeno je velke
+        password[2] = specialCharacters.charAt(random.nextInt(specialCharacters.length()));     //tretie je specialny znka
+        password[3] = numbers.charAt(random.nextInt(numbers.length()));     //stvrte je cislo
 
-        for (int i = 4; i < length; i++) {
+        for (int i = 4; i < length; i++) {      //ostatne su nahodne
             password[i] = combinedChars.charAt(random.nextInt(combinedChars.length()));
         }
         logger.info("password generated");
@@ -107,10 +107,10 @@ public class RegisterPersonController  implements Initializable  {
     }
 
     @FXML
-    private void saveUser() {
-        if(added)
+    private void saveUser() {       //funkcia, ktora uklada pouzivatela do databazy
+        if(added)       //kontrolujeme, ci chceme registrovat noveho pouzivatela
             registerAnotherUser();
-        else {
+        else {      //alebo ulozit toho uz vytvoreneho
             if (checkValues()) {
                 User user;
                 if (Objects.equals(comboBox.getValue(), rb.getString("Teacher"))) {
@@ -144,14 +144,14 @@ public class RegisterPersonController  implements Initializable  {
         }
     }
 
-    private void registrationFailed(){
+    private void registrationFailed(){      //vola sa ak uz niektory pouzvatel ma rovnaky nick name
         logger.info(" Registration failed");
         errorAlert.setHeaderText(rb.getString("Wrong_email"));
         errorAlert.setContentText(rb.getString("Email_taken"));
         errorAlert.showAndWait();
     }
 
-    private void registrationSuccessful() {
+    private void registrationSuccessful() {     //registracia uspesna
         logger.info("Registration successful");
         admin.refreshUsers();
         added=true;
@@ -164,7 +164,7 @@ public class RegisterPersonController  implements Initializable  {
         generatePassword.setVisible(false);
     }
 
-    private void registerAnotherUser(){
+    private void registerAnotherUser(){         //registracia dalsieho pouzivatela
         comboBox.setEditable(true);
         userName.setEditable(true);
         userEmail.setEditable(true);
@@ -177,8 +177,10 @@ public class RegisterPersonController  implements Initializable  {
         saveUser.setText(rb.getString("Save_user"));
     }
 
-    private boolean isValidEmailAddress(String email) {
-        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+    private boolean isValidEmailAddress(String email) {     // kontrola ci je emailova adresa validna
+        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]" +      //cast pred @
+                "+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)" +  //cast za .
+                "+[a-zA-Z]{2,}))$";
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
         java.util.regex.Matcher m = p.matcher(email);
         return m.matches();
@@ -188,11 +190,11 @@ public class RegisterPersonController  implements Initializable  {
         return !generatedPassword.getText().isEmpty();
     }
 
-    private boolean checkValues(){
+    private boolean checkValues(){      // kotntrolujeme vsetky vstupy predtym, ako pouzivatela ukladame
         if(!userEmail.getText().isEmpty()) {
             if(!userName.getText().isEmpty()) {
-                if (isValidEmailAddress(userEmail.getText())) {
-                    if (isPasswordGenerated()) {
+                if (isValidEmailAddress(userEmail.getText())) {     //ci je email adresa validna
+                    if (isPasswordGenerated()) {        // ci je heslo vygenerovane
                         return true;
                     } else {
                         errorAlert.setHeaderText(rb.getString("Password_not_generated"));

@@ -12,8 +12,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class ChangePassword {
-    public ChangePassword(User currentUser) throws IOException {
-        //logger.info("log_user_id:" + currentUser.getId() + "Show profile");
+    public ChangePassword(User currentUser) throws IOException {    //trieda, ktora spusta pop up na zmenu hesla
 
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("change-password-dialog.fxml"));
         ResourceBundle rb = (ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault()));

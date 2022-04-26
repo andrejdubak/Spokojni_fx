@@ -64,6 +64,10 @@ public class AdminViewController implements Initializable {
     private ResourceBundle rb = ResourceBundle.getBundle("com.example.spokojni.messages", Locale.getDefault());
     private SortedList<UserTable> sortedUser;
 
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+    }
+
     @FXML
     private CheckBox showS;
 
@@ -380,7 +384,7 @@ public class AdminViewController implements Initializable {
 
     }
 
-    private void chosenUser(UserTable user) throws IOException {
+    private void chosenUser(UserTable user) throws IOException {    //funkcia, ktora vola adminPopupController
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("admin-popup.fxml"));
         fxmlLoader.setResources(rb);
         DialogPane dialogPane = fxmlLoader.load();
@@ -388,18 +392,14 @@ public class AdminViewController implements Initializable {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setDialogPane(dialogPane);
         dialog.setTitle(rb.getString("Selected_user"));
-        adminPopupController.setCurrentUser(user, dialog, exportPeople, this);
+        adminPopupController.setCurrentUser(user, dialog, exportPeople, this);  // a posuva do nej vybraneho pouzivatela a dialog
 
         dialog.showAndWait();
     }
 
-    public void setCurrentUser(User user) {
-        this.currentUser = user;
-    }
-
     public void refreshUsers() {
         loadUsers();
-    }
+    }   //sluzi na refreshovanie zoznamu pouzivatelov v tabulke
 
     @FXML
     private void loadUsers() { // Zobrazenie pouzivatelov podla check box-u

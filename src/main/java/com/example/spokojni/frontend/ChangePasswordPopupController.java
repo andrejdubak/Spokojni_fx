@@ -16,7 +16,7 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ChangePasswordPopupController {
+public class ChangePasswordPopupController {        // kontroler, ktory zabezpecuje zmenu hesla pre pouzivatela
 
     @FXML
     private Button savePassword;
@@ -38,13 +38,13 @@ public class ChangePasswordPopupController {
     }
 
     @FXML
-    private void saveSettings() {
-        if (newPassword.getText().isEmpty()) {
+    private void saveSettings() {       // funkcia na ulozenie hesla do databazy
+        if (newPassword.getText().isEmpty()) {  //testujeme ci nove heslo nieje prazdne
             logger.warn("log_user_id:" + currentUser.getId() + "No password");
             showError(rb.getString("ERROR_new_password"), rb.getString("New_password_not_empty"));
         }
         else {
-            if (Objects.equals(repeatPassword.getText(), newPassword.getText())) {
+            if (Objects.equals(repeatPassword.getText(), newPassword.getText())) {      // testujeme ci sa nove heslo zhoduje so zopakovanym heslom
                 try {
                     DB.makeConn();
                 } catch (Exception var3) {
@@ -52,8 +52,8 @@ public class ChangePasswordPopupController {
                     logger.error("log_user_id:" + currentUser.getId() + "No database connection " + var3);
                 }
                 try {
-                    if (DB.checkPassword(currentUser.getId(), oldPassword.getText())) {
-                        if(isValidPassword(newPassword.getText())) {
+                    if (DB.checkPassword(currentUser.getId(), oldPassword.getText())) {     //kontrolujeme v databaze, ci sa zhoduje stare heslo
+                        if(isValidPassword(newPassword.getText())) {        // testujeme ci nove heslo splna vsetky minimalne poziadavky
                             DB.updatePassword(currentUser.getId(), newPassword.getText());
                             logger.info("log_user_id:" + currentUser.getId() + "Password changed");
                             passwordChangeSuccessful();
@@ -87,10 +87,10 @@ public class ChangePasswordPopupController {
         errorAlert.showAndWait();
     }
 
-    private static boolean isValidPassword(String password){
-        String regex = "^(?=.*[0-9])"
-                + "(?=.*[a-z])(?=.*[A-Z])"
-                + "(?=\\S+$).{8,20}$";
+    private static boolean isValidPassword(String password){    // kontrola minimalnych poziadavok na heslo
+        String regex = "^(?=.*[0-9])"   // aspon jedno cislo
+                + "(?=.*[a-z])(?=.*[A-Z])"  //velke aj male pismeno
+                + "(?=\\S+$).{8,20}$";  //medzi 8 az 20 znakov
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(password);
         return m.matches();

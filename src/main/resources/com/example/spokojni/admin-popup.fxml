@@ -14,7 +14,7 @@
                 <Button fx:id="Login" layoutX="20.0" layoutY="111.0" mnemonicParsing="false" onAction="#logInUser" prefHeight="75.0" prefWidth="120.0" text="%Log_as_user" textAlignment="CENTER" wrapText="true" />
                 <Button fx:id="newPassword" layoutX="160.0" layoutY="111.0" mnemonicParsing="false" onAction="#generateNewPassword" prefHeight="75.0" prefWidth="120.0" text="%Generate_password" textAlignment="CENTER" wrapText="true" />
                 <Button fx:id="deleteUser" layoutX="300.0" layoutY="111.0" mnemonicParsing="false" onAction="#deleteUser" prefHeight="75.0" prefWidth="120.0" text="%Delete_user" textAlignment="CENTER" wrapText="true" />
-                <Button fx:id="addSubject" layoutX="440.0" layoutY="111.0" mnemonicParsing="false" onAction="#addUser" prefHeight="75.0" prefWidth="120.0" text="%Subjects" textAlignment="CENTER" wrapText="true" />
+                <Button fx:id="addSubject" layoutX="440.0" layoutY="111.0" mnemonicParsing="false" onAction="#addSubject" prefHeight="75.0" prefWidth="120.0" text="%Subjects" textAlignment="CENTER" wrapText="true" />
                 <Label fx:id="nameOfUser" alignment="CENTER" layoutX="118.0" layoutY="14.0" prefHeight="59.0" prefWidth="343.0" text="Label">
                     <font>
                         <Font size="24.0" />
